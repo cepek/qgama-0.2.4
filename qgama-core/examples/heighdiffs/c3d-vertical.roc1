@@ -1,0 +1,121 @@
+<?xml version="1.0" ?>
+<!DOCTYPE gama-xml SYSTEM "gama-xml.dtd">
+
+<gama-xml>
+<network>
+
+<description>
+Vertical.txt: example from Demo - Ver 3.0.0.1
+              COLUMBUS 3D Geodetic Network Adjustment Software
+</description>
+
+
+<parameters
+   sigma-apr ="1"
+   conf-pr="0.95"
+   sigma-act ="aposteriori"
+/>
+
+<points-observations>
+
+<point id="BOB"   z="260.04050" fix="z" />
+<point id="CINDY" z="262.61200" adj="z" />
+<point id="DEBRA" z="267.71765" adj="z" />
+<point id="ED"    z="263.88720" adj="z" />
+<point id="FAYE"  z="260.61770" adj="z" />
+<point id="GABE"  z="259.59200" adj="z" />
+
+<height-differences>
+  <dh  from="BOB  "  to="CINDY"  val=" 2.56916"  stdev="0.38710" />
+  <dh  from="BOB  "  to="GABE "  val="-0.44714"  stdev="0.34138" />
+  <dh  from="CINDY"  to="DEBRA"  val=" 5.09749"  stdev="0.40234" />
+  <dh  from="CINDY"  to="FAYE "  val="-1.98974"  stdev="0.31394" />
+  <dh  from="DEBRA"  to="ED   "  val="-3.82921"  stdev="0.29261" />
+  <dh  from="ED   "  to="FAYE "  val="-3.26777"  stdev="0.39319" />
+  <dh  from="FAYE "  to="GABE "  val="-1.02169"  stdev="0.42062" />
+</height-differences>
+
+</points-observations>
+
+</network>
+</gama-xml>
+
+<!--
+
+$DATUM
+  NAD 83
+  6378137.000000
+  298.257222101
+
+$UNITS
+  M
+  D
+  1
+
+$HEIGHT
+  BOB
+             260.04050      0.0000001
+
+$HEIGHT
+  CINDY
+             262.61200      0.0000001
+
+$HEIGHT
+  DEBRA
+             267.71765      0.0000001
+
+$HEIGHT
+  ED
+             263.88720      0.0000001
+
+$HEIGHT
+  FAYE
+             260.61770      0.0000001
+
+$HEIGHT
+  GABE
+             259.59200      0.0000001
+
+
+$HGTDIFF
+  BOB
+  CINDY
+               2.56916        0.38710
+
+$HGTDIFF
+  BOB
+  GABE
+              -0.44714        0.34138
+
+$HGTDIFF
+  CINDY
+  DEBRA
+               5.09749        0.40234
+
+$HGTDIFF
+  CINDY
+  FAYE
+              -1.98974        0.31394
+
+$HGTDIFF
+  DEBRA
+  ED
+              -3.82921        0.29261
+
+$HGTDIFF
+  ED
+  FAYE
+              -3.26777        0.39319
+
+$HGTDIFF
+  FAYE
+  GABE
+              -1.02169        0.42062
+
+
+-->
+
+
+
+
+

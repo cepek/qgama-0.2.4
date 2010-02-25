@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>schemas/gama-local.xsd</file>
+        <file>schemas/gama-local-adjustment.xsd</file>
+    </qresource>
+</RCC>
