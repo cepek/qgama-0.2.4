@@ -4,7 +4,7 @@ win32:version.commands = cd ../scripts && mingw32-g++.exe -o version version.cpp
 QMAKE_EXTRA_TARGETS += version
 PRE_TARGETDEPS += version
 
-include(../options.pri) : error(Couldn't find the options.pri file!)
+!include(../options.pri) : error(Couldn't find the options.pri file!)
 
 TARGET = qgama
 
