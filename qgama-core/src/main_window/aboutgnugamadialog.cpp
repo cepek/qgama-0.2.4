@@ -37,7 +37,7 @@ AboutGnuGamaDialog::AboutGnuGamaDialog(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->label_Text1->setText(tr("This program uses GNU Gama version") + " <b>" + QString(GAMA_VERSION) + "</b>.");
+    ui->label_Text1->setText(tr("This program uses GNU Gama version") + " <b>" + QString(VERSION) + "</b>.");
     ui->label_Text2->setText(tr("The project GNU Gama is a free software written in C++, released under the terms of GNU General Public License, aimed at geodetic network adjustment."));
     ui->label_Text3->setText(tr("Developers:") + "<br/>" +
                              QString::fromUtf8("&nbsp;&nbsp;&nbsp;&nbsp;Aleš Čepek") + " (<a href=mailto:cepek@gama.fsv.cvut.cz>cepek@gama.fsv.cvut.cz</a>)<br/>" +

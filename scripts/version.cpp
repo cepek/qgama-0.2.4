@@ -24,6 +24,8 @@ int main() {
   gama_version = gama_version.substr(1,gama_version.length()-3);
   
   ofstream output("../config.h");
-  output << "#define GAMA_VERSION \"" << gama_version << "\""<< endl;
+  output << "#define VERSION \"" << gama_version << "\""<< endl;
+#if defined QGAMA_VERSION
   output << "#define QGAMA_VERSION \"" << QGAMA_VERSION << "\"" << endl;
+#endif
 }

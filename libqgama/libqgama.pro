@@ -1,14 +1,10 @@
 # generating of config.h file with the version info
-!exists(../config.h) {
-    unix:version.commands = cd ../scripts && g++ -o version version.cpp && ./version
-    win32:version.commands = cd ../scripts && mingw32-g++.exe -o version version.cpp && version.exe
-    QMAKE_EXTRA_TARGETS += version
-    PRE_TARGETDEPS += version
-}
+unix:version.commands = cd ../scripts && g++ -o version version.cpp && ./version
+win32:version.commands = cd ../scripts && mingw32-g++.exe -o version version.cpp && version.exe
+QMAKE_EXTRA_TARGETS += version
+PRE_TARGETDEPS += version
 
-!include(../options.pri) {
-    error( Couldn't find the options.pri file! )
-}
+include(../options.pri) : error(Couldn't find the options.pri file!)
 
 TARGET = qgama
 

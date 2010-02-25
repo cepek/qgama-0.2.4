@@ -81,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->menu_Network->setEnabled(false);
 
     // setting window title
-    this->setWindowTitle("QGama " + QString(QGAMA_VERSION) + tr(" (using GNU Gama version ") + QString(GAMA_VERSION) + ")");
+    this->setWindowTitle("QGama " + QString(QGAMA_VERSION) + tr(" (using GNU Gama version ") + QString(VERSION) + ")");
 
     // setting mdiArea subwindows icons
     ui->mdiArea->setWindowIcon(QIcon(":/images/icons/notes-32.png"));
