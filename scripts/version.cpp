@@ -25,7 +25,7 @@ int main() {
   
   ofstream output("../config.h");
   output << "#define VERSION \"" << gama_version << "\""<< endl;
-#if defined QGAMA_VERSION
+#ifdef QGAMA_VERSION
   output << "#define QGAMA_VERSION \"" << QGAMA_VERSION << "\"" << endl;
 #endif
 }

@@ -1,17 +1,17 @@
 # version of the QGamaCore GUI
 QGAMA_VERSION = 0.0.2
 
-# generating of config.h file with the version info
-unix:version.commands = cd ../../scripts && g++ -o version -D"'QGAMA_VERSION=\"$${QGAMA_VERSION}\"'" version.cpp && ./version
-win32:version.commands = cd ../../scripts && mingw32-g++.exe -o version -D"'QGAMA_VERSION=\"$${QGAMA_VERSION}\"'" version.cpp && version.exe
-QMAKE_EXTRA_TARGETS += version
-PRE_TARGETDEPS += version
-
 # dependency to libqgama
 unix:libqgama.commands = cd ../../libqgama && $$QMAKE_QMAKE libqgama.pro && make
 win32:libqgama.commands = cd ../../libqgama && $$QMAKE_QMAKE libqgama.pro && minqw32-make.exe
 QMAKE_EXTRA_TARGETS += libqgama
 PRE_TARGETDEPS += libqgama
+
+# generating of config.h file with the version info
+unix:version.commands = cd ../../scripts && g++ -o version -D"'QGAMA_VERSION=\"$${QGAMA_VERSION}\"'" version.cpp && ./version
+win32:version.commands = cd ../../scripts && mingw32-g++.exe -o version -D"'QGAMA_VERSION=\"$${QGAMA_VERSION}\"'" version.cpp && version.exe
+QMAKE_EXTRA_TARGETS += version
+PRE_TARGETDEPS += version
 
 !include(../../options.pri):error(Couldn't find the options.pri file!)
 
