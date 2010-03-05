@@ -10,11 +10,14 @@
     <height>768</height>
    </rect>
   </property>
+  <property name="contextMenuPolicy">
+   <enum>Qt::NoContextMenu</enum>
+  </property>
   <property name="windowTitle">
    <string/>
   </property>
   <property name="windowIcon">
-   <iconset resource="../qgama-core.qrc">
+   <iconset>
     <normaloff>:/images/icons/babieca-64.png</normaloff>:/images/icons/babieca-64.png</iconset>
   </property>
   <property name="toolTip">
@@ -32,12 +35,12 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="QWorkspace" name="workspace">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-        <horstretch>1</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QMdiArea" name="mdiArea">
+      <property name="viewMode">
+       <enum>QMdiArea::TabbedView</enum>
+      </property>
+      <property name="documentMode">
+       <bool>false</bool>
       </property>
      </widget>
     </item>
@@ -77,12 +80,14 @@
      <addaction name="action_File_5"/>
     </widget>
     <addaction name="action_New_Project"/>
-    <addaction name="action_New"/>
+    <addaction name="action_New_File"/>
     <addaction name="separator"/>
     <addaction name="action_Open_Project"/>
     <addaction name="menu_Open_Recent_Project"/>
-    <addaction name="action_Open"/>
+    <addaction name="action_Open_File"/>
     <addaction name="menu_Open_Recent_File"/>
+    <addaction name="separator"/>
+    <addaction name="action_Close_File"/>
     <addaction name="action_Close_Project"/>
     <addaction name="action_Close_All_Projects"/>
     <addaction name="separator"/>
@@ -174,7 +179,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="action_New"/>
+   <addaction name="action_New_File"/>
    <addaction name="action_New_Project"/>
    <addaction name="action_Open_Project"/>
    <addaction name="action_Save_All"/>
@@ -205,7 +210,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QTreeWidget" name="treeWidget_Projects">
+      <widget class="ProjectsTreeWidget" name="treeWidget_Projects">
        <property name="palette">
         <palette>
          <active>
@@ -635,14 +640,6 @@
          <string>Projects</string>
         </property>
        </column>
-       <item>
-        <property name="text">
-         <string>&lt; No Project Open &gt;</string>
-        </property>
-        <property name="flags">
-         <set>ItemIsEnabled</set>
-        </property>
-       </item>
       </widget>
      </item>
     </layout>
@@ -666,9 +663,9 @@
    </attribute>
    <widget class="QWidget" name="dockWidget_Output_Contents"/>
   </widget>
-  <action name="action_New">
+  <action name="action_New_File">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/file-32.png</normaloff>:/images/icons/file-32.png</iconset>
    </property>
    <property name="text">
@@ -690,9 +687,9 @@
     <bool>true</bool>
    </property>
   </action>
-  <action name="action_Open">
+  <action name="action_Open_File">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/standardbutton-open-32.png</normaloff>:/images/icons/standardbutton-open-32.png</iconset>
    </property>
    <property name="text">
@@ -713,7 +710,7 @@
   </action>
   <action name="action_Preferences">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/configure-16.png</normaloff>:/images/icons/configure-16.png</iconset>
    </property>
    <property name="text">
@@ -734,7 +731,7 @@
   </action>
   <action name="action_Plugins">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/plugin-manager-16.png</normaloff>:/images/icons/plugin-manager-16.png</iconset>
    </property>
    <property name="text">
@@ -743,13 +740,16 @@
    <property name="statusTip">
     <string>Manage Plugins.</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+P</string>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
    </property>
   </action>
   <action name="action_Quit">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/exit-16.png</normaloff>:/images/icons/exit-16.png</iconset>
    </property>
    <property name="text">
@@ -795,7 +795,7 @@
   </action>
   <action name="action_New_Project">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/newdirectory-32.png</normaloff>:/images/icons/newdirectory-32.png</iconset>
    </property>
    <property name="text">
@@ -810,7 +810,7 @@
   </action>
   <action name="action_Open_Project">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/diropen-32.png</normaloff>:/images/icons/diropen-32.png</iconset>
    </property>
    <property name="text">
@@ -825,8 +825,8 @@
   </action>
   <action name="action_Close_Project">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
-     <normaloff>:/images/icons/standardbutton-close-32.png</normaloff>:/images/icons/standardbutton-close-32.png</iconset>
+    <iconset>
+     <normaloff>:/images/icons/standardbutton-cancel-32.png</normaloff>:/images/icons/standardbutton-cancel-32.png</iconset>
    </property>
    <property name="text">
     <string> &amp;Close Project</string>
@@ -842,7 +842,7 @@
   </action>
   <action name="action_Save">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/standardbutton-save-32.png</normaloff>:/images/icons/standardbutton-save-32.png</iconset>
    </property>
    <property name="text">
@@ -865,7 +865,7 @@
   </action>
   <action name="action_Save_All">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/save_all-32.png</normaloff>:/images/icons/save_all-32.png</iconset>
    </property>
    <property name="text">
@@ -877,7 +877,7 @@
   </action>
   <action name="action_Print">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/print-32.png</normaloff>:/images/icons/print-32.png</iconset>
    </property>
    <property name="text">
@@ -941,10 +941,6 @@
    </property>
   </action>
   <action name="action_Close_All_Projects">
-   <property name="icon">
-    <iconset resource="../qgama-core.qrc">
-     <normaloff>:/images/icons/standardbutton-cancel-32.png</normaloff>:/images/icons/standardbutton-cancel-32.png</iconset>
-   </property>
    <property name="text">
     <string> &amp;Close All Projects</string>
    </property>
@@ -962,7 +958,7 @@
   </action>
   <action name="action_Projects">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/draft-32.png</normaloff>:/images/icons/draft-32.png</iconset>
    </property>
    <property name="text">
@@ -977,7 +973,7 @@
   </action>
   <action name="action_Output">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/notes-32.png</normaloff>:/images/icons/notes-32.png</iconset>
    </property>
    <property name="text">
@@ -990,10 +986,27 @@
     <bool>true</bool>
    </property>
   </action>
+  <action name="action_Close_File">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/images/icons/standardbutton-close-32.png</normaloff>:/images/icons/standardbutton-close-32.png</iconset>
+   </property>
+   <property name="text">
+    <string> &amp;Close File</string>
+   </property>
+   <property name="iconVisibleInMenu">
+    <bool>true</bool>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="../qgama-core.qrc"/>
- </resources>
+ <customwidgets>
+  <customwidget>
+   <class>ProjectsTreeWidget</class>
+   <extends>QTreeWidget</extends>
+   <header>../projects_manager/projectstreewidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
  <connections/>
 </ui>

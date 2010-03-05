@@ -1,8 +1,12 @@
 # generating of config.h file with the version info
-unix:version.commands = cd ../scripts && g++ -o version version.cpp && ./version
-win32:version.commands = cd ../scripts && mingw32-g++.exe -o version version.cpp && version.exe
-QMAKE_EXTRA_TARGETS += version
-PRE_TARGETDEPS += version
+!exists(../config.h) {
+    unix:version.commands = cd ../scripts && g++ -o version version.cpp && ./version
+    win32:version.commands = cd ../scripts && mingw32-g++.exe -o version version.cpp && version.exe
+    QMAKE_EXTRA_TARGETS += version
+    PRE_TARGETDEPS += version
+}
+
+QMAKE_CLEAN += ../config.h
 
 !include(../options.pri) : error(Couldn't find the options.pri file!)
 

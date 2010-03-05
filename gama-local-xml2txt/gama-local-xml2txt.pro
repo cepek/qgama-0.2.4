@@ -1,12 +1,16 @@
 # generating of config.h file with the version info
-unix:version.commands = cd ../scripts && g++ -o version version.cpp && ./version
-win32:version.commands = cd ../scripts && mingw32-g++.exe -o version version.cpp && version.exe
-QMAKE_EXTRA_TARGETS += version
-PRE_TARGETDEPS += version
+!exists (../config.h) {
+    unix:version.commands = cd ../scripts && g++ -o version version.cpp && ./version
+    win32:version.commands = cd ../scripts && mingw32-g++.exe -o version version.cpp && version.exe
+    QMAKE_EXTRA_TARGETS += version
+    PRE_TARGETDEPS += version
+}
+
+QMAKE_CLEAN += ../config.h
 
 # dependency to libqgama
 unix:libqgama.commands = cd ../libqgama && $$QMAKE_QMAKE libqgama.pro && make
-win32:libqgama.commands = cd ../libqgama && $$QMAKE_QMAKE libqgama.pro && minqw32-make.exe
+win32:libqgama.commands = cd ../libqgama && $$QMAKE_QMAKE libqgama.pro && mingw32-make.exe
 QMAKE_EXTRA_TARGETS += libqgama
 PRE_TARGETDEPS+=libqgama
 

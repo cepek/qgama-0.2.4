@@ -23,7 +23,7 @@
 #include <QFontDialog>
 
 #include "preferencesdialog.h"
-#include "../preferences/qgamasettingsimpl.h"
+#include "../preferences/settingsimpl.h"
 
 using namespace QGamaCore;
 
@@ -35,7 +35,7 @@ using namespace QGamaCore;
 PreferencesDialog::PreferencesDialog(QWidget *parent) :
     QDialog(parent),
     ui(new QGamaCore::Ui::PreferencesDialog),
-    settings(QGamaSettingsImpl::instance())
+    settings(SettingsImpl::instance())
 {
     ui->setupUi(this);
 }
@@ -58,7 +58,7 @@ PreferencesDialog::~PreferencesDialog()
   */
 void PreferencesDialog::paintEvent(QPaintEvent *e)
 {
-    ui->pushButtonSelectFont->setText(qApp->font().family() + " | " + QString::number(qApp->font().pointSize()) + "pt");
+    ui->pushButton_Select_Font->setText(qApp->font().family() + " | " + QString::number(qApp->font().pointSize()) + "pt");
     resize(this->sizeHint());
 }
 
@@ -66,7 +66,7 @@ void PreferencesDialog::paintEvent(QPaintEvent *e)
 /** Slot for selecting application font setting.
   *
   */
-void PreferencesDialog::on_pushButtonSelectFont_clicked()
+void PreferencesDialog::on_pushButton_Select_Font_clicked()
 {
     bool ok;
     QFont font = QFontDialog::getFont(&ok, qApp->font(), this);

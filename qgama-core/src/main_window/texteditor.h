@@ -19,48 +19,45 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef NEWPROJECTDIALOG_H
-#define NEWPROJECTDIALOG_H
+#ifndef TEXTEDITOR_H
+#define TEXTEDITOR_H
 
-#include <QDialog>
-#include <QDir>
-#include <ui_newprojectdialog.h>
-
-#include "../projects_manager/projectsmanager.h"
+#include <QTextEdit>
 
 
 namespace QGamaCore {
-
-    namespace Ui {
-
-        class NewProjectDialog : public Ui_NewProjectDialog {};
-
-    } // namespace Ui
-
-
-    class NewProjectDialog : public QDialog
+    class TextEditor : public QTextEdit
     {
         Q_OBJECT
 
         public:
-            NewProjectDialog(QWidget *parent = 0);
-            ~NewProjectDialog();
+            TextEditor();
+            ~TextEditor();
+
+            void newFile();
+            bool loadFile(const QString &fileName);
+            bool save();
+            bool saveAs();
+            bool saveFile(const QString &fileName);
+            QString userFriendlyCurrentFile();
+            QString currentFile() { return curFile; }
 
         protected:
-            void changeEvent(QEvent *e);
-
-        private:
-            Ui::NewProjectDialog *ui;
-            QDir location;
-            QDir folder;
-            QGamaCore::ProjectsManager &prm;
+            void closeEvent(QCloseEvent *event);
 
         private slots:
-            void on_toolButton_Browse_clicked();
-            void on_lineEdit_Project_Name_textChanged(QString);
-            void createProject();
-    }; // class NewProjectDialog
+            void documentWasModified();
+
+        private:
+            bool maybeSave();
+            void setCurrentFile(const QString &fileName);
+            QString strippedName(const QString &fullFileName);
+
+            QString curFile;
+            bool isUntitled;
+    }; // class TextEditor
+
 } // namespace QGamaCore
 
 
-#endif // NEWPROJECTDIALOG_H
+#endif // TEXTEDITOR_H

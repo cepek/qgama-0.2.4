@@ -19,34 +19,42 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef PROJECT_H
+#define PROJECT_H
 
 #include <QString>
-#include <QWidget>
-#include <QMdiSubWindow>
-
+#include <QStringList>
 
 namespace QGamaCore {
 
-    /// Auxiliary enumeration.
-    enum { Enabled, NotEnabled };
-
-    /** Class containing static methods used all over the rest of the application.
-      *
-      */
-    class Utils
+    class Project
     {
         private:
-            Utils(); // forbidden (class contains only static methods)
+            QString name;
+            QString location;
+            QString outputType;
+            QStringList files;
+            bool mainProject;
+            bool opened;
 
         public:
-            static QWidget* findTopLevelWidget(const QString &name);
-            static QWidget* findWidget(const QString &name);
-            static QMdiSubWindow* findMdiSubWindow(const QString &file);
-    }; // class Utils
+            Project() { opened=false; mainProject=false; }
+            Project(const QString &name, const QString &location, bool mainProject);
+
+            // setters
+            void setMainProject(bool mainProject) { this->mainProject = mainProject; }
+            void setOpened(bool opened) { this->opened = opened; }
+            void setName(const QString &name) { this->name = name; }
+            void setLocation(const QString &location) { this->location = location; }
+
+            // getters
+            bool isMainProject() { return mainProject; }
+            bool isOpened() { return opened; }
+            QString getLocation() { return location; }
+            QString getName() { return name; }
+    }; // class Project
 
 } // namespace QGamaCore
 
 
-#endif // UTILS_H
+#endif // PROJECT_H

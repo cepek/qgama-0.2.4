@@ -19,57 +19,38 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PREFERENCESDIALOG_H
-#define PREFERENCESDIALOG_H
+#ifndef NEWFILEDIALOG_H
+#define NEWFILEDIALOG_H
 
 #include <QDialog>
-#include <ui_preferencesdialog.h>
-
-#include "../preferences/settings.h"
+#include <ui_newfiledialog.h>
 
 
 namespace QGamaCore {
 
     namespace Ui {
 
-        /** Class generated from Qt Designer's .ui file.
-          *
-          * It defines the appearence of QGamaCore::PreferencesDialog GUI.
-          */
-        class PreferencesDialog : public Ui_PreferencesDialog {};
+        class NewFileDialog : public Ui_NewFileDialog {};
+
     } // namespace Ui
 
 
-    /** PreferencesDialog implementation class.
-      *
-      * All the functionality for QGamaCore::Ui::PreferencesDialog class.
-      */
-    class PreferencesDialog : public QDialog
+    class NewFileDialog : public QDialog
     {
         Q_OBJECT
 
         public:
-            PreferencesDialog(QWidget *parent = 0);
-            ~PreferencesDialog();
+            NewFileDialog(QWidget *parent = 0);
+            ~NewFileDialog();
 
         protected:
             void changeEvent(QEvent *e);
-            void paintEvent(QPaintEvent *e);
 
         private:
-            /// Pointer to the Qt Designer's generated class with GUI definition.
-            QGamaCore::Ui::PreferencesDialog *ui;
-            /// Reference to the QGamaCore::Settings.
-            QGamaCore::Settings &settings;
-
-        signals:
-            void fontChanged();
-
-        private slots:
-            void on_pushButton_Select_Font_clicked();
-    }; // class PreferencesDialog
+            QGamaCore::Ui::NewFileDialog *ui;
+    }; // class NewFileDialog
 
 } // namespace QGamaCore
 
 
-#endif // PREFERENCESDIALOG_H
+#endif // NEWFILEDIALOG_H

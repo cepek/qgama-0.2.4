@@ -139,6 +139,7 @@
 	<file>../images/icons/draft-32.png</file>
 	<file>../images/icons/notes-32.png</file>
 	<file>../images/gama-local.png</file>
+	<file>../images/gama-local-elipse.png</file>
 	<file>../images/rocinante.png</file>
     </qresource>
 </RCC>

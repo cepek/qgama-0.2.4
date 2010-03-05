@@ -19,27 +19,42 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PROJECTSMANAGER_H
-#define PROJECTSMANAGER_H
+#include "newfiledialog.h"
 
-#include <QList>
-
-#include "project.h"
+using namespace QGamaCore;
 
 
-namespace QGamaCore {
-
-    class ProjectsManager
-    {
-        protected:
-            QList<Project*> projects;
-
-        public:
-            virtual bool newProject(const QString &name, const QString &location, bool mainProject) = 0;
-            virtual bool openProject(const QString &projectFile) = 0;
-    }; // class ProjectsManager
-
-} // namespace QGamaCore
+/**
+  *
+  */
+NewFileDialog::NewFileDialog(QWidget *parent) :
+    QDialog(parent),
+    ui(new QGamaCore::Ui::NewFileDialog)
+{
+    ui->setupUi(this);
+}
 
 
-#endif // PROJECTSMANAGER_H
+/**
+  *
+  */
+NewFileDialog::~NewFileDialog()
+{
+    delete ui;
+}
+
+
+/**
+  *
+  */
+void NewFileDialog::changeEvent(QEvent *e)
+{
+    QDialog::changeEvent(e);
+    switch (e->type()) {
+    case QEvent::LanguageChange:
+        ui->retranslateUi(this);
+        break;
+    default:
+        break;
+    }
+}

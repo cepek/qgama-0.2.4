@@ -1,21 +1,26 @@
 # version of the QGamaCore GUI
-QGAMA_VERSION = 0.0.2
+QGAMA_VERSION = 0.0.3
 
 # dependency to libqgama
 unix:libqgama.commands = cd ../../libqgama && $$QMAKE_QMAKE libqgama.pro && make
-win32:libqgama.commands = cd ../../libqgama && $$QMAKE_QMAKE libqgama.pro && minqw32-make.exe
+win32:libqgama.commands = cd ../../libqgama && $$QMAKE_QMAKE libqgama.pro && mingw32-make.exe
 QMAKE_EXTRA_TARGETS += libqgama
 PRE_TARGETDEPS += libqgama
 
 # generating of config.h file with the version info
-unix:version.commands = cd ../../scripts && g++ -o version -D"'QGAMA_VERSION=\"$${QGAMA_VERSION}\"'" version.cpp && ./version
-win32:version.commands = cd ../../scripts && mingw32-g++.exe -o version -D"'QGAMA_VERSION=\"$${QGAMA_VERSION}\"'" version.cpp && version.exe
-QMAKE_EXTRA_TARGETS += version
-PRE_TARGETDEPS += version
+!exists(../../config.h) {
+    unix:version.commands = cd ../scripts && g++ -o version version.cpp && ./version
+    win32:version.commands = cd ../scripts && mingw32-g++.exe -o version version.cpp && version.exe
+    QMAKE_EXTRA_TARGETS += version
+    PRE_TARGETDEPS += version
+}
 
 !include(../../options.pri):error(Couldn't find the options.pri file!)
 
-LIBS += -L../../libqgama -lqgama
+win32:QMAKE_LFLAGS_EXCEPTIONS_ON = -Wl
+win32:QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions
+
+#LIBS += -L../../libqgama -lqgama
 
 TARGET = qgama
 
@@ -25,47 +30,70 @@ TEMPLATE = app
 
 DESTDIR = ../../bin
 
+INCLUDEPATH += ui ../../
+
 SOURCES += main.cpp \
-    main_window/mainwindow.cpp \
-    preferences/qgamasettingsimpl.cpp \
-    plugin_manager/pluginmanagerdialog.cpp \
-    plugin_manager/pluginmanagerimpl.cpp \
+    # preferences
+    preferences/settingsimpl.cpp \
     preferences/preferencesdialog.cpp \
+    # plugins_manager
+    plugins_manager/pluginsmanagerdialog.cpp \
+    plugins_manager/pluginsmanagerimpl.cpp \
+    # utils
     utils/utils.cpp \
+    # main_window
+    main_window/mainwindow.cpp \
     main_window/aboutqgamadialog.cpp \
     main_window/aboutgnugamadialog.cpp \
-    main_window/network.cpp \
+    main_window/texteditor.cpp \
+    # projects_manager
     projects_manager/projectsmanagerimpl.cpp \
-    projects_manager/newprojectdialog.cpp
+    projects_manager/newprojectdialog.cpp \
+    projects_manager/newfiledialog.cpp \
+    projects_manager/project.cpp \
+    projects_manager/projectstreewidget.cpp
 
-HEADERS += main_window/mainwindow.h \
-    preferences/qgamasettings.h \
-    preferences/qgamasettingsimpl.h \
+HEADERS += \
+    # preferences
+    preferences/settings.h \
+    preferences/settingsimpl.h \
     preferences/preferencesdialog.h \
-    plugin_manager/pluginmanagerdialog.h \
-    plugin_manager/pluginmanager.h \
-    plugin_manager/pluginmanagerimpl.h \
-    plugin_manager/plugininterface.h \
+    # plugins_manager
+    plugins_manager/pluginsmanagerdialog.h \
+    plugins_manager/pluginsmanager.h \
+    plugins_manager/pluginsmanagerimpl.h \
+    plugins_manager/plugininterface.h \
+    # utils
     utils/utils.h \
+    # main_window
+    main_window/mainwindow.h \
     main_window/aboutqgamadialog.h \
     main_window/aboutgnugamadialog.h \
-    main_window/network.h \
+    main_window/texteditor.h \
+    # projects_manager
     projects_manager/projectsmanager.h \
     projects_manager/projectsmanagerimpl.h \
-    projects_manager/newprojectdialog.h
+    projects_manager/newprojectdialog.h \
+    projects_manager/newfiledialog.h \
+    projects_manager/project.h \
+    projects_manager/projectstreewidget.h
 
-FORMS += main_window/mainwindow.ui \
-    plugin_manager/pluginmanagerdialog.ui \
+FORMS += \
+    # preferences
     preferences/preferencesdialog.ui \
+    # plugins_manager
+    plugins_manager/pluginsmanagerdialog.ui \
+    # main_window
+    main_window/mainwindow.ui \
     main_window/aboutqgamadialog.ui \
     main_window/aboutgnugamadialog.ui \
-    projects_manager/newprojectdialog.ui
+    # projects_manager
+    projects_manager/newprojectdialog.ui \
+    projects_manager/newfiledialog.ui
 
 RESOURCES += qgama-core.qrc
 
 TRANSLATIONS = ../translations/qgamacore_cs_CZ.ts
-
-INCLUDEPATH += ui
 
 UI_DIR = ui
 MOC_DIR = .moc/release-shared

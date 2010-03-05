@@ -19,48 +19,38 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef NEWPROJECTDIALOG_H
-#define NEWPROJECTDIALOG_H
+#ifndef PROJECTSTREEWIDGET_H
+#define PROJECTSTREEWIDGET_H
 
-#include <QDialog>
-#include <QDir>
-#include <ui_newprojectdialog.h>
-
-#include "../projects_manager/projectsmanager.h"
+#include <QTreeWidget>
+#include <QWidget>
+#include <QContextMenuEvent>
+#include <QAction>
 
 
 namespace QGamaCore {
 
-    namespace Ui {
-
-        class NewProjectDialog : public Ui_NewProjectDialog {};
-
-    } // namespace Ui
-
-
-    class NewProjectDialog : public QDialog
+    class ProjectsTreeWidget : public QTreeWidget
     {
         Q_OBJECT
 
         public:
-            NewProjectDialog(QWidget *parent = 0);
-            ~NewProjectDialog();
+            ProjectsTreeWidget(QWidget *parent);
 
         protected:
-            void changeEvent(QEvent *e);
+            void contextMenuEvent(QContextMenuEvent *event);
 
-        private:
-            Ui::NewProjectDialog *ui;
-            QDir location;
-            QDir folder;
-            QGamaCore::ProjectsManager &prm;
+        signals:
+            void openFile(const QString &file);
+
+        public slots:
+            void changeActiveProject(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
         private slots:
-            void on_toolButton_Browse_clicked();
-            void on_lineEdit_Project_Name_textChanged(QString);
-            void createProject();
-    }; // class NewProjectDialog
+            void openFileDoubleClick(QTreeWidgetItem *current, int);
+            void openFileContextMenu(QAction *action);
+    }; // class ProjectsTreeWidget
+
 } // namespace QGamaCore
 
-
-#endif // NEWPROJECTDIALOG_H
+#endif // PROJECTSTREEWIDGET_H

@@ -19,57 +19,60 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PREFERENCESDIALOG_H
-#define PREFERENCESDIALOG_H
+#ifndef PLUGINSMANAGERDIALOG_H
+#define PLUGINSMANAGERDIALOG_H
 
 #include <QDialog>
-#include <ui_preferencesdialog.h>
+#include <QMap>
+#include <QWidget>
+#include <QString>
 
+#include <ui_pluginsmanagerdialog.h>
 #include "../preferences/settings.h"
+#include "../plugins_manager/plugininterface.h"
+#include "../plugins_manager/pluginsmanager.h"
 
 
 namespace QGamaCore {
 
+    /** Class generated from Qt Designer's .ui file.
+      *
+      * It defines the appearence of QGamaCore::PluginsManagerDialog.
+      */
     namespace Ui {
+        class PluginsManagerDialog : public Ui_PluginsManagerDialog {};
 
-        /** Class generated from Qt Designer's .ui file.
-          *
-          * It defines the appearence of QGamaCore::PreferencesDialog GUI.
-          */
-        class PreferencesDialog : public Ui_PreferencesDialog {};
     } // namespace Ui
 
 
-    /** PreferencesDialog implementation class.
+    /** PluginManagerDialog implementation class.
       *
-      * All the functionality for QGamaCore::Ui::PreferencesDialog class.
+      * All the underlaying functionality for QGamaCore::Ui::PluginsManagerDialog.
       */
-    class PreferencesDialog : public QDialog
+    class PluginsManagerDialog : public QDialog
     {
         Q_OBJECT
 
         public:
-            PreferencesDialog(QWidget *parent = 0);
-            ~PreferencesDialog();
+            PluginsManagerDialog(QWidget *parent = 0);
+            ~PluginsManagerDialog();
+            void addLoadedPlugin(const QString &name, int status, QGamaCore::PluginInterface* plugin);
 
         protected:
             void changeEvent(QEvent *e);
-            void paintEvent(QPaintEvent *e);
 
         private:
-            /// Pointer to the Qt Designer's generated class with GUI definition.
-            QGamaCore::Ui::PreferencesDialog *ui;
-            /// Reference to the QGamaCore::Settings.
+            QGamaCore::Ui::PluginsManagerDialog *ui;
+            QGamaCore::PluginsManager &pm;
             QGamaCore::Settings &settings;
 
-        signals:
-            void fontChanged();
-
         private slots:
-            void on_pushButton_Select_Font_clicked();
-    }; // class PreferencesDialog
+            void on_treeWidget_Plugins_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+            void on_buttonBox_accepted();
+            void on_toolButton_clicked();
+    }; // class PluginsManagerDialog
 
 } // namespace QGamaCore
 
 
-#endif // PREFERENCESDIALOG_H
+#endif // PLUGINSMANAGERDIALOG_H

@@ -24,13 +24,24 @@
 
 #include "../../../config.h"
 #include "mainwindow.h"
-#include "plugin_manager/pluginmanagerdialog.h"
-#include "plugin_manager/pluginmanagerimpl.h"
-#include "preferences/qgamasettingsimpl.h"
-#include "preferences/preferencesdialog.h"
+#include "../plugins_manager/pluginsmanagerdialog.h"
+#include "../plugins_manager/pluginsmanagerimpl.h"
+#include "../preferences/settingsimpl.h"
+#include "../preferences/preferencesdialog.h"
 #include "aboutqgamadialog.h"
 #include "aboutgnugamadialog.h"
-#include "network.h"
+#include "../projects_manager/projectsmanagerimpl.h"
+#include "../projects_manager/newprojectdialog.h"
+#include "../projects_manager/newfiledialog.h"
+#include "texteditor.h"
+#include "../utils/utils.h"
+
+#include <iostream>
+#include <QString>
+#include <QFile>
+#include <QFileDialog>
+#include <QMdiSubWindow>
+#include <QList>
 
 using namespace QGamaCore;
 
@@ -44,10 +55,11 @@ using namespace QGamaCore;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new QGamaCore::Ui::MainWindow),
-    pmd(new PluginManagerDialog(this)),
+    pmd(new PluginsManagerDialog(this)),
     pd(new PreferencesDialog(this)),
-    pm(PluginManagerImpl::instance()),
-    settings(QGamaSettingsImpl::instance())
+    pm(PluginsManagerImpl::instance()),
+    prm(ProjectsManagerImpl::instance()),
+    settings(SettingsImpl::instance())
  {
     // setting .ui file
     ui->setupUi(this);
@@ -81,10 +93,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->menu_Network->setEnabled(false);
 
     // setting window title
-    this->setWindowTitle("QGama " + QString(QGAMA_VERSION) + tr(" (using GNU Gama version ") + QString(VERSION) + ")");
+    this->setWindowTitle("QGama " + QString(QGAMA_VERSION) + tr(" (using GNU GamaLib ") + QString(VERSION) + ")");
 
     // setting mdiArea subwindows icons
     ui->mdiArea->setWindowIcon(QIcon(":/images/icons/notes-32.png"));
+
+    // if there are no projects opened, disable treewidget with projects
+    if (ui->treeWidget_Projects->topLevelItemCount() == 0)
+        ui->treeWidget_Projects->setEnabled(false);
 }
 
 
@@ -104,15 +120,25 @@ MainWindow::~MainWindow()
   */
 void MainWindow::makeConnections()
 {
+    // File menu actions
+    connect(ui->action_New_Project, SIGNAL(triggered()), this, SLOT(newProject()));
     connect(ui->action_New_File, SIGNAL(triggered()), this, SLOT(newFile()));
+    connect(ui->action_Quit, SIGNAL(triggered()), this, SLOT(close()));
+    connect(ui->action_Open_File, SIGNAL(triggered()), this, SLOT(openFile()));
+    connect(ui->action_Open_Project, SIGNAL(triggered()), this, SLOT(openProject()));
+
+    // Edit menu actions
+    connect(ui->action_Plugins, SIGNAL(triggered()), this, SLOT(pluginManagerDialog()));
+    connect(ui->action_Preferences, SIGNAL(triggered()), this, SLOT(preferencesDialog()));
+
+    // Window menu actions
     connect(ui->action_Output, SIGNAL(triggered()), this, SLOT(openOutputDock()));
     connect(ui->action_Projects, SIGNAL(triggered()), this, SLOT(openProjectsDock()));
+
+    // About menu actions
     connect(ui->action_About, SIGNAL(triggered()), this, SLOT(aboutQGamaDialog()));
     connect(ui->action_About_GNU_Gama, SIGNAL(triggered()), this, SLOT(aboutGnuGamaDialog()));
     connect(ui->action_About_Qt, SIGNAL(triggered()), this, SLOT(aboutQtDialog()));
-    connect(ui->action_Plugins, SIGNAL(triggered()), this, SLOT(pluginManagerDialog()));
-    connect(ui->action_Preferences, SIGNAL(triggered()), this, SLOT(preferencesDialog()));
-    connect(ui->action_Quit, SIGNAL(triggered()), this, SLOT(close()));
 }
 
 
@@ -138,16 +164,26 @@ void MainWindow::readSettings()
   *
   * @param[in] e    Produced QEvent.
   */
-void MainWindow::changeEvent(QEvent *e)
+void MainWindow::changeEvent(QEvent *event)
 {
-    QMainWindow::changeEvent(e);
-    switch (e->type()) {
+    QMainWindow::changeEvent(event);
+    switch (event->type()) {
     case QEvent::LanguageChange:
         ui->retranslateUi(this);
         break;
     default:
         break;
     }
+}
+
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QList<QMdiSubWindow*> subWindows = ui->mdiArea->subWindowList();
+    for (QList<QMdiSubWindow*>::iterator i=subWindows.begin(); i!=subWindows.end(); ++i) {
+        (*i)->close();
+    }
+    event->accept();
 }
 
 
@@ -174,8 +210,8 @@ void MainWindow::preferencesDialog()
   */
 void MainWindow::aboutQGamaDialog()
 {
-    AboutQGamaDialog about(this);
-    about.exec();
+    AboutQGamaDialog dialog(this);
+    dialog.exec();
 }
 
 
@@ -184,8 +220,8 @@ void MainWindow::aboutQGamaDialog()
   */
 void MainWindow::aboutGnuGamaDialog()
 {
-    AboutGnuGamaDialog about(this);
-    about.exec();
+    AboutGnuGamaDialog dialog(this);
+    dialog.exec();
 }
 
 
@@ -230,9 +266,57 @@ void MainWindow::openOutputDock()
   */
 void MainWindow::newFile()
 {
+    NewFileDialog dialog(this);
+    dialog.exec();
+
+    /*
     Network *network = new Network;
     ui->mdiArea->addSubWindow(network);
 
     network->newFile();
     network->showMaximized();
+    */
+}
+
+
+void MainWindow::newProject()
+{
+    NewProjectDialog dialog(this);
+    dialog.exec();
+}
+
+
+void MainWindow::openFile()
+{
+    QDir dir;
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), dir.home().absolutePath()+"/QGamaProjects");
+    openFile(fileName);
+}
+
+
+void MainWindow::openFile(const QString &file)
+{
+    if (!file.isEmpty()) {
+        QMdiSubWindow *existing = Utils::findMdiSubWindow(file);
+        if (existing) {
+            ui->mdiArea->setActiveSubWindow(existing);
+            return;
+        }
+
+        TextEditor *child = new TextEditor;
+        ui->mdiArea->addSubWindow(child);
+        if (child->loadFile(file)) {
+            child->show();
+        } else {
+            child->close();
+        }
+    }
+}
+
+
+void MainWindow::openProject()
+{
+    QDir dir;
+    QString projectName = QFileDialog::getOpenFileName(this, tr("Open QGama Project"), dir.home().absolutePath()+"/QGamaProjects", tr("QGama Project Files (*.qgp)"));
+    prm.openProject(projectName);
 }

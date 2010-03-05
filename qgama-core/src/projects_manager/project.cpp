@@ -19,27 +19,18 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PROJECTSMANAGER_H
-#define PROJECTSMANAGER_H
-
-#include <QList>
-
 #include "project.h"
 
-
-namespace QGamaCore {
-
-    class ProjectsManager
-    {
-        protected:
-            QList<Project*> projects;
-
-        public:
-            virtual bool newProject(const QString &name, const QString &location, bool mainProject) = 0;
-            virtual bool openProject(const QString &projectFile) = 0;
-    }; // class ProjectsManager
-
-} // namespace QGamaCore
+using namespace QGamaCore;
 
 
-#endif // PROJECTSMANAGER_H
+/**
+  *
+  */
+Project::Project(const QString &name, const QString &location, bool mainProject)
+{
+    this->name = name;
+    this->location = location;
+    this->mainProject = mainProject;
+    this->opened = false;
+}

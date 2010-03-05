@@ -19,48 +19,44 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef NEWPROJECTDIALOG_H
-#define NEWPROJECTDIALOG_H
+#ifndef PLUGININTERFACE_H
+#define PLUGININTERFACE_H
 
-#include <QDialog>
-#include <QDir>
-#include <ui_newprojectdialog.h>
-
-#include "../projects_manager/projectsmanager.h"
+#include <QtPlugin>
+#include <QObject>
+#include <QMap>
+#include <QAction>
+#include <QList>
+#include <QMenu>
+#include <QStringList>
+#include <QIcon>
 
 
 namespace QGamaCore {
 
-    namespace Ui {
-
-        class NewProjectDialog : public Ui_NewProjectDialog {};
-
-    } // namespace Ui
-
-
-    class NewProjectDialog : public QDialog
+    /** General interface which every plugin has to implement.
+      *
+      * Specialized plugin interfaces has to be inherited from it.
+      */
+    class PluginInterface : public QObject
     {
-        Q_OBJECT
-
         public:
-            NewProjectDialog(QWidget *parent = 0);
-            ~NewProjectDialog();
+            virtual ~PluginInterface() {}
 
-        protected:
-            void changeEvent(QEvent *e);
+            virtual QIcon icon() const = 0;
+            virtual QString name() const = 0;
+            virtual QString description() const = 0;
+            virtual QStringList authors() const = 0;
+            virtual QStringList items() const = 0;
+            virtual QWidget* configuration() const = 0;
+    }; // class PluginInterface
 
-        private:
-            Ui::NewProjectDialog *ui;
-            QDir location;
-            QDir folder;
-            QGamaCore::ProjectsManager &prm;
-
-        private slots:
-            void on_toolButton_Browse_clicked();
-            void on_lineEdit_Project_Name_textChanged(QString);
-            void createProject();
-    }; // class NewProjectDialog
 } // namespace QGamaCore
 
 
-#endif // NEWPROJECTDIALOG_H
+QT_BEGIN_NAMESPACE
+    Q_DECLARE_INTERFACE(QGamaCore::PluginInterface,"Jiri_Novak.QGamaCore.PluginInterface/1.0")
+QT_END_NAMESPACE
+
+
+#endif // PLUGININTERFACE_H

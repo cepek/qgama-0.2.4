@@ -25,11 +25,12 @@
 #include <QMainWindow>
 #include <ui_mainwindow.h>
 
-#include "plugin_manager/pluginmanagerdialog.h"
-#include "plugin_manager/pluginmanager.h"
-#include "preferences/preferencesdialog.h"
-#include "preferences/qgamasettings.h"
-#include "network.h"
+#include "../plugins_manager/pluginsmanagerdialog.h"
+#include "../plugins_manager/pluginsmanager.h"
+#include "../projects_manager/projectsmanager.h"
+#include "../preferences/preferencesdialog.h"
+#include "../preferences/settings.h"
+#include "texteditor.h"
 
 
 /** Main namespace of the QGamaCore application.
@@ -67,27 +68,37 @@ namespace QGamaCore {
             ~MainWindow();
 
         protected:
-            void changeEvent(QEvent *e);
+            void changeEvent(QEvent *event);
+            void closeEvent(QCloseEvent *event);
 
         private:
             /// Pointer to the Qt Designer's generated class with GUI definition.
             QGamaCore::Ui::MainWindow *ui;
 
             /// Pointer to the QGamaCore::PluginManagerDialog.
-            QGamaCore::PluginManagerDialog *pmd;
+            QGamaCore::PluginsManagerDialog *pmd;
             /// Pointer to the QGamaCore::PreferencesDialog.
             QGamaCore::PreferencesDialog *pd;
 
             /// Reference to the QGamaCore::PluginManager.
-            QGamaCore::PluginManager &pm;
-            /// Reference to the QGamaCore::QGamaSettings.
-            QGamaCore::QGamaSettings &settings;
+            QGamaCore::PluginsManager &pm;
+            /// Reference to the QGamaCore::ProjectsManager.
+            QGamaCore::ProjectsManager &prm;
+            /// Reference to the QGamaCore::Settings.
+            QGamaCore::Settings &settings;
 
             void readSettings();
             void makeConnections();
 
         private slots:
+            // File menu
+            void newProject();
+            void openProject();
+
             void newFile();
+            void openFile();
+            void openFile(const QString &file);
+
             void pluginManagerDialog();
             void preferencesDialog();
             void openProjectsDock();

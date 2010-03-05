@@ -8,7 +8,7 @@
 #include <QList>
 #include <QMenu>
 #include <QAction>
-#include <qgama-core/src/plugin_manager/plugininterface.h>
+#include <qgama-core/src/plugins_manager/plugininterface.h>
 #include "xmlvalidationdialog.h"
 
 class QWidget;

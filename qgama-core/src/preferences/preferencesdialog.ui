@@ -107,14 +107,14 @@
              </property>
              <layout class="QGridLayout" name="gridLayout">
               <item row="0" column="0">
-               <widget class="QLabel" name="labelFont">
+               <widget class="QLabel" name="label_Font">
                 <property name="text">
                  <string>Font:</string>
                 </property>
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QPushButton" name="pushButtonSelectFont">
+               <widget class="QPushButton" name="pushButton_Select_Font">
                 <property name="text">
                  <string/>
                 </property>
@@ -138,22 +138,6 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="other">
-          <attribute name="title">
-           <string>Other</string>
-          </attribute>
-         </widget>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="page_2">
-      <layout class="QVBoxLayout" name="verticalLayout_4">
-       <item>
-        <widget class="QTabWidget" name="tabWidgetPlugins">
-         <property name="currentIndex">
-          <number>-1</number>
-         </property>
         </widget>
        </item>
       </layout>
@@ -180,8 +164,8 @@
      <y>190</y>
     </hint>
     <hint type="destinationlabel">
-     <x>363</x>
-     <y>190</y>
+     <x>355</x>
+     <y>199</y>
     </hint>
    </hints>
   </connection>
