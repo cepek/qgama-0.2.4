@@ -27,6 +27,9 @@
 #include <QContextMenuEvent>
 #include <QAction>
 
+#include "projectsmanager.h"
+#include "../preferences/settings.h"
+
 
 namespace QGamaCore {
 
@@ -40,6 +43,10 @@ namespace QGamaCore {
         protected:
             void contextMenuEvent(QContextMenuEvent *event);
 
+        private:
+            QGamaCore::ProjectsManager &prm;
+            QGamaCore::Settings &settings;
+
         signals:
             void openFile(const QString &file);
 
@@ -48,7 +55,7 @@ namespace QGamaCore {
 
         private slots:
             void openFileDoubleClick(QTreeWidgetItem *current, int);
-            void openFileContextMenu(QAction *action);
+            void processContextMenuAction(QAction *action);
     }; // class ProjectsTreeWidget
 
 } // namespace QGamaCore

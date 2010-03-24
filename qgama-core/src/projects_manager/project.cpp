@@ -27,10 +27,11 @@ using namespace QGamaCore;
 /**
   *
   */
-Project::Project(const QString &name, const QString &location, bool mainProject)
+Project::Project(const QString &name, const QString &location)
 {
     this->name = name;
     this->location = location;
-    this->mainProject = mainProject;
+    this->projectFilePath = location+"/"+name+"/"+name.toLower()+".qgp";
     this->opened = false;
+    this->active = false;
 }

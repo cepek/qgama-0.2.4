@@ -19,11 +19,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <QMessageBox>
-#include <QWhatsThis>
+#include <Qt/QtGui>
 
-#include "../../../config.h"
 #include "mainwindow.h"
+#include "../../../config.h"
 #include "../plugins_manager/pluginsmanagerdialog.h"
 #include "../plugins_manager/pluginsmanagerimpl.h"
 #include "../preferences/settingsimpl.h"
@@ -37,11 +36,6 @@
 #include "../utils/utils.h"
 
 #include <iostream>
-#include <QString>
-#include <QFile>
-#include <QFileDialog>
-#include <QMdiSubWindow>
-#include <QList>
 
 using namespace QGamaCore;
 
@@ -98,9 +92,11 @@ MainWindow::MainWindow(QWidget *parent) :
     // setting mdiArea subwindows icons
     ui->mdiArea->setWindowIcon(QIcon(":/images/icons/notes-32.png"));
 
-    // if there are no projects opened, disable treewidget with projects
-    if (ui->treeWidget_Projects->topLevelItemCount() == 0)
-        ui->treeWidget_Projects->setEnabled(false);
+    // if there are no projects opened, hide treewidget with projects
+    if (ui->treeWidget_Projects->topLevelItemCount() == 0) {
+        ui->dockWidget_Projects->setWindowTitle("Projects (0 Opened)");
+        ui->treeWidget_Projects->setStyleSheet("background-color: transparent;");
+    }
 }
 
 
@@ -110,6 +106,8 @@ MainWindow::MainWindow(QWidget *parent) :
   */
 MainWindow::~MainWindow()
 {
+    std::cout << "aaaaaaaaaaaaaaaaaaaaaaa" << std::endl;
+
     delete ui;
     delete pmd;
 }
@@ -126,6 +124,7 @@ void MainWindow::makeConnections()
     connect(ui->action_Quit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->action_Open_File, SIGNAL(triggered()), this, SLOT(openFile()));
     connect(ui->action_Open_Project, SIGNAL(triggered()), this, SLOT(openProject()));
+    connect(ui->action_Close_Project, SIGNAL(triggered()), this, SLOT(closeProject()));
 
     // Edit menu actions
     connect(ui->action_Plugins, SIGNAL(triggered()), this, SLOT(pluginManagerDialog()));
@@ -155,6 +154,12 @@ void MainWindow::readSettings()
     QFont font;
     font.fromString(fontString);
     qApp->setFont(font);
+
+    // open projects
+    QStringList openedProjects = settings.get("projects/openedProjects").toStringList();
+    for (int i=0; i<openedProjects.size(); i++) {
+        prm.openProject(openedProjects[i]);
+    }
 }
 
 
@@ -318,5 +323,12 @@ void MainWindow::openProject()
 {
     QDir dir;
     QString projectName = QFileDialog::getOpenFileName(this, tr("Open QGama Project"), dir.home().absolutePath()+"/QGamaProjects", tr("QGama Project Files (*.qgp)"));
-    prm.openProject(projectName);
+    if (!projectName.isEmpty())
+        prm.openProject(projectName);
+}
+
+
+void MainWindow::closeProject()
+{
+    prm.closeActiveProject();
 }

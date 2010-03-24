@@ -26,7 +26,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../qgama-core.qrc">:/images/gama-local-elipse.png</pixmap>
+      <pixmap>:/images/gama-local-elipse.png</pixmap>
      </property>
     </widget>
    </item>
@@ -119,23 +119,6 @@
       </widget>
      </item>
      <item>
-      <widget class="Line" name="line_Horizontal">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="checkBox_Set_As_Main_Project">
-       <property name="text">
-        <string>Set as Main Project</string>
-       </property>
-       <property name="checked">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
       <spacer name="verticalSpacer">
        <property name="orientation">
         <enum>Qt::Vertical</enum>
@@ -165,8 +148,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../qgama-core.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

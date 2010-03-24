@@ -26,6 +26,8 @@
 
 #include "settingsimpl.h"
 
+#include <iostream>
+
 using namespace QGamaCore;
 
 
@@ -60,6 +62,8 @@ SettingsImpl::~SettingsImpl()
 {
     // save all the settings from the inner map
     saveAll();
+
+    std::cout << "Destruktor SettingsImpl" << std::endl;
 
     // delete dynamically alocated elements
     if (self != 0) {

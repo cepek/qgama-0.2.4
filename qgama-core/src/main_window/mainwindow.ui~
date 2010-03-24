@@ -17,7 +17,7 @@
    <string/>
   </property>
   <property name="windowIcon">
-   <iconset>
+   <iconset resource="../qgama-core.qrc">
     <normaloff>:/images/icons/babieca-64.png</normaloff>:/images/icons/babieca-64.png</iconset>
   </property>
   <property name="toolTip">
@@ -210,7 +210,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="ProjectsTreeWidget" name="treeWidget_Projects">
+      <widget class="QGamaCore::ProjectsTreeWidget" name="treeWidget_Projects" native="true">
        <property name="palette">
         <palette>
          <active>
@@ -629,17 +629,12 @@
        <property name="styleSheet">
         <string notr="true"/>
        </property>
-       <property name="alternatingRowColors">
+       <property name="alternatingRowColors" stdset="0">
         <bool>false</bool>
        </property>
-       <property name="headerHidden">
+       <property name="headerHidden" stdset="0">
         <bool>true</bool>
        </property>
-       <column>
-        <property name="text">
-         <string>Projects</string>
-        </property>
-       </column>
       </widget>
      </item>
     </layout>
@@ -665,7 +660,7 @@
   </widget>
   <action name="action_New_File">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/file-32.png</normaloff>:/images/icons/file-32.png</iconset>
    </property>
    <property name="text">
@@ -689,7 +684,7 @@
   </action>
   <action name="action_Open_File">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/standardbutton-open-32.png</normaloff>:/images/icons/standardbutton-open-32.png</iconset>
    </property>
    <property name="text">
@@ -710,7 +705,7 @@
   </action>
   <action name="action_Preferences">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/configure-16.png</normaloff>:/images/icons/configure-16.png</iconset>
    </property>
    <property name="text">
@@ -731,7 +726,7 @@
   </action>
   <action name="action_Plugins">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/plugin-manager-16.png</normaloff>:/images/icons/plugin-manager-16.png</iconset>
    </property>
    <property name="text">
@@ -749,7 +744,7 @@
   </action>
   <action name="action_Quit">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/exit-16.png</normaloff>:/images/icons/exit-16.png</iconset>
    </property>
    <property name="text">
@@ -777,7 +772,7 @@
   </action>
   <action name="action_About">
    <property name="text">
-    <string>&amp;About</string>
+    <string> &amp;About</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F1</string>
@@ -785,17 +780,17 @@
   </action>
   <action name="action_About_GNU_Gama">
    <property name="text">
-    <string>About &amp;GNU Gama</string>
+    <string> About &amp;GNU Gama</string>
    </property>
   </action>
   <action name="action_About_Qt">
    <property name="text">
-    <string>About &amp;Qt</string>
+    <string> About &amp;Qt</string>
    </property>
   </action>
   <action name="action_New_Project">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/newdirectory-32.png</normaloff>:/images/icons/newdirectory-32.png</iconset>
    </property>
    <property name="text">
@@ -810,7 +805,7 @@
   </action>
   <action name="action_Open_Project">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/diropen-32.png</normaloff>:/images/icons/diropen-32.png</iconset>
    </property>
    <property name="text">
@@ -825,7 +820,7 @@
   </action>
   <action name="action_Close_Project">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/standardbutton-cancel-32.png</normaloff>:/images/icons/standardbutton-cancel-32.png</iconset>
    </property>
    <property name="text">
@@ -842,7 +837,7 @@
   </action>
   <action name="action_Save">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/standardbutton-save-32.png</normaloff>:/images/icons/standardbutton-save-32.png</iconset>
    </property>
    <property name="text">
@@ -865,7 +860,7 @@
   </action>
   <action name="action_Save_All">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/save_all-32.png</normaloff>:/images/icons/save_all-32.png</iconset>
    </property>
    <property name="text">
@@ -877,7 +872,7 @@
   </action>
   <action name="action_Print">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/print-32.png</normaloff>:/images/icons/print-32.png</iconset>
    </property>
    <property name="text">
@@ -958,7 +953,7 @@
   </action>
   <action name="action_Projects">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/draft-32.png</normaloff>:/images/icons/draft-32.png</iconset>
    </property>
    <property name="text">
@@ -973,7 +968,7 @@
   </action>
   <action name="action_Output">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/notes-32.png</normaloff>:/images/icons/notes-32.png</iconset>
    </property>
    <property name="text">
@@ -988,7 +983,7 @@
   </action>
   <action name="action_Close_File">
    <property name="icon">
-    <iconset>
+    <iconset resource="../qgama-core.qrc">
      <normaloff>:/images/icons/standardbutton-close-32.png</normaloff>:/images/icons/standardbutton-close-32.png</iconset>
    </property>
    <property name="text">
@@ -1000,13 +995,8 @@
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <customwidgets>
-  <customwidget>
-   <class>ProjectsTreeWidget</class>
-   <extends>QTreeWidget</extends>
-   <header>../projects_manager/projectstreewidget.h</header>
-  </customwidget>
- </customwidgets>
- <resources/>
+ <resources>
+  <include location="../qgama-core.qrc"/>
+ </resources>
  <connections/>
 </ui>

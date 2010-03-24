@@ -32,26 +32,28 @@ namespace QGamaCore {
         private:
             QString name;
             QString location;
-            QString outputType;
+            QString projectFilePath;
             QStringList files;
-            bool mainProject;
             bool opened;
+            bool active;
 
         public:
-            Project() { opened=false; mainProject=false; }
-            Project(const QString &name, const QString &location, bool mainProject);
+            Project() { opened=false; active=false; }
+            Project(const QString &name, const QString &location);
 
             // setters
-            void setMainProject(bool mainProject) { this->mainProject = mainProject; }
             void setOpened(bool opened) { this->opened = opened; }
+            void setActive(bool active) { this->active = active; }
             void setName(const QString &name) { this->name = name; }
             void setLocation(const QString &location) { this->location = location; }
+            void setProjectFilePath(const QString &projectFilePath) { this->projectFilePath = projectFilePath; }
 
             // getters
-            bool isMainProject() { return mainProject; }
+            bool isActive() { return active; }
             bool isOpened() { return opened; }
             QString getLocation() { return location; }
             QString getName() { return name; }
+            QString getProjectFilePath() { return projectFilePath; }
     }; // class Project
 
 } // namespace QGamaCore

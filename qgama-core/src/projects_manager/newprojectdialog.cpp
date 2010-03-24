@@ -39,10 +39,11 @@ using namespace QGamaCore;
 NewProjectDialog::NewProjectDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::NewProjectDialog),
-    location(location.home().absolutePath()+"/QGamaProjects"),
     prm(ProjectsManagerImpl::instance())
 {
     ui->setupUi(this);
+
+    location.setPath(location.home().absolutePath()+"/QGamaProjects");
 
     int num = 1;
     QStringList dirNames = location.entryList(QDir::Dirs);
@@ -63,7 +64,7 @@ NewProjectDialog::NewProjectDialog(QWidget *parent) :
     ui->lineEdit_Project_Name->setText("QGamaProject"+QString::number(num));
     ui->lineEdit_Project_Folder->setText(location.absolutePath()+"/"+ui->lineEdit_Project_Name->text());
     ui->lineEdit_Project_Location->setText(location.absolutePath());
-    ui->lineEdit_Project_Folder->setMinimumWidth(ui->lineEdit_Project_Location->text().length()*13);
+    ui->lineEdit_Project_Folder->setMinimumWidth(ui->lineEdit_Project_Folder->text().length()*8);
     ui->label_Warning->setVisible(false);
 
     folder.setPath(ui->lineEdit_Project_Folder->text());
@@ -148,7 +149,7 @@ void NewProjectDialog::on_toolButton_Browse_clicked()
   */
 void NewProjectDialog::createProject()
 {
-    prm.newProject(ui->lineEdit_Project_Name->text(), ui->lineEdit_Project_Location->text(), ui->checkBox_Set_As_Main_Project->isChecked());
+    prm.newProject(ui->lineEdit_Project_Name->text(), ui->lineEdit_Project_Location->text());
     prm.openProject(ui->lineEdit_Project_Folder->text()+"/"+ui->lineEdit_Project_Name->text().toLower()+".qgp");
 
     accept();

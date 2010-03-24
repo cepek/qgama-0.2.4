@@ -23,6 +23,7 @@
 #define PROJECTSMANAGER_H
 
 #include <QList>
+#include <QTreeWidgetItem>
 
 #include "project.h"
 
@@ -35,8 +36,11 @@ namespace QGamaCore {
             QList<Project*> projects;
 
         public:
-            virtual bool newProject(const QString &name, const QString &location, bool mainProject) = 0;
+            virtual bool newProject(const QString &name, const QString &location) = 0;
             virtual bool openProject(const QString &projectFile) = 0;
+            virtual void closeProject(Project *project) = 0;
+            virtual void closeActiveProject() = 0;
+            virtual void setActiveProject(const QString &name, const QString locationb) = 0;
     }; // class ProjectsManager
 
 } // namespace QGamaCore

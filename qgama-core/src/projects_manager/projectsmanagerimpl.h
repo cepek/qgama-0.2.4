@@ -23,6 +23,7 @@
 #define PROJECTSMANAGERIMPL_H
 
 #include <QList>
+#include <QTreeWidgetItem>
 
 #include "projectsmanager.h"
 #include "project.h"
@@ -47,6 +48,8 @@ namespace QGamaCore {
 
             /// Reference to QGamaCore::Settings.
             QGamaCore::Settings &settings;
+
+            Project* activeProject();
 
         public:
             /** Method returning a pointer to QGamaCore::ProjectsManagerImpl object.
@@ -74,8 +77,13 @@ namespace QGamaCore {
                 }
             }  // destructor
 
-            bool newProject(const QString &name, const QString &location, bool mainProject);
+            bool newProject(const QString &name, const QString &location);
             bool openProject(const QString &projectFile);
+
+            void closeProject(Project *project);
+            void closeActiveProject();
+
+            void setActiveProject(const QString &name, QString location);
     }; // class ProjectsManagerImpl
 
 } // namespace QGamaCore

@@ -88,12 +88,14 @@ namespace QGamaCore {
             QGamaCore::Settings &settings;
 
             void readSettings();
+            //void saveSettings();
             void makeConnections();
 
         private slots:
             // File menu
             void newProject();
             void openProject();
+            void closeProject();
 
             void newFile();
             void openFile();
