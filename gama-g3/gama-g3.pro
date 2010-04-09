@@ -21,7 +21,6 @@ TARGET = gama-g3
 TEMPLATE = app
 
 CONFIG += release
-
 CONFIG -= qt
 
 win32:QMAKE_LFLAGS_EXCEPTIONS_ON = -Wl

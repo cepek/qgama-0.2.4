@@ -22,7 +22,7 @@ win32:QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions
 win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
 
 # static linking against libgama.a
-#LIBS += -L../../libqgama -lqgama
+LIBS += -L../../libqgama -lqgama
 
 #unix:LIBS += -lXext -lm -ldl -lSM -lICE
 #unix:QMAKE_LFLAGS_SHAPP += -static

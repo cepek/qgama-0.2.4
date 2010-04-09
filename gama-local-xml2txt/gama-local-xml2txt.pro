@@ -21,8 +21,8 @@ TARGET=gama-local-xml2txt
 TEMPLATE=app
 
 CONFIG += release
+CONFIG -= qt
 
-win32:CONFIG -= qt
 win32:QMAKE_LFLAGS_EXCEPTIONS_ON = -Wl
 win32:QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions
 win32:CONFIG+=console
