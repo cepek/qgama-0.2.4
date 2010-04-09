@@ -22,7 +22,8 @@ TEMPLATE = app
 
 CONFIG += release
 
-win32:CONFIG -= qt
+CONFIG -= qt
+
 win32:QMAKE_LFLAGS_EXCEPTIONS_ON = -Wl
 win32:QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions
 win32:CONFIG += console

@@ -60,7 +60,7 @@ namespace QGamaCore {
             /// Pointer to the Qt Designer's generated class with GUI definition.
             QGamaCore::Ui::PreferencesDialog *ui;
             /// Reference to the QGamaCore::Settings.
-            QGamaCore::Settings &settings;
+            QGamaCore::Settings *settings;
 
         signals:
             void fontChanged();

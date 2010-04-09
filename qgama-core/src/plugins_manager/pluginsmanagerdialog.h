@@ -63,8 +63,8 @@ namespace QGamaCore {
 
         private:
             QGamaCore::Ui::PluginsManagerDialog *ui;
-            QGamaCore::PluginsManager &pm;
-            QGamaCore::Settings &settings;
+            QGamaCore::PluginsManager *pm;
+            QGamaCore::Settings *settings;
 
         private slots:
             void on_treeWidget_Plugins_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous);

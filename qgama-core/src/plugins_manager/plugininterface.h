@@ -54,9 +54,7 @@ namespace QGamaCore {
 } // namespace QGamaCore
 
 
-QT_BEGIN_NAMESPACE
-    Q_DECLARE_INTERFACE(QGamaCore::PluginInterface,"Jiri_Novak.QGamaCore.PluginInterface/1.0")
-QT_END_NAMESPACE
+Q_DECLARE_INTERFACE(QGamaCore::PluginInterface,"Jiri_Novak.QGamaCore.PluginInterface/1.0")
 
 
 #endif // PLUGININTERFACE_H

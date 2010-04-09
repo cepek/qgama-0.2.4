@@ -52,7 +52,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>25</height>
+     <height>24</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu_File">
@@ -106,16 +106,6 @@
      <string>&amp;Tools</string>
     </property>
    </widget>
-   <widget class="QMenu" name="menu_Points">
-    <property name="title">
-     <string>&amp;Points</string>
-    </property>
-   </widget>
-   <widget class="QMenu" name="menu_Observations">
-    <property name="title">
-     <string>&amp;Observations</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menu_Network">
     <property name="title">
      <string>&amp;Network</string>
@@ -162,8 +152,6 @@
    <addaction name="menu_File"/>
    <addaction name="menu_Edit"/>
    <addaction name="menu_View"/>
-   <addaction name="menu_Points"/>
-   <addaction name="menu_Observations"/>
    <addaction name="menu_Network"/>
    <addaction name="menu_Tools"/>
    <addaction name="menu_Windows"/>
@@ -661,7 +649,7 @@
   <action name="action_New_File">
    <property name="icon">
     <iconset>
-     <normaloff>:/images/icons/file-32.png</normaloff>:/images/icons/file-32.png</iconset>
+     <normaloff>:/images/icons/new-file-32.png</normaloff>:/images/icons/new-file-32.png</iconset>
    </property>
    <property name="text">
     <string> &amp;New File...</string>
@@ -791,7 +779,7 @@
   <action name="action_New_Project">
    <property name="icon">
     <iconset>
-     <normaloff>:/images/icons/newdirectory-32.png</normaloff>:/images/icons/newdirectory-32.png</iconset>
+     <normaloff>:/images/icons/new-project-32.png</normaloff>:/images/icons/new-project-32.png</iconset>
    </property>
    <property name="text">
     <string> &amp;New Project...</string>
@@ -806,7 +794,7 @@
   <action name="action_Open_Project">
    <property name="icon">
     <iconset>
-     <normaloff>:/images/icons/diropen-32.png</normaloff>:/images/icons/diropen-32.png</iconset>
+     <normaloff>:/images/icons/open-project-32.png</normaloff>:/images/icons/open-project-32.png</iconset>
    </property>
    <property name="text">
     <string> &amp;Open Project...</string>
@@ -887,27 +875,27 @@
   </action>
   <action name="action_Project_1">
    <property name="text">
-    <string>1</string>
+    <string/>
    </property>
   </action>
   <action name="action_Project_2">
    <property name="text">
-    <string>2</string>
+    <string/>
    </property>
   </action>
   <action name="action_Project_3">
    <property name="text">
-    <string>3</string>
+    <string/>
    </property>
   </action>
   <action name="action_Project_4">
    <property name="text">
-    <string>4</string>
+    <string/>
    </property>
   </action>
   <action name="action_Project_5">
    <property name="text">
-    <string>5</string>
+    <string/>
    </property>
   </action>
   <action name="action_File_1">
@@ -989,8 +977,16 @@
    <property name="text">
     <string> &amp;Close File</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
    <property name="iconVisibleInMenu">
     <bool>true</bool>
+   </property>
+  </action>
+  <action name="action_Solve">
+   <property name="text">
+    <string> &amp;Solve</string>
    </property>
   </action>
  </widget>

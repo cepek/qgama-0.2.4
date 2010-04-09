@@ -33,27 +33,37 @@ namespace QGamaCore {
             QString name;
             QString location;
             QString projectFilePath;
-            QStringList files;
-            bool opened;
+            QString type;
             bool active;
 
+            QStringList networks;
+            QStringList settings;
+            QStringList solutions;
+
         public:
-            Project() { opened=false; active=false; }
-            Project(const QString &name, const QString &location);
+            Project() { active=false; }
+            Project(const QString &name, const QString &location, const QString &projectFilePath);
 
             // setters
-            void setOpened(bool opened) { this->opened = opened; }
             void setActive(bool active) { this->active = active; }
+            void setType(const QString &type) { this->type = type; }
             void setName(const QString &name) { this->name = name; }
             void setLocation(const QString &location) { this->location = location; }
             void setProjectFilePath(const QString &projectFilePath) { this->projectFilePath = projectFilePath; }
 
             // getters
             bool isActive() { return active; }
-            bool isOpened() { return opened; }
+            QString getType() { return type; }
             QString getLocation() { return location; }
             QString getName() { return name; }
             QString getProjectFilePath() { return projectFilePath; }
+            QStringList& getNetworks() { return networks; }
+            QStringList& getSettings() { return settings; }
+            QStringList& getSolutions() { return solutions; }
+
+            void addNetwork(const QString &network) { networks.append(network); }
+            void addSetting(const QString &setting) { settings.append(setting); }
+            void addSolution(const QString &solution) { settings.append(solution    ); }
     }; // class Project
 
 } // namespace QGamaCore

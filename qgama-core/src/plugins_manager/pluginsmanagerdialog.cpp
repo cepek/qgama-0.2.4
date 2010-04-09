@@ -25,8 +25,7 @@
 #include <iostream>
 
 #include "pluginsmanagerdialog.h"
-#include "pluginsmanagerimpl.h"
-#include "../preferences/settingsimpl.h"
+#include "../factory.h"
 #include "../plugins_manager/plugininterface.h"
 #include "../utils/utils.h"
 
@@ -36,12 +35,12 @@ using namespace QGamaCore;
 PluginsManagerDialog::PluginsManagerDialog(QWidget *parent) :
     QDialog(parent),
     ui(new QGamaCore::Ui::PluginsManagerDialog),
-    pm(PluginsManagerImpl::instance()),
-    settings(SettingsImpl::instance())
+    pm(Factory::getPluginsManager()),
+    settings(Factory::getSettings())
 {
     ui->setupUi(this);
 
-    ui->lineEdit_PluginDirectoryValue->setText(settings.get("plugins/directory").toString());
+    ui->lineEdit_PluginDirectoryValue->setText(settings->get("plugins/directory").toString());
 
     ui->treeWidget_Plugins->sortByColumn(1);
     ui->treeWidget_Plugins->sortItems(1,Qt::AscendingOrder);
@@ -50,6 +49,9 @@ PluginsManagerDialog::PluginsManagerDialog(QWidget *parent) :
 
 PluginsManagerDialog::~PluginsManagerDialog()
 {
+    Factory::releaseSettings(settings);
+    Factory::releasePluginsManager(pm);
+
     delete ui;
 }
 
@@ -99,7 +101,7 @@ void PluginsManagerDialog::on_toolButton_clicked()
     QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if (!dir.isEmpty()) {
         ui->lineEdit_PluginDirectoryValue->setText(dir);
-        settings.set("plugins/directory",dir);
+        settings->set("plugins/directory",dir);
     }
 }
 
@@ -119,22 +121,22 @@ void PluginsManagerDialog::on_buttonBox_accepted()
     }
 
     if (!enabledPlugins.isEmpty()) {
-        settings.set("plugins/enabledPlugins",enabledPlugins);
-        settings.saveValue("plugins/enabledPlugins");
+        settings->set("plugins/enabledPlugins",enabledPlugins);
+        //settings.saveValue("plugins/enabledPlugins");
     }
     else {
-        settings.del("plugins/enabledPlugins");
-        settings.removeValue("plugins/enabledPlugins");
+        settings->del("plugins/enabledPlugins");
+        //settings.removeValue("plugins/enabledPlugins");
     }
 
-    settings.saveValue("plugins/directory");
+    //settings.saveValue("plugins/directory");
 
     for (QStringList::iterator i=disabledPlugins.begin(); i!=disabledPlugins.end(); ++i) {
-        pm.unloadPlugin(*i);
+        pm->unloadPlugin(*i);
     }
 
     for (QStringList::iterator i=enabledPlugins.begin(); i!=enabledPlugins.end(); ++i) {
-        pm.loadPlugin(*i);
+        pm->loadPlugin(*i);
     }
 }
 
@@ -143,7 +145,7 @@ void PluginsManagerDialog::on_treeWidget_Plugins_currentItemChanged(QTreeWidgetI
 {
     ui->textEdit_Description->setText(current->text(2));
 
-    PluginInterface *plugin = pm.plugin(current->text(3));
+    PluginInterface *plugin = pm->plugin(current->text(3));
     if (ui->tabWidget->findChild<QWidget*>(tr("Configuration")) != 0)
         ui->tabWidget->removeTab(1);
     ui->tabWidget->addTab(plugin->configuration(),tr("Configuration"));

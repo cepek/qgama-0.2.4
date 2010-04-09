@@ -27,7 +27,7 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QListWidget" name="listWidget">
+    <widget class="QListWidget" name="listWidget_Categories">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -60,10 +60,15 @@
        <string>Appearance</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>Environment</string>
+      </property>
+     </item>
     </widget>
    </item>
    <item>
-    <widget class="QStackedWidget" name="stackedWidget">
+    <widget class="QStackedWidget" name="stackedWidget_Options">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>1</horstretch>
@@ -71,9 +76,9 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
-     <widget class="QWidget" name="appearance">
+     <widget class="QWidget" name="page_Appearance">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -103,7 +108,7 @@
            <item>
             <widget class="QGroupBox" name="groupBox">
              <property name="title">
-              <string>Fonts &amp;&amp; Colors:</string>
+              <string>Fonts:</string>
              </property>
              <layout class="QGridLayout" name="gridLayout">
               <item row="0" column="0">
@@ -142,6 +147,7 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="page_Environment"/>
     </widget>
    </item>
   </layout>
@@ -154,9 +160,9 @@
  <resources/>
  <connections>
   <connection>
-   <sender>listWidget</sender>
+   <sender>listWidget_Categories</sender>
    <signal>currentRowChanged(int)</signal>
-   <receiver>stackedWidget</receiver>
+   <receiver>stackedWidget_Options</receiver>
    <slot>setCurrentIndex(int)</slot>
    <hints>
     <hint type="sourcelabel">

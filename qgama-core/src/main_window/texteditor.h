@@ -26,6 +26,10 @@
 
 
 namespace QGamaCore {
+
+    /**
+      *
+      */
     class TextEditor : public QTextEdit
     {
         Q_OBJECT

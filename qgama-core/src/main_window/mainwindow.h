@@ -67,6 +67,10 @@ namespace QGamaCore {
             MainWindow(QWidget *parent = 0);
             ~MainWindow();
 
+            void updateRecentlyOpenedProjects();
+            void increaseProjectsCount();
+            void decreaseProjectsCount();
+
         protected:
             void changeEvent(QEvent *event);
             void closeEvent(QCloseEvent *event);
@@ -81,34 +85,50 @@ namespace QGamaCore {
             QGamaCore::PreferencesDialog *pd;
 
             /// Reference to the QGamaCore::PluginManager.
-            QGamaCore::PluginsManager &pm;
+            QGamaCore::PluginsManager *pm;
             /// Reference to the QGamaCore::ProjectsManager.
-            QGamaCore::ProjectsManager &prm;
+            QGamaCore::ProjectsManager *prm;
             /// Reference to the QGamaCore::Settings.
-            QGamaCore::Settings &settings;
+            QGamaCore::Settings *settings;
 
             void readSettings();
-            //void saveSettings();
             void makeConnections();
+
+        public slots:
+            void openFile(const QString &file);
 
         private slots:
             // File menu
             void newProject();
             void openProject();
+            void openRecentProject(QAction *action);
             void closeProject();
+            void closeAllProjects();
+            void projectProperties();
 
             void newFile();
             void openFile();
-            void openFile(const QString &file);
+            void closeFile();
 
+            // Edit Menu
             void pluginManagerDialog();
             void preferencesDialog();
+
+            // View Menu
+            void on_action_Toolbar_File_toggled(bool checked);
+
+            // Network Menu
+            void solve();
+
+            // Window Menu
             void openProjectsDock();
             void openOutputDock();
+
+            // About Menu
             void aboutQGamaDialog();
             void aboutGnuGamaDialog();
             void aboutQtDialog();
-            void on_action_Toolbar_File_toggled(bool checked);
+
     }; // class MainWindow
 
 } // namespace QGamaCore

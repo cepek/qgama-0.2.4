@@ -37,38 +37,39 @@ namespace QGamaCore {
       */
     class SettingsImpl : public Settings
     {
+        friend class Factory;
+
         private:
+
             /// Pointer to the QGamaCore::QGamaSettingsImpl object.
             static SettingsImpl *self;                     // singleton
+
             SettingsImpl();                                // forbidden
+
             /// Private operator= (singleton implementation).
             SettingsImpl& operator=(SettingsImpl&);        // forbidden
+
             /// Private copy constructor (singleton implementation)
             SettingsImpl(const SettingsImpl&);             // forbidden
+
+            ~SettingsImpl();                               // forbidden
 
             /// QSettings object used for storing persistent settings.
             QSettings applicationSettings;                 // QSettings used for storing values
 
-        public:
-            /** Method returning a pointer to QGamaCore::PluginManagerImpl object.
-              *
-              * On the first call the instance is created, sequentially pointers to this instance are returned.
-              */
-            static SettingsImpl& instance() {
-                if (self == 0)
-                    self = new SettingsImpl();
-                return *self;
-            }
+            /// Counter of the active pointers.
+            static int pointersCount;
 
-            ~SettingsImpl();
+        protected:
 
             void saveValue(const QString &key);
             void loadValue(const QString &key);
-            void removeValue(const QString &key);
 
             void saveAll();
             void loadAll();
-            void removeAll();
+
+            static SettingsImpl* instance();
+            void release();
     }; // class SettingsImpl
 
 } // namespace QGamaCore

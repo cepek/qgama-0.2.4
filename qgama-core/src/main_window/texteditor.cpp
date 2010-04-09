@@ -30,6 +30,8 @@
 #include "../utils/utils.h"
 #include "mainwindow.h"
 
+#include <iostream>
+
 using namespace QGamaCore;
 
 
@@ -44,8 +46,8 @@ TextEditor::TextEditor()
 
 TextEditor::~TextEditor()
 {
-    MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
-    mw->setWindowTitle(mw->windowTitle().split(" - ").value(0).trimmed());
+    //MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
+    //mw->setWindowTitle(mw->windowTitle().split(" - ").value(0).trimmed());
 }
 
 
@@ -142,6 +144,8 @@ void TextEditor::closeEvent(QCloseEvent *event)
     } else {
         event->ignore();
     }
+
+    std::cout << "tady bych ciste teoreticky mohl nacpat to ulozeni zmen o souboru" << std::endl;
 }
 
 

@@ -26,13 +26,17 @@
 
 #include "settingsimpl.h"
 
+
 #include <iostream>
 
 using namespace QGamaCore;
 
 
-// Inicialization of the private instance pointer to null.
+// inicialization of the private instance pointer to null.
 SettingsImpl* SettingsImpl::self = 0;
+
+// inicialization of the private counter of references
+int SettingsImpl::pointersCount = 0;
 
 
 /** Implicit constructor.
@@ -53,23 +57,48 @@ SettingsImpl::SettingsImpl() :
 }
 
 
+/** Method returning a pointer to QGamaCore::PluginManagerImpl object.
+  *
+  * On the first call the instance is created, sequentially pointers to this instance are returned.
+  * Also a counter of pointers is hold.
+  */
+SettingsImpl* SettingsImpl::instance() {
+    if (self == 0) {
+        self = new SettingsImpl();
+    }
+    pointersCount++;
+
+    return self;
+}
+
+
+/** Actions that have to be done on the release.
+  *
+  * Saves everything stored in the inner map into QSettings. Descreases counter of pointers by one
+  * and if it dealed the last reference, deletes dynamicaly created structures, that's object
+  * on the address by private instance pointer, set's the pointer to null.
+  */
+void SettingsImpl::release()
+{
+    pointersCount--;
+
+    if (pointersCount == 0) {
+      delete self;
+      self = 0;
+  }
+}
+
+
 /** Class destructor.
   *
-  * Saves everything stored in the inner map into QSettings. Deletes dynamicaly created structures, that's object
-  * on the address by private instance pointer, set's the pointer to null.
+  * Saves everything stored in the inner map into QSettings.
   */
 SettingsImpl::~SettingsImpl()
 {
     // save all the settings from the inner map
     saveAll();
 
-    std::cout << "Destruktor SettingsImpl" << std::endl;
-
-    // delete dynamically alocated elements
-    if (self != 0) {
-        delete self;
-        self = 0;
-    }
+    std::cout << "SettingsImpl - Destruktor" << std::endl;
 }
 
 
@@ -93,23 +122,19 @@ void SettingsImpl::loadValue(const QString &key)
 }
 
 
-/** Removes value referenced with the specified key from the persistent storage (QSettings).
-  *
-  * @param[in] key  The key for the value desired to load.
-  */
-void SettingsImpl::removeValue(const QString &key)
-{
-    applicationSettings.remove(key);
-}
-
-
 /** Saves all the values from the inner map into the persistent storage (QSettings).
   *
   */
 void SettingsImpl::saveAll()
 {
+    // clear everything
+    applicationSettings.clear();
+
+    // commit all values at once
     for (QMap<QString,QVariant>::iterator i=settings.begin(); i!=settings.end(); ++i) {
-        saveValue(i.key());
+        // skip those marked as temporary
+        if (!i.key().startsWith("temporary"))
+            saveValue(i.key());
     }
 }
 
@@ -122,18 +147,5 @@ void SettingsImpl::loadAll()
     QStringList keys = applicationSettings.allKeys();
     for (QStringList::iterator i=keys.begin(); i!=keys.end(); ++i) {
         loadValue(*i);
-    }
-}
-
-
-
-/** Removes all the values from the persistent storage (QSettings).
-  *
-  */
-void SettingsImpl::removeAll()
-{
-    QStringList keys = applicationSettings.allKeys();
-    for (QStringList::iterator i=keys.begin(); i!=keys.end(); ++i) {
-        removeValue(*i);
     }
 }

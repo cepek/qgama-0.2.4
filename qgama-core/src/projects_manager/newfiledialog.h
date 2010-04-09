@@ -24,6 +24,7 @@
 
 #include <QDialog>
 #include <ui_newfiledialog.h>
+#include "projectsmanager.h"
 
 
 namespace QGamaCore {
@@ -48,6 +49,7 @@ namespace QGamaCore {
 
         private:
             QGamaCore::Ui::NewFileDialog *ui;
+            QGamaCore::ProjectsManager *prm;
     }; // class NewFileDialog
 
 } // namespace QGamaCore

@@ -32,12 +32,15 @@
 
 namespace QGamaCore {
 
-    /** Abstract class defining basic interface which plugins manager has to implement.
+    /** Base class defining basic interface which plugins manager has to implement.
       *
       */
     class PluginsManager
     {
+        friend class Factory;
+
         protected:
+
             /// Directory, from which the plugins are loaded.
             QDir pluginsDir;
 
@@ -47,7 +50,10 @@ namespace QGamaCore {
             /// Map storing pointers to all of the plugins in plugin's directory.
             QMap<QString,QPluginLoader*> plugins;
 
+            virtual void release() = 0;
+
         public:
+
             virtual void loadPlugin(const QString &name) = 0;
             virtual void enablePlugin(const QString &name) = 0;
             virtual void disablePlugin(const QString &name) = 0;

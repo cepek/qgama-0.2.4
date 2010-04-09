@@ -29,6 +29,7 @@
 
 #include "projectsmanager.h"
 #include "../preferences/settings.h"
+#include "project.h"
 
 
 namespace QGamaCore {
@@ -38,25 +39,39 @@ namespace QGamaCore {
         Q_OBJECT
 
         public:
+            enum { Id=32, ProjectLocation=33, FileType=34, ProjectFilePath=35, FileOpened=36, FilePath=37 };
+        
             ProjectsTreeWidget(QWidget *parent);
+            ~ProjectsTreeWidget();
+
+            void addProjectItem(const QString &projectName, const QString &projectLocation, bool markAsActive);
+            void deleteProjectItem(const QString &projectName, const QString &projectLocation);
+
+            void setProjectItemActive(const QString &projectName, const QString &projectLocation);
+
+            void addFileItems(Project *project);
+
+            void collapseNonActiveProjects();
 
         protected:
             void contextMenuEvent(QContextMenuEvent *event);
 
         private:
-            QGamaCore::ProjectsManager &prm;
-            QGamaCore::Settings &settings;
+            QGamaCore::ProjectsManager *prm;
+            QGamaCore::Settings *settings;
 
-        signals:
-            void openFile(const QString &file);
+            QTreeWidgetItem* findProjectItem(const QString &projectName, const QString &projectLocation);
+            QTreeWidgetItem* findFileCategoryItem(const QString &projectName, const QString &projectLocation, const QString &fileCategoryId);
 
-        public slots:
-            void changeActiveProject(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+            void cancelAllHighlightings();
+            void highlightActiveProject(QTreeWidgetItem *item);
+            void highlightActiveFile(QTreeWidgetItem *item);      
 
         private slots:
             void openFileDoubleClick(QTreeWidgetItem *current, int);
             void processContextMenuAction(QAction *action);
-    }; // class ProjectsTreeWidget
+            void changeActiveProject(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+        }; // class ProjectsTreeWidget
 
 } // namespace QGamaCore
 

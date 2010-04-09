@@ -33,11 +33,17 @@ namespace QGamaCore {
 
     namespace Ui {
 
+        /**
+          *
+          */
         class NewProjectDialog : public Ui_NewProjectDialog {};
 
     } // namespace Ui
 
 
+    /**
+      *
+      */
     class NewProjectDialog : public QDialog
     {
         Q_OBJECT
@@ -53,13 +59,18 @@ namespace QGamaCore {
             Ui::NewProjectDialog *ui;
             QDir location;
             QDir folder;
-            QGamaCore::ProjectsManager &prm;
+            QGamaCore::ProjectsManager *prm;
+            bool isNameValid(const QString &name);
+
+            enum { Id=32 };
 
         private slots:
+            void on_buttonBox_helpRequested();
             void on_toolButton_Browse_clicked();
-            void on_lineEdit_Project_Name_textChanged(QString);
+            void on_lineEdit_Project_Name_textChanged(QString text);
             void createProject();
     }; // class NewProjectDialog
+
 } // namespace QGamaCore
 
 

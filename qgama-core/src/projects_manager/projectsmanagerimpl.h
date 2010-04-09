@@ -34,7 +34,10 @@ namespace QGamaCore {
 
     class ProjectsManagerImpl : public ProjectsManager
     {
+        friend class Factory;
+
         private:
+
             /// Pointer to the QGamaCore::ProjectsManagerImpl object.
             static ProjectsManagerImpl *self;                       // singleton
 
@@ -46,44 +49,36 @@ namespace QGamaCore {
             /// Private copy constructor (singleton implementation).
             ProjectsManagerImpl(const ProjectsManagerImpl&);        // forbidden
 
-            /// Reference to QGamaCore::Settings.
-            QGamaCore::Settings &settings;
+            ~ProjectsManagerImpl();                                 // forbidden
 
-            Project* activeProject();
+            /// Reference to QGamaCore::Settings.
+            QGamaCore::Settings *settings;
+
+            /// Counter of the active pointers.
+            static int pointersCount;
+
+            Project* getActiveProject();
+            Project* getProject(const QString &projectName, const QString &projectLocation);
+            bool isProjectOpened(const QString &projectName, const QString &projectLocation);
+            bool writeFileToProjectXml(const QString &fileName, const QString &fileCategory, const QString &fileType, const QString &projectFilePath);
+            bool readFilesFromProjectXml(Project* project);
+
+        protected:
+
+            static ProjectsManagerImpl* instance();
+            void release();
 
         public:
-            /** Method returning a pointer to QGamaCore::ProjectsManagerImpl object.
-              *
-              * On the first call the instance is created, sequentially pointers to this instance are returned.
-              */
-            static ProjectsManagerImpl& instance() {
-                if (self == 0)
-                    self = new ProjectsManagerImpl();
-                return *self;
-            }
 
-            /** Class destructor.
-              *
-              * Deletes dynamicaly created structures, that's object on the address by private instance pointer, set's the pointer
-              * to null. Deletes also projects in the list.
-              */
-            ~ProjectsManagerImpl() {
-                if (self != 0) {
-                    delete self; self = 0;
-                }
-
-                for (int i=0; i<projects.size(); ++i) {
-                    delete projects[i];
-                }
-            }  // destructor
-
-            bool newProject(const QString &name, const QString &location);
-            bool openProject(const QString &projectFile);
+            bool newProject(const QString &projectType, const QString &projectName, const QString &projectLocation);
+            bool openProject(const QString &projectFilePath, bool markAsActive=true);
 
             void closeProject(Project *project);
             void closeActiveProject();
 
-            void setActiveProject(const QString &name, QString location);
+            void setActiveProject(const QString &projectName, const QString &projectLocation, bool slotCall=false);
+
+            bool newFile(const QString &fileToCreate, const QString &fileType);
     }; // class ProjectsManagerImpl
 
 } // namespace QGamaCore

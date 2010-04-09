@@ -32,6 +32,8 @@
 #include "plugininterface.h"
 #include "../preferences/settings.h"
 
+#include <iostream>
+
 
 namespace QGamaCore {
 
@@ -42,7 +44,10 @@ namespace QGamaCore {
       */
     class PluginsManagerImpl : public PluginsManager
     {
+        friend class Factory;
+
         private:
+
             /// Pointer to the QGamaCore::PluginManagerImpl object.
             static PluginsManagerImpl *self;                     // singleton
 
@@ -54,29 +59,23 @@ namespace QGamaCore {
             /// Private copy constructor (singleton implementation).
             PluginsManagerImpl(const PluginsManagerImpl&);       // forbidden
 
+            ~PluginsManagerImpl();                               // forbidden
+
             /// Reference to QGamaCore::Settings.
-            QGamaCore::Settings &settings;
+            QGamaCore::Settings *settings;
 
             void populateMenus(QGamaCore::PluginInterface *plugin);
             void unPopulateMenus(QGamaCore::PluginInterface *plugin);
 
-        public:
-            /** Method returning a pointer to QGamaCore::PluginManagerImpl object.
-              *
-              * On the first call the instance is created, sequentially pointers to this instance are returned.
-              */
-            static PluginsManagerImpl& instance() {
-                if (self == 0)
-                    self = new PluginsManagerImpl();
-                return *self;
-            }
+            /// Counter of the active pointers.
+            static int pointersCount;
 
-            /** Class destructor.
-              *
-              * Deletes dynamicaly created structures, that's object on the address by private instance pointer, set's the pointer
-              * to null.
-              */
-            ~PluginsManagerImpl() { if (self != 0) { delete self; self = 0; } }  // destructor
+        protected:
+
+            static PluginsManagerImpl* instance();
+            void release();
+
+        public:
 
             void loadPlugin(const QString &name);
             void enablePlugin(const QString &name);

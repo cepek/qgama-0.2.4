@@ -20,6 +20,8 @@
 */
 
 #include "newfiledialog.h"
+#include "../factory.h"
+#include "../projects_manager/project.h"
 
 using namespace QGamaCore;
 
@@ -29,9 +31,17 @@ using namespace QGamaCore;
   */
 NewFileDialog::NewFileDialog(QWidget *parent) :
     QDialog(parent),
-    ui(new QGamaCore::Ui::NewFileDialog)
+    ui(new QGamaCore::Ui::NewFileDialog),
+    prm(Factory::getProjectsManager())
 {
     ui->setupUi(this);
+
+    QList<Project*> projects = prm->getProjectsList();
+    QStringList projectNames;
+    for (int i=0; i<projects.size(); i++) {
+        projectNames.append(projects[i]->getName());
+    }
+    ui->comboBox_Project->addItems(projectNames);
 }
 
 

@@ -26,17 +26,26 @@
 #include <QString>
 #include <QVariant>
 
-
 namespace QGamaCore {
 
-    /** Abstract class for handling application settings.
+    /** Base class for handling application settings.
       *
       */
     class Settings
     {
+        friend class Factory;
+
         protected:
             /// Inner map to hold the settings at runtime.
             QMap<QString,QVariant> settings;
+
+            virtual void loadValue(const QString &key) = 0;
+            virtual void saveValue(const QString &key) = 0;
+
+            virtual void loadAll() = 0;
+            virtual void saveAll() = 0;
+
+            virtual void release() = 0;
 
         public:
             /** Gets the value corresponding to the specified key from the inner map.
@@ -58,14 +67,6 @@ namespace QGamaCore {
               * @param[in]  key     The name of the key.
               */
             void del(const QString &key) { settings.remove(key); }
-
-            virtual void loadValue(const QString &key) = 0;
-            virtual void saveValue(const QString &key) = 0;
-            virtual void removeValue(const QString &key) = 0;
-
-            virtual void loadAll() = 0;
-            virtual void saveAll() = 0;
-            virtual void removeAll() = 0;
     }; // class Settings
 
 } // namespace QGamaCore

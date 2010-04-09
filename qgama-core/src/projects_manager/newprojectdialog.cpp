@@ -20,13 +20,11 @@
 */
 
 
-#include <QDir>
-#include <QFileDialog>
-#include <QPushButton>
+#include <QtGui>
 
 #include "newprojectdialog.h"
 #include "project.h"
-#include "projectsmanagerimpl.h"
+#include "../factory.h"
 
 #include <iostream>
 
@@ -39,7 +37,7 @@ using namespace QGamaCore;
 NewProjectDialog::NewProjectDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::NewProjectDialog),
-    prm(ProjectsManagerImpl::instance())
+    prm(Factory::getProjectsManager())
 {
     ui->setupUi(this);
 
@@ -62,12 +60,11 @@ NewProjectDialog::NewProjectDialog(QWidget *parent) :
     }
 
     ui->lineEdit_Project_Name->setText("QGamaProject"+QString::number(num));
-    ui->lineEdit_Project_Folder->setText(location.absolutePath()+"/"+ui->lineEdit_Project_Name->text());
     ui->lineEdit_Project_Location->setText(location.absolutePath());
-    ui->lineEdit_Project_Folder->setMinimumWidth(ui->lineEdit_Project_Folder->text().length()*8);
-    ui->label_Warning->setVisible(false);
+    ui->lineEdit_Project_Location->setMinimumWidth(ui->lineEdit_Project_Location->text().length()*8);
 
-    folder.setPath(ui->lineEdit_Project_Folder->text());
+    ui->comboBox_Project_Type->addItem(QIcon(":/images/icons/babieca-64.png")," "+tr("Single Network Project"));
+    ui->comboBox_Project_Type->setItemData(0,"SingleNetworkProject",Id);
 
     connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(createProject()));
     connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
@@ -79,6 +76,7 @@ NewProjectDialog::NewProjectDialog(QWidget *parent) :
   */
 NewProjectDialog::~NewProjectDialog()
 {
+    Factory::releaseProjectsManager(prm);
     delete ui;
 }
 
@@ -102,31 +100,18 @@ void NewProjectDialog::changeEvent(QEvent *e)
 /**
   *
   */
-void NewProjectDialog::on_lineEdit_Project_Name_textChanged(QString)
-{
-    ui->lineEdit_Project_Folder->setText(ui->lineEdit_Project_Location->text()+"/"+ui->lineEdit_Project_Name->text());
-    folder.setPath(ui->lineEdit_Project_Folder->text());
+void NewProjectDialog::on_lineEdit_Project_Name_textChanged(QString text)
+{   
+    folder.setPath(location.absolutePath()+"/"+ui->lineEdit_Project_Name->text());
 
-    if (ui->lineEdit_Project_Name->text().isEmpty()) {
-        ui->label_Warning->setText(tr("Project name have to be specified!"));
-        ui->label_Warning->setStyleSheet("background-color: yellow");
+    if (!isNameValid(text)) {
         ui->label_Warning->setVisible(true);
-        ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
-    }
-    else if (ui->lineEdit_Project_Name->text().contains(QRegExp("[?:&*\"|#%<> /]"))) {
-        ui->label_Warning->setText(tr("Project name must not contain any of the following characters '?:&*\"|#%<> /'!"));
-        ui->label_Warning->setStyleSheet("background-color: red");
-        ui->label_Warning->setVisible(true);
-        ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
-    }
-    else if (folder.exists()) {
-        ui->label_Warning->setText(tr("A project with the specified name already exists!"));
-        ui->label_Warning->setStyleSheet("background-color: yellow");
-        ui->label_Warning->setVisible(true);
+        ui->label_Warning_Icon->setVisible(true);
         ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
     }
     else {
         ui->label_Warning->setVisible(false);
+        ui->label_Warning_Icon->setVisible(false);
         ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(true);
     }
 }
@@ -138,9 +123,13 @@ void NewProjectDialog::on_lineEdit_Project_Name_textChanged(QString)
 void NewProjectDialog::on_toolButton_Browse_clicked()
 {
     QString directory = QFileDialog::getExistingDirectory(this, tr("Open Directory"), location.absolutePath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-    ui->lineEdit_Project_Location->setText(directory);
 
-    location.setPath(directory);
+    if (!directory.isEmpty()) {
+        ui->lineEdit_Project_Location->setText(directory);
+
+        location.setPath(directory);
+        folder.setPath(directory+"/"+ui->lineEdit_Project_Name->text());
+    }
 }
 
 
@@ -149,8 +138,51 @@ void NewProjectDialog::on_toolButton_Browse_clicked()
   */
 void NewProjectDialog::createProject()
 {
-    prm.newProject(ui->lineEdit_Project_Name->text(), ui->lineEdit_Project_Location->text());
-    prm.openProject(ui->lineEdit_Project_Folder->text()+"/"+ui->lineEdit_Project_Name->text().toLower()+".qgp");
+    QString projectType = ui->comboBox_Project_Type->itemData(ui->comboBox_Project_Type->currentIndex(),Id).toString();
+    QString projectName = ui->lineEdit_Project_Name->text();
+    QString projectLocation = ui->lineEdit_Project_Location->text();
+    QString projectFilePath = folder.absolutePath()+"/"+projectName+".qgp";
+
+    prm->newProject(projectType, projectName, projectLocation);
+    prm->openProject(projectFilePath);
 
     accept();
+}
+
+
+/**
+  *
+  */
+void NewProjectDialog::on_buttonBox_helpRequested()
+{
+    QString message = tr("Specify the project type name and location!\n\n"
+                         "Project name could not already exist in the specified location and "
+                         "must not contain any of the following characters:\n"
+                         "[?:&*\"()|#%<> /',.!]\n\n"
+                         "Default project type is Single Network Project.");
+    QMessageBox::information(this, tr("New QGama Project Dialog Help"), message);
+}
+
+
+/**
+  *
+  */
+bool NewProjectDialog::isNameValid(const QString &name)
+{
+    if (name.isEmpty()) {
+        ui->label_Warning->setText(tr("Project name have to be specified!"));
+        return false;
+    }
+    else if (name.contains(QRegExp("[?:;&*\"()|#%<> /',.!]"))) {
+        ui->label_Warning->setText("  "+tr("Project name must not contain any of the following characters:\n[?:&*\"()|#%<> /',.!]"));
+        return false;
+    }
+    else if (folder.exists()) {
+        std::cout << "bb" << folder.absolutePath().toStdString() << std::endl;
+        ui->label_Warning->setText(tr("A project with the specified name already exists! Choose diferent name."));
+        return false;
+    }
+    else {
+        return true;
+    }
 }

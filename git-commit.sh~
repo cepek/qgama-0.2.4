@@ -1,0 +1,30 @@
+#!/bin/bash
+
+filesToCommit="";
+
+# root folder
+rm -f *~
+for i in $(ls -l -I bin -I config.h -I git-commit.sh | grep ^- | awk '{print $8}'); do
+    filesToCommit=$filesToCommit" "$i
+done
+filesToCommit=${filesToCommit:1:${#filesToCommit}}
+
+# gama-g3 folder
+filesToCommit=$filesToCommit" gama-g3/gama-g3.pro"
+
+# gama-local folder
+
+filesToCommit=$filesToCommit" gama-local/gama-local.pro"
+
+# gama-local-xml2txt
+filesToCommit=$filesToCommit" gama-local-xml2txt/gama-local-xml2txt.pro"
+
+# libqgama
+filesToCommit=$filesToCommit" libqgama/libqgama.pro"
+
+# scripts
+filesToCommit=$filesToCommit" scripts/version.cpp"
+
+
+
+echo $filesToCommit

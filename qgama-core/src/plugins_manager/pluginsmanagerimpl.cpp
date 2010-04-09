@@ -29,9 +29,8 @@
 #include "pluginsmanagerdialog.h"
 #include "plugininterface.h"
 #include "../utils/utils.h"
-#include "../preferences/settingsimpl.h"
 #include "../main_window/mainwindow.h"
-#include "../preferences/settings.h"
+#include "../factory.h"
 
 using namespace QGamaCore;
 
@@ -39,18 +38,63 @@ using namespace QGamaCore;
 // Inicialization of the private instance pointer to null.
 PluginsManagerImpl* PluginsManagerImpl::self = 0;
 
+// inicialization of the private counter of pointers
+int PluginsManagerImpl::pointersCount = 0;
+
 
 /** Implicit constructor.
   *
   * Set's the plugin directory according to the application settings, store the filenames found in that directory.
   */
-PluginsManagerImpl::PluginsManagerImpl() : settings(SettingsImpl::instance())
+PluginsManagerImpl::PluginsManagerImpl() : settings(Factory::getSettings())
 {
     // get the directory from application settings
-    pluginsDir = QDir(settings.get("plugins/directory").toString());
+    pluginsDir = QDir(settings->get("plugins/directory").toString());
 
     // getting file names from the plugin directory
     fileNames = pluginsDir.entryList(QDir::Files);
+}
+
+
+/** Method returning a pointer to QGamaCore::PluginManagerImpl object.
+  *
+  * On the first call the instance is created, sequentially pointers to this instance are returned.
+  * Also a counter of pointers is hold.
+  */
+PluginsManagerImpl* PluginsManagerImpl::instance() {
+    if (self == 0)
+        self = new PluginsManagerImpl();
+
+    pointersCount++;
+
+    return self;
+}
+
+
+/** Actions that have to be done on the release.
+  *
+  * Descreases counter of pointers by one and if it dealed the last reference, deletes dynamicaly
+  * created structures, that's object on the address by private instance pointer, set's the
+  * pointer to null.
+  */
+void PluginsManagerImpl::release()
+{
+    pointersCount--;
+
+    if (pointersCount == 0) {
+      delete self;
+      self = 0;
+  }
+}
+
+
+/** Class destructor.
+  *
+  */
+PluginsManagerImpl::~PluginsManagerImpl()
+{
+    Factory::releaseSettings(settings);
+    std::cout << "PluginsManagerImpl - Destruktor" << std::endl;
 }
 
 
@@ -73,13 +117,13 @@ void PluginsManagerImpl::loadPlugin(const QString &name)
 
             // add entry to the PluginManagerDialog
             PluginsManagerDialog *pmd = qobject_cast<PluginsManagerDialog*> (Utils::findTopLevelWidget("PluginsManagerDialog"));
-            if (settings.get("plugins/enabledPlugins").toStringList().contains(name))
+            if (settings->get("plugins/enabledPlugins").toStringList().contains(name))
                 pmd->addLoadedPlugin(name,Enabled,plugin);
             else
                 pmd->addLoadedPlugin(name,NotEnabled,plugin);
 
             // if the plugin was supposed to be enabled we will initialize it
-            if (settings.get("plugins/enabledPlugins").toStringList().contains(name))
+            if (settings->get("plugins/enabledPlugins").toStringList().contains(name))
                 populateMenus(plugin);
         }
         // otherwise delete allocated elements
