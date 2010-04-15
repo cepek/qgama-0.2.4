@@ -34,22 +34,27 @@
 
 namespace QGamaCore {
 
+
+    class MainWindow;
+
+
     class ProjectsTreeWidget : public QTreeWidget
     {
+        friend class Project;
+
         Q_OBJECT
 
         public:
-            enum { Id=32, ProjectLocation=33, FileType=34, ProjectFilePath=35, FileOpened=36, FilePath=37 };
+            enum { Id=32, ProjectLocation=33, AdjustmentSettingId=34, NetworkId=35 };
         
             ProjectsTreeWidget(QWidget *parent);
             ~ProjectsTreeWidget();
 
-            void addProjectItem(const QString &projectName, const QString &projectLocation, bool markAsActive);
+            void addProjectItem(Project *project);
             void deleteProjectItem(const QString &projectName, const QString &projectLocation);
-
             void setProjectItemActive(const QString &projectName, const QString &projectLocation);
 
-            void addFileItems(Project *project);
+            void addFileItems(Project *project, bool highlightOpened = true);
 
             void collapseNonActiveProjects();
 
@@ -65,7 +70,9 @@ namespace QGamaCore {
 
             void cancelAllHighlightings();
             void highlightActiveProject(QTreeWidgetItem *item);
-            void highlightActiveFile(QTreeWidgetItem *item);      
+            void highlightActiveFile(QTreeWidgetItem *item);
+
+            QGamaCore::MainWindow *mw;
 
         private slots:
             void openFileDoubleClick(QTreeWidgetItem *current, int);

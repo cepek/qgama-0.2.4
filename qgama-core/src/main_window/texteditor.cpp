@@ -19,12 +19,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <QFile>
-#include <QCloseEvent>
-#include <QApplication>
-#include <QFileDialog>
-#include <QMessageBox>
-#include <QTextStream>
+#include <QtGui>
 
 #include "texteditor.h"
 #include "../utils/utils.h"
@@ -35,89 +30,98 @@
 using namespace QGamaCore;
 
 
-TextEditor::TextEditor()
+/* ===============================================================================================================*/
+/**
+  *
+  */
+TextEditor::TextEditor(const QString &type) :
+    Document(type),
+    editor(),
+    highlighter(editor.document())
 {
-    // makes Qt delete this widget when the widget has accepted the close event (see QWidget::closeEvent())
-    setAttribute(Qt::WA_DeleteOnClose);
-    // sets document as untitled after it's creation
-    isUntitled = true;
 }
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 TextEditor::~TextEditor()
 {
-    //MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
-    //mw->setWindowTitle(mw->windowTitle().split(" - ").value(0).trimmed());
 }
 
 
-void TextEditor::newFile()
-{
-    static int sequenceNumber = 1;
-    isUntitled = true;
-    curFile = tr("Untitled_TextEditor_%1.gfk").arg(sequenceNumber++);
-    setWindowTitle(curFile+"[*]");
-
-    MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
-    mw->setWindowTitle(mw->windowTitle()+" - "+curFile+"[*]");
-
-    connect(document(), SIGNAL(contentsChanged()), this, SLOT(documentWasModified()));
-}
-
-
+/* ===============================================================================================================*/
+/**
+  *
+  */
 bool TextEditor::loadFile(const QString &fileName)
 {
+    // try to open the file
     QFile file(fileName);
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
-        QMessageBox::warning(this, tr("MDI"),
-                             tr("Cannot read file %1:\n%2.")
-                             .arg(fileName)
-                             .arg(file.errorString()));
+        QMessageBox::warning(this, tr("Error during opening file!"), tr("Cannot read file %1:\n%2.") .arg(fileName) .arg(file.errorString()));
         return false;
     }
 
+    // read its content
     QTextStream in(&file);
     QApplication::setOverrideCursor(Qt::WaitCursor);
     setPlainText(in.readAll());
     QApplication::restoreOverrideCursor();
 
+    // set the current file
     setCurrentFile(fileName);
 
     connect(document(), SIGNAL(contentsChanged()), this, SLOT(documentWasModified()));
+    connect(document(), SIGNAL(contentsChanged()), mw, SLOT(subWindowsStatesChanged()));
+    connect(this, SIGNAL(saveStateChanged()), mw, SLOT(subWindowsStatesChanged()));
+
+    emit saveStateChanged();
 
     return true;
 }
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 bool TextEditor::save()
 {
-    if (isUntitled) {
-        return saveAs();
-    } else {
-        return saveFile(curFile);
-    }
+    return saveFile(curFile);
 }
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 bool TextEditor::saveAs()
 {
+    std::cout << "saveAs START" << std::endl;
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save As"),
                                                     curFile);
     if (fileName.isEmpty())
         return false;
 
+    std::cout << "saveAs STOP" << std::endl;
+
     return saveFile(fileName);
 }
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 bool TextEditor::saveFile(const QString &fileName)
 {
+    std::cout << "saveFile START" << std::endl;
+    // try to open the file
     QFile file(fileName);
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
-        QMessageBox::warning(this, tr("MDI"),
-                             tr("Cannot write file %1:\n%2.")
-                             .arg(fileName)
-                             .arg(file.errorString()));
+        QMessageBox::warning(this, tr("Error during writing to file!"), tr("Cannot write file %1:\n%2.") .arg(fileName) .arg(file.errorString()));
         return false;
     }
 
@@ -127,18 +131,33 @@ bool TextEditor::saveFile(const QString &fileName)
     QApplication::restoreOverrideCursor();
 
     setCurrentFile(fileName);
+
+    std::cout << "saveFile STOP" << std::endl;
+
+    emit saveStateChanged();
+
     return true;
 }
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 QString TextEditor::userFriendlyCurrentFile()
 {
     return strippedName(curFile);
 }
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 void TextEditor::closeEvent(QCloseEvent *event)
 {
+    mw->setWindowTitle(mw->windowTitle().split(" - ").value(0).trimmed());
+
     if (maybeSave()) {
         event->accept();
     } else {
@@ -149,45 +168,54 @@ void TextEditor::closeEvent(QCloseEvent *event)
 }
 
 
-void TextEditor::documentWasModified()
-{
-    setWindowModified(document()->isModified());
-
-    MainWindow *mw = dynamic_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
-    mw->setWindowModified(document()->isModified());
-}
-
-
+/* ===============================================================================================================*/
+/**
+  *
+  */
 bool TextEditor::maybeSave()
 {
     if (document()->isModified()) {
-        QMessageBox::StandardButton ret;
-        ret = QMessageBox::warning(this, tr("MDI"),
-                     tr("'%1' has been modified.\n"
-                        "Do you want to save your changes?")
-                     .arg(userFriendlyCurrentFile()),
-                     QMessageBox::Save | QMessageBox::Discard
-                     | QMessageBox::Cancel);
+        QMessageBox::StandardButton ret = QMessageBox::warning(this,
+                                                               tr("Unsaved changes!"),
+                                                               tr("'%1' has been modified.\nDo you want to save your changes?")
+                                                                    .arg(userFriendlyCurrentFile()),
+                                                               QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
         if (ret == QMessageBox::Save)
             return save();
         else if (ret == QMessageBox::Cancel)
             return false;
     }
+
     return true;
 }
 
 
-void TextEditor::setCurrentFile(const QString &fileName)
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void TextEditor::documentWasModified()
 {
-    curFile = QFileInfo(fileName).canonicalFilePath();
-    isUntitled = false;
-    document()->setModified(false);
-    setWindowModified(false);
-    setWindowTitle(userFriendlyCurrentFile() + "[*]");
+    std::cout << "??" << std::endl;
+    setWindowModified(document()->isModified());
+    mw->setWindowModified(document()->isModified());
+    std::cout << "???" << std::endl;
 }
 
 
-QString TextEditor::strippedName(const QString &fullFileName)
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void TextEditor::setCurrentFile(const QString &fileName)
 {
-    return QFileInfo(fullFileName).fileName();
+    curFile = QFileInfo(fileName).canonicalFilePath();
+
+    document()->setModified(false);
+
+    setWindowModified(false);
+    setWindowTitle(userFriendlyCurrentFile()+"[*]");
+
+    mw->setWindowModified(false);
+    mw->setWindowTitle(mw->windowTitle().split(" - ").value(0).trimmed()+" - "+userFriendlyCurrentFile()+"[*]");
 }

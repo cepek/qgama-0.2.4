@@ -1,36 +1,49 @@
 #ifndef FILE_H
 #define FILE_H
 
-class QString;
+#include <QString>
 
-class File
-{
-    private:
-        QString name;
-        QString category;
-        QString type;
-        QString path;
-        bool opened;
-        bool active;
 
-    public:
-        File() {}
+namespace QGamaCore {
 
-        // setters
-        void setName(const QString &name) { this->name = name; }
-        void setCategory(const QString &category) { this->category = category; }
-        void setType(const QString &type) { this->type = type; }
-        void setPath(const QString &path) { this->path = path; }
-        void setActive(bool active) { this->active = active; }
-        void setOpened(bool opened) { this->opened = opened; }
+    /**
+      *
+      */
+    class File
+    {
+        private:
+            QString name;
+            QString path;
+            QString opened;
+            QString format;
+            int settingsId;
+            int id;
+            bool displayed;
 
-        // getters
-        QString name() { return name; }
-        QString category() { return category; }
-        QString type() { return type; }
-        QString path() { return path; }
-        bool isActive() { return active; }
-        bool isOpened() { return opened; }
-};
+        public:
+            File() { displayed=false; }
+            ~File() {}
+
+            // setters
+            void setName(const QString &name)       { this->name=name; }
+            void setPath(const QString &path)       { this->path=path; }
+            void setOpened(const QString &opened)   { this->opened=opened; }
+            void setFormat(const QString &format)   { this->format=format; }
+            void setSettingsId(int settingsId)      { this->settingsId=settingsId; }
+            void setId(int id)                      { this->id=id; }
+            void setDisplayed(bool displayed)       { this->displayed=displayed; }
+
+            // getters
+            QString getName() const     { return name; }
+            QString getPath() const     { return path; }
+            QString getOpened() const   { return opened; }
+            QString getFormat() const   { return format; }
+            int getSettingsId() const   { return settingsId; }
+            int getId() const           { return id; }
+            bool isDisplayed() const    { return displayed; }
+    }; // class File
+
+} // namespace QGamaCore
+
 
 #endif // FILE_H

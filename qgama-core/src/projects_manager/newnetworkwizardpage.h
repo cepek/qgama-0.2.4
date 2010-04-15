@@ -19,51 +19,49 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef TEXTEDITOR_H
-#define TEXTEDITOR_H
+#ifndef NEWNETWORKWIZARDPAGE_H
+#define NEWNETWORKWIZARDPAGE_H
 
-#include <QTextEdit>
-
-#include "document.h"
-#include "../utils/xmlsyntaxhighlighter.h"
+#include <QWizardPage>
+#include <ui_newnetworkwizardpage.h>
 
 
 namespace QGamaCore {
 
-    class MainWindow;
+    namespace Ui {
+
+        class NewNetworkWizardPage : public Ui_NewNetworkWizardPage {};
+
+    } // namespace Ui
 
 
-    /**
-      *
-      */
-    class TextEditor : public Document
+    class ProjectsManager;
+    class Settings;
+
+
+    class NewNetworkWizardPage : public QWizardPage
     {
         Q_OBJECT
 
         public:
-            TextEditor(const QString &type);
-            ~TextEditor();
-
-            bool loadFile(const QString &fileName);
+            NewNetworkWizardPage(QWidget *parent = 0);
+            ~NewNetworkWizardPage();
 
         protected:
-            void closeEvent(QCloseEvent *event);
+            void changeEvent(QEvent *e);
+            bool validatePage();
+            int nextId() const;
 
-        signals:
-            void saveStateChanged();
+        private:
+            QGamaCore::Ui::NewNetworkWizardPage *ui;
+            QGamaCore::ProjectsManager *prm;
+            QGamaCore::Settings *settings;
 
         private slots:
-            virtual void setModified();
-
-        protected:
-            virtual bool maybeSave();
-            XmlSyntaxHighlighter highlighter;
-
-        protected:
-            QTextEdit editor;
-    }; // class TextEditor
+            void on_listWidget_Network_Types_currentRowChanged(int currentRow);
+    }; // class NewNetworkWizardPage
 
 } // namespace QGamaCore
 
 
-#endif // TEXTEDITOR_H
+#endif // NEWNETWORKWIZARDPAGE_H

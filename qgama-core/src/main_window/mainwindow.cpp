@@ -20,6 +20,7 @@
 */
 
 #include <QtGui>
+#include <QtWebKit>
 
 #include "mainwindow.h"
 #include "../../../config.h"
@@ -28,11 +29,13 @@
 #include "aboutqgamadialog.h"
 #include "aboutgnugamadialog.h"
 #include "../projects_manager/newprojectdialog.h"
-#include "../projects_manager/newfilewizard.h"
+#include "../projects_manager/newnetworkwizard.h"
 #include "texteditor.h"
 #include "../utils/utils.h"
 #include "../factory.h"
 #include "../projects_manager/projectpropertiesdialog.h"
+#include "../projects_manager/project.h"
+#include "../projects_manager/adjustmentsettingdialog.h"
 
 //#include <gama-local-main.h>
 
@@ -41,13 +44,7 @@
 using namespace QGamaCore;
 
 
-/*
- __  __      _   __      ___         _
-|  \/  |__ _(_)_ \ \    / (_)_ _  __| |_____ __ __
-| |\/| / _` | | ' \ \/\/ /| | ' \/ _` / _ \ V  V /
-|_|  |_\__,_|_|_||_\_/\_/ |_|_||_\__,_\___/\_/\_/
-
-*/
+/* ===============================================================================================================*/
 /** Constructor.
   *
   * Setups ui, allocate dialogs, loads settings for the application, loads plugins.
@@ -66,6 +63,21 @@ MainWindow::MainWindow(QWidget *parent) :
     // setting .ui file
     ui->setupUi(this);
 
+    // add close button to the tabs in mdi area and also block the default context menu over it
+    foreach (QTabBar* tab, ui->mdiArea->findChildren<QTabBar*>()) {
+        tab->setTabsClosable(true);
+        tab->setContextMenuPolicy(Qt::NoContextMenu);
+
+        connect(tab, SIGNAL(tabCloseRequested(int)),this, SLOT(closeFile()));
+    }
+
+    // setting window title
+    this->setWindowTitle("QGama " + QString(QGAMA_VERSION) + tr(" (using GNU GamaLib ") + QString(VERSION) + ")");
+
+    // setting the menu initial state
+    ui->action_Toolbar_File->setChecked(ui->toolBar_File->isEnabled());
+    ui->menu_Network->setEnabled(false);
+
     // load all settings
     readSettings();
 
@@ -82,69 +94,40 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->toolBar_File->addAction(action_Whatsthis);
     ui->menu_Help->addAction(action_Whatsthis);
 
-    // setting bottom left corner of dock widget area
-    this->setCorner(Qt::BottomLeftCorner,Qt::LeftDockWidgetArea);
-
-    // set output dock widget to hidden at startup
-    ui->dockWidget_Output->setVisible(false);
-
-    // setting the menu initial state
-    ui->action_Toolbar_File->setChecked(ui->toolBar_File->isEnabled());
-    ui->menu_Network->setEnabled(false);
-
-    // setting window title
-    this->setWindowTitle("QGama " + QString(QGAMA_VERSION) + tr(" (using GNU GamaLib ") + QString(VERSION) + ")");
-
-    // setting mdiArea subwindows icons
-    ui->mdiArea->setWindowIcon(QIcon(":/images/icons/notes-32.png"));
-
     // if there are no projects opened
     if (prm->projectsCount()==0) {
         decreaseProjectsCount();
     }
 
-    // add close button to the tabs in mdi area and also block the default context menu over it
-    foreach (QTabBar* tab, ui->mdiArea->findChildren<QTabBar*>()) {
-        tab->setTabsClosable(true);
-        tab->setContextMenuPolicy(Qt::NoContextMenu);
-
-        connect(tab,SIGNAL(tabCloseRequested(int)),ui->mdiArea,SLOT(closeActiveSubWindow()));
-    }
+    // initialize file menu actions state, if there are no subwindows opened
+    if (ui->mdiArea->subWindowList().size()==0)
+        activeSubWindowChanged(0);
 }
 
-/*
- /\/|_  __      _   __      ___         _
-|/\/  \/  |__ _(_)_ \ \    / (_)_ _  __| |_____ __ __
-   | |\/| / _` | | ' \ \/\/ /| | ' \/ _` / _ \ V  V /
-   |_|  |_\__,_|_|_||_\_/\_/ |_|_||_\__,_\___/\_/\_/
 
-*/
+/* ===============================================================================================================*/
 /** Destructor.
   *
   * Deletes dynamicaly created structures.
   */
 MainWindow::~MainWindow()
 {
+    // save the window's state
     settings->set("MainWindow/size",size());
     settings->set("MainWindow/pos",pos());
 
-    ui->mdiArea->closeAllSubWindows();
+    // release all singletons
     Factory::releaseSettings(settings);
     Factory::releasePluginsManager(pm);
     Factory::releaseProjectsManager(prm);
 
+    // delete dynamically created structures
     delete ui;
     delete pmd;
 }
 
 
-/*
-            _        ___                      _   _
- _ __  __ _| |_____ / __|___ _ _  _ _  ___ __| |_(_)___ _ _  ___
-| '  \/ _` | / / -_) (__/ _ \ ' \| ' \/ -_) _|  _| / _ \ ' \(_-<
-|_|_|_\__,_|_\_\___|\___\___/_||_|_||_\___\__|\__|_\___/_||_/__/
-
-*/
+/* ===============================================================================================================*/
 /** Makes signal slot connections.
   *
   */
@@ -152,15 +135,21 @@ void MainWindow::makeConnections()
 {
     // File menu actions
     connect(ui->action_New_Project, SIGNAL(triggered()), this, SLOT(newProject()));
-    connect(ui->action_New_File, SIGNAL(triggered()), this, SLOT(newFile()));
+    connect(ui->action_New_Network, SIGNAL(triggered()), this, SLOT(newNetwork()));
     connect(ui->action_Quit, SIGNAL(triggered()), this, SLOT(close()));
     connect(ui->action_Open_File, SIGNAL(triggered()), this, SLOT(openFile()));
+    connect(ui->action_Close_File, SIGNAL(triggered()), this, SLOT(closeFile()));
     connect(ui->action_Open_Project, SIGNAL(triggered()), this, SLOT(openProject()));
     connect(ui->action_Close_Project, SIGNAL(triggered()), this, SLOT(closeProject()));
     connect(ui->menu_Open_Recent_Project, SIGNAL(triggered(QAction*)), this, SLOT(openRecentProject(QAction*)));
+    connect(ui->menu_Open_Recent_File, SIGNAL(triggered(QAction*)), this, SLOT(openRecentFile(QAction*)));
     connect(ui->action_Close_All_Projects, SIGNAL(triggered()), this, SLOT(closeAllProjects()));
     connect(ui->action_Project_Properties, SIGNAL(triggered()), this, SLOT(projectProperties()));
-    connect(ui->action_Close_File, SIGNAL(triggered()), this, SLOT(closeFile()));
+    connect(ui->action_Save, SIGNAL(triggered()), this, SLOT(save()));
+    connect(ui->action_Save_As, SIGNAL(triggered()), this, SLOT(saveAs()));
+    connect(ui->action_Save_All, SIGNAL(triggered()), this, SLOT(saveAll()));
+    connect(ui->mdiArea, SIGNAL(subWindowActivated(QMdiSubWindow*)), this, SLOT(activeSubWindowChanged(QMdiSubWindow*)));
+    connect(ui->action_Print, SIGNAL(triggered()), this, SLOT(print()));
 
     // Edit menu actions
     connect(ui->action_Plugins, SIGNAL(triggered()), this, SLOT(pluginManagerDialog()));
@@ -168,9 +157,9 @@ void MainWindow::makeConnections()
 
     // Networks menu actions
     connect(ui->action_Solve, SIGNAL(triggered()), this, SLOT(solve()));
+    connect(ui->action_Add_Setting, SIGNAL(triggered()), this, SLOT(newSetting()));
 
     // Window menu actions
-    connect(ui->action_Output, SIGNAL(triggered()), this, SLOT(openOutputDock()));
     connect(ui->action_Projects, SIGNAL(triggered()), this, SLOT(openProjectsDock()));
 
     // About menu actions
@@ -180,14 +169,7 @@ void MainWindow::makeConnections()
 }
 
 
-/*
-                 _ ___      _   _   _
- _ _ ___ __ _ __| / __| ___| |_| |_(_)_ _  __ _ ___
-| '_/ -_) _` / _` \__ \/ -_)  _|  _| | ' \/ _` (_-<
-|_| \___\__,_\__,_|___/\___|\__|\__|_|_||_\__, /__/
-                                          |___/
-
-*/
+/* ===============================================================================================================*/
 /** Reads all available settings for the application and initialize the application based on it.
   *
   */
@@ -204,7 +186,7 @@ void MainWindow::readSettings()
     // open projects
     QStringList openedProjects = settings->get("projects/openedProjects").toStringList();
     for (int i=0; i<openedProjects.size(); i++) {
-        prm->openProject(openedProjects[i], false);
+        prm->openProject(openedProjects[i],false);
     }
 
     // set active project
@@ -217,6 +199,9 @@ void MainWindow::readSettings()
     // initialize recently opened projects
     updateRecentlyOpenedProjects();
 
+    // initialize recently opened files
+    updateRecentlyOpenedFiles();
+
     // resize and move
     if (!settings->get("MainWindow/size").isNull())
         resize(settings->get("MainWindow/size").toSize());
@@ -225,14 +210,7 @@ void MainWindow::readSettings()
 }
 
 
-/*
-    _                       ___             _
- __| |_  __ _ _ _  __ _ ___| __|_ _____ _ _| |_
-/ _| ' \/ _` | ' \/ _` / -_) _|\ V / -_) ' \  _|
-\__|_||_\__,_|_||_\__, \___|___|\_/\___|_||_\__|
-                  |___/
-
-*/
+/* ===============================================================================================================*/
 /** Reimplementation of the changeEvent handler.
   *
   * Checks if the event is of QEvent::LanguageChange type, if it's so, will retranslate the UI.
@@ -252,37 +230,23 @@ void MainWindow::changeEvent(QEvent *event)
 }
 
 
-/*
-    _             ___             _
- __| |___ ___ ___| __|_ _____ _ _| |_
-/ _| / _ (_-</ -_) _|\ V / -_) ' \  _|
-\__|_\___/__/\___|___|\_/\___|_||_\__|
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    /*
-    QList<QMdiSubWindow*> subWindows = ui->mdiArea->subWindowList();
-    for (QList<QMdiSubWindow*>::iterator i=subWindows.begin(); i!=subWindows.end(); ++i) {
-        (*i)->close();
-    }
-    event->accept();
-    */
+    // update files attributes in projects
+    prm->updateProjectFilesEntries();
+
+    // close all subwindows
     ui->mdiArea->closeAllSubWindows();
+
+    event->accept();
 }
 
 
-/*
-      _           _      __  __                             ___  _      _
- _ __| |_  _ __ _(_)_ _ |  \/  |__ _ _ _  __ _ __ _ ___ _ _|   \(_)__ _| |___  __ _
-| '_ \ | || / _` | | ' \| |\/| / _` | ' \/ _` / _` / -_) '_| |) | / _` | / _ \/ _` |
-| .__/_|\_,_\__, |_|_||_|_|  |_\__,_|_||_\__,_\__, \___|_| |___/|_\__,_|_\___/\__, |
-|_|         |___/                             |___/                           |___/
-
-*/
+/* ===============================================================================================================*/
 /** Opens modal Plugin Manager dialog.
   *
   */
@@ -292,14 +256,7 @@ void MainWindow::pluginManagerDialog()
 }
 
 
-/*
-               __                            ___  _      _
- _ __ _ _ ___ / _|___ _ _ ___ _ _  __ ___ __|   \(_)__ _| |___  __ _
-| '_ \ '_/ -_)  _/ -_) '_/ -_) ' \/ _/ -_|_-< |) | / _` | / _ \/ _` |
-| .__/_| \___|_| \___|_| \___|_||_\__\___/__/___/|_\__,_|_\___/\__, |
-|_|                                                            |___/
-
-*/
+/* ===============================================================================================================*/
 /** Opens modal Preferences dialog.
   *
   */
@@ -309,14 +266,7 @@ void MainWindow::preferencesDialog()
 }
 
 
-/*
-      _              _    ___   ___                 ___  _      _
- __ _| |__  ___ _  _| |_ / _ \ / __|__ _ _ __  __ _|   \(_)__ _| |___  __ _
-/ _` | '_ \/ _ \ || |  _| (_) | (_ / _` | '  \/ _` | |) | / _` | / _ \/ _` |
-\__,_|_.__/\___/\_,_|\__|\__\_\\___\__,_|_|_|_\__,_|___/|_\__,_|_\___/\__, |
-                                                                      |___/
-
-*/
+/* ===============================================================================================================*/
 /** Opens modal About QGama dialog.
   *
   */
@@ -327,14 +277,7 @@ void MainWindow::aboutQGamaDialog()
 }
 
 
-/*
-      _              _    ___           ___                 ___  _      _
- __ _| |__  ___ _  _| |_ / __|_ _ _  _ / __|__ _ _ __  __ _|   \(_)__ _| |___  __ _
-/ _` | '_ \/ _ \ || |  _| (_ | ' \ || | (_ / _` | '  \/ _` | |) | / _` | / _ \/ _` |
-\__,_|_.__/\___/\_,_|\__|\___|_||_\_,_|\___\__,_|_|_|_\__,_|___/|_\__,_|_\___/\__, |
-                                                                              |___/
-
-*/
+/* ===============================================================================================================*/
 /** Opens modal About GNU Gama dialog.
   *
   */
@@ -345,14 +288,7 @@ void MainWindow::aboutGnuGamaDialog()
 }
 
 
-/*
-      _              _    ___  _   ___  _      _
- __ _| |__  ___ _  _| |_ / _ \| |_|   \(_)__ _| |___  __ _
-/ _` | '_ \/ _ \ || |  _| (_) |  _| |) | / _` | / _ \/ _` |
-\__,_|_.__/\___/\_,_|\__|\__\_\\__|___/|_\__,_|_\___/\__, |
-                                                     |___/
-
-*/
+/* ===============================================================================================================*/
 /** Opens modal About Qt dialog.
   *
   */
@@ -362,14 +298,7 @@ void MainWindow::aboutQtDialog()
 }
 
 
-/*
-                    _   _          _____         _ _              ___ _ _      _                  _        _
- ___ _ _    __ _ __| |_(_)___ _ _ |_   _|__  ___| | |__  __ _ _ _| __(_) |___ | |_ ___  __ _ __ _| |___ __| |
-/ _ \ ' \  / _` / _|  _| / _ \ ' \  | |/ _ \/ _ \ | '_ \/ _` | '_| _|| | / -_)|  _/ _ \/ _` / _` | / -_) _` |
-\___/_||_|_\__,_\__|\__|_\___/_||_|_|_|\___/\___/_|_.__/\__,_|_|_|_| |_|_\___|_\__\___/\__, \__, |_\___\__,_|
-        |___|                    |___|                        |___|         |___|      |___/|___/
-
-*/
+/* ===============================================================================================================*/
 /** Slot for mantaining "View->Toolbar->File" checkbox synchronized with the toolbar visibility.
   *
   */
@@ -379,14 +308,7 @@ void MainWindow::on_action_Toolbar_File_toggled(bool checked)
 }
 
 
-/*
-                    ___          _        _      ___          _
- ___ _ __  ___ _ _ | _ \_ _ ___ (_)___ __| |_ __|   \ ___  __| |__
-/ _ \ '_ \/ -_) ' \|  _/ '_/ _ \| / -_) _|  _(_-< |) / _ \/ _| / /
-\___/ .__/\___|_||_|_| |_| \___// \___\__|\__/__/___/\___/\__|_\_\
-    |_|                       |__/
-
-*/
+/* ===============================================================================================================*/
 /** Slot for making visible the Projects dock widget.
   *
   */
@@ -396,48 +318,18 @@ void MainWindow::openProjectsDock()
 }
 
 
-/*
-                    ___       _             _   ___          _
- ___ _ __  ___ _ _ / _ \ _  _| |_ _ __ _  _| |_|   \ ___  __| |__
-/ _ \ '_ \/ -_) ' \ (_) | || |  _| '_ \ || |  _| |) / _ \/ _| / /
-\___/ .__/\___|_||_\___/ \_,_|\__| .__/\_,_|\__|___/\___/\__|_\_\
-    |_|                          |_|
-
-  */
-/** Slot for making visible the Output dock widget.
-  *
-  */
-void MainWindow::openOutputDock()
-{
-    ui->dockWidget_Output->setVisible(true);
-}
-
-
-/*
-                 ___ _ _
- _ _  _____ __ _| __(_) |___
-| ' \/ -_) V  V / _|| | / -_)
-|_||_\___|\_/\_/|_| |_|_\___|
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
-void MainWindow::newFile()
+void MainWindow::newNetwork()
 {
-    NewFileWizard wizard(this);
+    NewNetworkWizard wizard(this);
     wizard.exec();
 }
 
 
-/*
-                 ___          _        _
- _ _  _____ __ _| _ \_ _ ___ (_)___ __| |_
-| ' \/ -_) V  V /  _/ '_/ _ \| / -_) _|  _|
-|_||_\___|\_/\_/|_| |_| \___// \___\__|\__|
-                           |__/
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
@@ -448,71 +340,86 @@ void MainWindow::newProject()
 }
 
 
-/*
-                    ___ _ _
- ___ _ __  ___ _ _ | __(_) |___
-/ _ \ '_ \/ -_) ' \| _|| | / -_)
-\___/ .__/\___|_||_|_| |_|_\___|
-    |_|
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
 void MainWindow::openFile()
 {
     QDir dir;
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), dir.home().absolutePath()+"/QGamaProjects", tr("QGama Network Files (*.xml *.gkf);; QGama Solution Files (*.xml *.txt *.html);; All Files"));
-    openFile(fileName);
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open File"), dir.home().absolutePath()+"/QGamaProjects", tr("QGama Network Files (*.xml *.gkf);; QGama Solution Files (*.xml *.txt *.html)"));
+
+    QString terminator = fileName.split(".").last();
+    if ((terminator == "xml" && !fileName.contains("Solutions")) || terminator == "gkf")
+        openFile(fileName,"network");
+    else if (terminator == "html")
+        openFile(fileName,"solution-html");
+    else if (terminator == "xml" && (fileName.contains("Solutions")))
+        openFile(fileName,"solution-xml");
+    else
+        openFile(fileName,"txt");
 }
 
 
-/*
-                    ___ _ _
- ___ _ __  ___ _ _ | __(_) |___
-/ _ \ '_ \/ -_) ' \| _|| | / -_)
-\___/ .__/\___|_||_|_| |_|_\___|
-    |_|
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
-void MainWindow::openFile(const QString &file)
+void MainWindow::openFile(const QString &file, const QString &fileType)
 {
     if (!file.isEmpty()) {
+        // if it was already opened, set active window to it
         QMdiSubWindow *existing = Utils::findMdiSubWindow(file);
         if (existing) {
             ui->mdiArea->setActiveSubWindow(existing);
             return;
         }
 
-        TextEditor *child = new TextEditor;
+        if (fileType == "network") {
+            // enable network menu
+            ui->menu_Network->setEnabled(true);
 
-        ui->mdiArea->addSubWindow(child);
-        if (child->loadFile(file)) {
-            child->showMaximized();
-        } else {
-            child->close();
+            // add subwindow and open the file in it
+            TextEditor *child = new TextEditor("network");
+            QMdiSubWindow *subWindow = ui->mdiArea->addSubWindow(child);
+            if (child->loadFile(file))
+                child->showMaximized();
+            else
+                child->close();
+
+            // set subwindow icon
+            subWindow->setWindowIcon(QIcon(":/images/icons/network-32.png"));
+
+            // disable subwindow's default shortcuts so that our works
+            foreach (QAction* action, ui->mdiArea->findChildren<QAction*>()) {
+                if (action->shortcut().toString()=="Ctrl+W")
+                    action->setShortcut(QKeySequence(""));
+            }
+
+            // add entries to the window menu
+            QAction *action = new QAction(QIcon(":/images/icons/network-32.png")," "+QFileInfo(file).fileName(),ui->menu_Windows);
+            action->setIconVisibleInMenu(true);
+            action->setData(file+"|network");
+            ui->menu_Windows->addAction(action);
+            connect(ui->menu_Windows, SIGNAL(triggered(QAction*)), this, SLOT(activateDesiredSubwindow(QAction*)));
         }
 
-        Q_FOREACH (QAction* action, ui->mdiArea->findChildren<QAction*>())
-            {
-            if (action->shortcut().toString()=="Ctrl+W")
-                action->setShortcut(QKeySequence(""));
-            }
+        if (fileType == "solution-html") {
+            // add subwindow and open the file in it
+            QWebView *child = new QWebView;
+            child->setAttribute(Qt::WA_DeleteOnClose);
+            QMdiSubWindow *subwindow = ui->mdiArea->addSubWindow(child);
+            QFile in(file);
+            in.open(QIODevice::ReadOnly);
+            QTextStream ts(&in);
+            child->setHtml(ts.readAll());
+            child->showMaximized();
+        }
     }
 }
 
 
-/*
-                    ___          _        _
- ___ _ __  ___ _ _ | _ \_ _ ___ (_)___ __| |_
-/ _ \ '_ \/ -_) ' \|  _/ '_/ _ \| / -_) _|  _|
-\___/ .__/\___|_||_|_| |_| \___// \___\__|\__|
-    |_|                       |__/
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
@@ -525,14 +432,7 @@ void MainWindow::openProject()
 }
 
 
-/*
-    _             ___          _        _
- __| |___ ___ ___| _ \_ _ ___ (_)___ __| |_
-/ _| / _ (_-</ -_)  _/ '_/ _ \| / -_) _|  _|
-\__|_\___/__/\___|_| |_| \___// \___\__|\__|
-                            |__/
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
@@ -542,14 +442,7 @@ void MainWindow::closeProject()
 }
 
 
-/*
-    _                             ___          _        _       ___              _
- __| |___ __ _ _ ___ __ _ ___ ___| _ \_ _ ___ (_)___ __| |_ ___/ __|___ _  _ _ _| |_
-/ _` / -_) _| '_/ -_) _` (_-</ -_)  _/ '_/ _ \| / -_) _|  _(_-< (__/ _ \ || | ' \  _|
-\__,_\___\__|_| \___\__,_/__/\___|_| |_| \___// \___\__|\__/__/\___\___/\_,_|_||_\__|
-                                            |__/
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
@@ -559,7 +452,7 @@ void MainWindow::decreaseProjectsCount()
 
     if (prm->projectsCount()==0) {
         // hide some actions in the file menu
-        ui->action_New_File->setEnabled(false);
+        ui->action_New_Network->setEnabled(false);
         ui->action_Close_File->setEnabled(false);
         ui->action_Close_Project->setEnabled(false);
         ui->action_Close_All_Projects->setEnabled(false);
@@ -575,14 +468,7 @@ void MainWindow::decreaseProjectsCount()
 }
 
 
-/*
- _                              ___          _        _       ___              _
-(_)_ _  __ _ _ ___ __ _ ___ ___| _ \_ _ ___ (_)___ __| |_ ___/ __|___ _  _ _ _| |_
-| | ' \/ _| '_/ -_) _` (_-</ -_)  _/ '_/ _ \| / -_) _|  _(_-< (__/ _ \ || | ' \  _|
-|_|_||_\__|_| \___\__,_/__/\___|_| |_| \___// \___\__|\__/__/\___\___/\_,_|_||_\__|
-                                          |__/
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
@@ -592,7 +478,7 @@ void MainWindow::increaseProjectsCount()
 
     if (prm->projectsCount()==1) {
         // hide some actions in the file menu
-        ui->action_New_File->setEnabled(true);
+        ui->action_New_Network->setEnabled(true);
         ui->action_Close_File->setEnabled(true);
         ui->action_Close_Project->setEnabled(true);
         ui->action_Close_All_Projects->setEnabled(true);
@@ -604,14 +490,7 @@ void MainWindow::increaseProjectsCount()
 }
 
 
-/*
-               _      _       ___                _   _       ___                        _ ___          _        _
- _  _ _ __  __| |__ _| |_ ___| _ \___ __ ___ _ _| |_| |_  _ / _ \ _ __  ___ _ _  ___ __| | _ \_ _ ___ (_)___ __| |_ ___
-| || | '_ \/ _` / _` |  _/ -_)   / -_) _/ -_) ' \  _| | || | (_) | '_ \/ -_) ' \/ -_) _` |  _/ '_/ _ \| / -_) _|  _(_-<
- \_,_| .__/\__,_\__,_|\__\___|_|_\___\__\___|_||_\__|_|\_, |\___/| .__/\___|_||_\___\__,_|_| |_| \___// \___\__|\__/__/
-     |_|                                               |__/      |_|                                |__/
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
@@ -651,14 +530,53 @@ void MainWindow::updateRecentlyOpenedProjects()
 }
 
 
-/*
-                    ___                _   ___          _        _
- ___ _ __  ___ _ _ | _ \___ __ ___ _ _| |_| _ \_ _ ___ (_)___ __| |_
-/ _ \ '_ \/ -_) ' \|   / -_) _/ -_) ' \  _|  _/ '_/ _ \| / -_) _|  _|
-\___/ .__/\___|_||_|_|_\___\__\___|_||_\__|_| |_| \___// \___\__|\__|
-    |_|                                              |__/
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void MainWindow::updateRecentlyOpenedFiles()
+{
+    std::cout << "updateRecentlyOpenedFiles() start" << std::endl;
 
-*/
+    QStringList recentlyOpenedFiles = settings->get("projects/recentlyOpenedFiles").toStringList();
+    int n = recentlyOpenedFiles.size();
+
+    // if there are no recently opened files, disable the submenu
+    if (n == 0) {
+        ui->menu_Open_Recent_File->setEnabled(false);
+    }
+    // else, fill corresponding number of items
+    else {
+        ui->menu_Open_Recent_File->setEnabled(true);
+
+        for (int i=0; i<5; i++) {
+            QAction *action = ui->menu_Open_Recent_File->actions().at(i);
+            action->setVisible(false);
+        }
+
+        for (int i=0; i<n; i++) {
+            QAction *action = ui->menu_Open_Recent_File->actions().at(i);
+            QString openedFileData = recentlyOpenedFiles[n-1-i];
+            QStringList aux = openedFileData.split("|");
+            QString openedFilePath = aux.value(0);
+            QString openedFileType = aux.value(1);
+
+            action->setVisible(true);
+            action->setText(" "+openedFilePath.split("/").last());
+            action->setData(openedFileData);
+            action->setIconVisibleInMenu(true);
+
+            if (openedFileType == "network") {
+                action->setIcon(QIcon(":/images/icons/network-32.png"));
+            }
+        }
+    }
+
+    std::cout << "updateRecentlyOpenedFiles() stop" << std::endl;
+}
+
+
+/* ===============================================================================================================*/
 /**
   *
   */
@@ -676,14 +594,27 @@ void MainWindow::openRecentProject(QAction *action)
 }
 
 
-/*
-    _               _   _ _ ___          _        _
- __| |___ ___ ___  /_\ | | | _ \_ _ ___ (_)___ __| |_ ___
-/ _| / _ (_-</ -_)/ _ \| | |  _/ '_/ _ \| / -_) _|  _(_-<
-\__|_\___/__/\___/_/ \_\_|_|_| |_| \___// \___\__|\__/__/
-                                      |__/
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void MainWindow::openRecentFile(QAction *action)
+{
+    std::cout << "openRecentFileStart" << std::endl;
 
-*/
+    QStringList aux = action->data().toString().split("|");
+    QString fileName = aux.value(0);
+    QString fileType = aux.value(1);
+
+    if (!fileName.isEmpty() && !fileType.isEmpty()) {
+        openFile(fileName, fileType);
+    }
+
+    std::cout << "openRecentFileStop" << std::endl;
+}
+
+
+/* ===============================================================================================================*/
 /**
   *
   */
@@ -697,6 +628,7 @@ void MainWindow::closeAllProjects()
 }
 
 
+/* ===============================================================================================================*/
 /**
   *
   */
@@ -707,6 +639,7 @@ void MainWindow::projectProperties()
 }
 
 
+/* ===============================================================================================================*/
 /**
   *
   */
@@ -729,10 +662,200 @@ void MainWindow::solve()
 }
 
 
+/* ===============================================================================================================*/
 /**
   *
   */
 void MainWindow::closeFile()
 {
-    ui->mdiArea->closeActiveSubWindow();;
+    // close the file
+    QString fileToClose;
+    QString fileType;
+    if (ui->mdiArea->subWindowList().size()==1) {
+        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->subWindowList()[0]->widget());
+        fileToClose = textEditor->currentFile();
+        fileType = textEditor->documentType();
+        ui->mdiArea->closeAllSubWindows();
+    }
+    else {
+        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->activeSubWindow()->widget());
+        fileToClose = textEditor->currentFile();
+        fileType = textEditor->documentType();
+        ui->mdiArea->closeActiveSubWindow();
+    }
+
+    // remove the Window menu entry
+    QList<QAction*> actions = ui->menu_Windows->actions();
+    for (int i=0; i<actions.size(); i++) {
+        if (actions[i]->data().toString().split("|").value(0) == fileToClose)
+            ui->menu_Windows->removeAction(actions[i]);
+    }
+    
+    // save the file to the list of the last five recently opened files
+    QStringList recentlyOpenedFiles = settings->get("projects/recentlyOpenedFiles").toStringList();
+    if (!recentlyOpenedFiles.contains(fileToClose+"|"+fileType)) {
+        if (recentlyOpenedFiles.size()==5) {
+            recentlyOpenedFiles.removeAt(0);
+        }
+        recentlyOpenedFiles.append(fileToClose+"|"+fileType);
+        settings->set("projects/recentlyOpenedFiles",recentlyOpenedFiles);
+    }
+    else {
+        int index = recentlyOpenedFiles.indexOf(fileToClose+"|"+fileType);
+        recentlyOpenedFiles.removeAt(index);
+        recentlyOpenedFiles.append(fileToClose+"|"+fileType);
+    }
+
+    // and "commit" the change
+    updateRecentlyOpenedFiles();
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void MainWindow::closeFile(const QString &filePath)
+{
+    // change focus to the corresponding subwindow if exists and close it
+    QMdiSubWindow *existing = Utils::findMdiSubWindow(filePath);
+    if (existing) {
+        ui->mdiArea->setActiveSubWindow(existing);
+        closeFile();
+    }
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void MainWindow::save()
+{
+    if (ui->mdiArea->subWindowList().size()==1) {
+        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->subWindowList()[0]->widget());
+        textEditor->save();
+    }
+    else {
+        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->activeSubWindow()->widget());
+        textEditor->save();
+    }
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void MainWindow::saveAs()
+{
+    if (ui->mdiArea->subWindowList().size()==1) {
+        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->subWindowList()[0]->widget());
+        textEditor->saveAs();
+    }
+    else {
+        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->activeSubWindow()->widget());
+        textEditor->saveAs();
+    }
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void MainWindow::saveAll()
+{
+    for (int i=0; i<ui->mdiArea->subWindowList().size(); i++) {
+        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->subWindowList()[i]->widget());
+        textEditor->save();
+    }
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void MainWindow::subWindowsStatesChanged()
+{
+    // get know the subwindows count
+    int n = ui->mdiArea->subWindowList().size();
+
+    // get know the number of the modified ones
+    int modified = 0;
+    for (int i=0; i<n; i++) {
+        if (ui->mdiArea->subWindowList()[i]->isWindowModified())
+            modified++;
+    }
+
+    std::cout << "modified: " << modified << std::endl;
+
+    // if there are no subwindows opened or none of the opened ones is modified disable save actions
+    if (n==0 || modified==0) {
+        ui->action_Save->setEnabled(false);
+        ui->action_Save_As->setEnabled(false);
+        ui->action_Save_All->setEnabled(false);
+    }
+    // else enable those functions again
+    else {
+        std::cout << "jdu tudy" << std::endl;
+        ui->action_Save->setEnabled(true);
+        ui->action_Save_As->setEnabled(true);
+        ui->action_Save_All->setEnabled(true);
+    }
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void MainWindow::activeSubWindowChanged(QMdiSubWindow *subWindow)
+{
+    // if doesn't deal the last subwindow, change the title
+    if (subWindow!=0) {
+        std::cout << "activeSubWindowChanged" << std::endl;
+
+        setWindowModified(subWindow->isWindowModified());
+        setWindowTitle(windowTitle().split(" - ").value(0).trimmed()+" - "+subWindow->windowTitle());
+        ui->action_Close_File->setEnabled(true);
+    }
+    // if it was last, disable the close file action
+    else {
+        ui->action_Close_File->setEnabled(false);
+    }
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void MainWindow::activateDesiredSubwindow(QAction *action)
+{
+    QStringList data = action->data().toString().split("|");
+
+    openFile(data.value(0), data.value(1));
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void MainWindow::print()
+{
+    QMessageBox::information(this, tr("Function not implemented!"), tr("In this version of QGama the Print functionality is not yet implemented, wait for the future releases..."));
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void MainWindow::newSetting()
+{
+    AdjustmentSettingDialog dialog(0,this);
+    dialog.exec();
 }

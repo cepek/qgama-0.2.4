@@ -68,6 +68,7 @@ namespace QGamaCore {
             ~MainWindow();
 
             void updateRecentlyOpenedProjects();
+            void updateRecentlyOpenedFiles();
             void increaseProjectsCount();
             void decreaseProjectsCount();
 
@@ -95,20 +96,28 @@ namespace QGamaCore {
             void makeConnections();
 
         public slots:
-            void openFile(const QString &file);
+            void openFile(const QString &file, const QString &fileType);
+            void closeFile(const QString &filePath);
 
         private slots:
             // File menu
             void newProject();
             void openProject();
             void openRecentProject(QAction *action);
+            void openRecentFile(QAction *action);
             void closeProject();
             void closeAllProjects();
             void projectProperties();
-
-            void newFile();
+            void newNetwork();
             void openFile();
             void closeFile();
+            void save();
+            void saveAs();
+            void saveAll();
+            void subWindowsStatesChanged();
+            void activeSubWindowChanged(QMdiSubWindow*);
+            void activateDesiredSubwindow(QAction*);
+            void print();
 
             // Edit Menu
             void pluginManagerDialog();
@@ -119,10 +128,10 @@ namespace QGamaCore {
 
             // Network Menu
             void solve();
+            void newSetting();
 
             // Window Menu
             void openProjectsDock();
-            void openOutputDock();
 
             // About Menu
             void aboutQGamaDialog();

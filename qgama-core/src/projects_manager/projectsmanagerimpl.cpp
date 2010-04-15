@@ -28,6 +28,7 @@
 #include "../utils/utils.h"
 #include "../factory.h"
 #include "../main_window/mainwindow.h"
+#include "file.h"
 
 #include <iostream>
 
@@ -42,14 +43,7 @@ ProjectsManagerImpl* ProjectsManagerImpl::self = 0;
 int ProjectsManagerImpl::pointersCount = 0;
 
 
-/*
- ___          _        _      __  __                            ___            _
-| _ \_ _ ___ (_)___ __| |_ __|  \/  |__ _ _ _  __ _ __ _ ___ _ |_ _|_ __  _ __| |
-|  _/ '_/ _ \| / -_) _|  _(_-< |\/| / _` | ' \/ _` / _` / -_) '_| || '  \| '_ \ |
-|_| |_| \___// \___\__|\__/__/_|  |_\__,_|_||_\__,_\__, \___|_||___|_|_|_| .__/_|
-           |__/                                    |___/                 |_|
-
-*/
+/* ===============================================================================================================*/
 /** Constructor.
   *
   * Initializes the reference to QGamaCore::Settings.
@@ -60,13 +54,7 @@ ProjectsManagerImpl::ProjectsManagerImpl() :
 }
 
 
-/*
- _         _
-(_)_ _  __| |_ __ _ _ _  __ ___
-| | ' \(_-<  _/ _` | ' \/ _/ -_)
-|_|_||_/__/\__\__,_|_||_\__\___|
-
-*/
+/* ===============================================================================================================*/
 /** Method returning a pointer to QGamaCore::ProjectsManagerImpl object.
   *
   * On the first call the instance is created, sequentially pointers to this instance are returned.
@@ -82,13 +70,7 @@ ProjectsManagerImpl* ProjectsManagerImpl::instance() {
 }
 
 
-/*
-         _
- _ _ ___| |___ __ _ ___ ___
-| '_/ -_) / -_) _` (_-</ -_)
-|_| \___|_\___\__,_/__/\___|
-
-*/
+/* ===============================================================================================================*/
 /** Actions that have to be done on the release.
   *
   * Descreases counter of pointers by one and if it dealed the last reference, deletes dynamicaly
@@ -106,15 +88,7 @@ void ProjectsManagerImpl::release()
 }
 
 
-/*
-
- /\/|__          _        _      __  __                            ___            _
-|/\/ _ \_ _ ___ (_)___ __| |_ __|  \/  |__ _ _ _  __ _ __ _ ___ _ |_ _|_ __  _ __| |
-   |  _/ '_/ _ \| / -_) _|  _(_-< |\/| / _` | ' \/ _` / _` / -_) '_| || '  \| '_ \ |
-   |_| |_| \___// \___\__|\__/__/_|  |_\__,_|_||_\__,_\__, \___|_||___|_|_|_| .__/_|
-              |__/                                    |___/                 |_|
-
-*/
+/* ===============================================================================================================*/
 /** Class destructor.
   *
   */
@@ -130,14 +104,7 @@ ProjectsManagerImpl::~ProjectsManagerImpl()
 }
 
 
-/*
-                 ___          _        _
- _ _  _____ __ _| _ \_ _ ___ (_)___ __| |_
-| ' \/ -_) V  V /  _/ '_/ _ \| / -_) _|  _|
-|_||_\___|\_/\_/|_| |_| \___// \___\__|\__|
-                           |__/
-
-*/
+/* ===============================================================================================================*/
 /** Creates the structure of a new project.
   *
   * That consists of creating the project directory in the user home (or at the other directory specified in preferences),
@@ -151,68 +118,12 @@ ProjectsManagerImpl::~ProjectsManagerImpl()
   */
 bool ProjectsManagerImpl::newProject(const QString &projectType, const QString &projectName, const QString &projectLocation)
 {
-    // get the pointer to the main window widget
-    MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
-
-    // get the project home directory
-    QDir directory(projectLocation);
-
-    // create it if doesn't exist
-    if (!directory.exists(directory.absolutePath()))
-        directory.mkpath(directory.path());
-
-    // if it deals of a single network project
-    if (projectType=="SingleNetworkProject") {
-        // create the project structure, inform about potencial problems
-        if (!directory.mkdir(projectName) || !directory.mkpath(projectName+"/Network") || !directory.mkpath(projectName+"/Solutions")) {
-            QMessageBox::critical( mw, QObject::tr("Project could not be created!"), QObject::tr("Probably there were insufficient permisions to create the project structure in the specified directory."));
-            return false;
-        }
-
-        // create project file, inform about potencial problems
-        QFile file(directory.absolutePath()+"/"+projectName+"/"+projectName+".qgp");
-        if (!file.open(QIODevice::WriteOnly)) {
-            QMessageBox::critical( mw, QObject::tr("Project could not be created!"), QObject::tr("Probably there were insufficient permisions to create the project structure in the specified directory."));
-            return false;
-        }
-
-        // initialize its xml content
-        QDomDocument projectDocument("qgamaproject");
-
-        QDomElement projectElement = projectDocument.createElement("qgamaprojectfile");
-        projectElement.setAttribute("name",projectName);
-        projectElement.setAttribute("type",projectType);
-        projectDocument.appendChild(projectElement);
-
-        QDomElement networksElement = projectDocument.createElement("networks");
-        projectElement.appendChild(networksElement);
-
-        QDomElement settingsElement = projectDocument.createElement("settings");
-        projectElement.appendChild(settingsElement);
-
-        QDomElement solutionsElement = projectDocument.createElement("solutions");
-        projectElement.appendChild(solutionsElement);
-
-        // write into file
-        QTextStream ts(&file);
-        ts << projectDocument.toString();
-
-        // close the file
-        file.close();
-    }
-
-    return true;
+    // call the static function of Project to create the corresponding project structure
+    return Project::createProjectStructure(projectType, projectName, projectLocation);
 }
 
 
-/*
-                    ___          _        _
- ___ _ __  ___ _ _ | _ \_ _ ___ (_)___ __| |_
-/ _ \ '_ \/ -_) ' \|  _/ '_/ _ \| / -_) _|  _|
-\___/ .__/\___|_||_|_| |_| \___// \___\__|\__|
-    |_|                       |__/
-
-*/
+/* ===============================================================================================================*/
 /** Opens a project based on the information included in specified project file.
   *
   * \param[in] projectFilePath     The absolute path to the project file (*.qgp)
@@ -243,12 +154,13 @@ bool ProjectsManagerImpl::openProject(const QString &projectFilePath, bool markA
         Project *project = new Project(projectName,projectLocation,projectFilePath);
         projects.append(project);
 
-        // read the project specifications
-        if (readFilesFromProjectXml(project)) {
-            // create treewidget's item
-            ptw->addProjectItem(projectName, projectLocation, markAsActive);
-            ptw->addFileItems(project);
-        }
+        // create project's treewidget item
+        ptw->addProjectItem(project);
+        ptw->addFileItems(project, false);
+
+        // mark opened project as active if desired
+        if (markAsActive)
+            setActiveProject(projectName, projectLocation);
 
         // save the project to be opened next time program is executed
         QStringList openedProjects = settings->get("projects/openedProjects").toStringList();
@@ -276,33 +188,33 @@ bool ProjectsManagerImpl::openProject(const QString &projectFilePath, bool markA
 
     // if was already opened
     else {
-        ptw->setProjectItemActive(projectName, projectLocation);
+        setActiveProject(projectName, projectLocation);
     }
 
     return true;
 }
 
 
-/*
-    _             ___          _        _
- __| |___ ___ ___| _ \_ _ ___ (_)___ __| |_
-/ _| / _ (_-</ -_)  _/ '_/ _ \| / -_) _|  _|
-\__|_\___/__/\___|_| |_| \___// \___\__|\__|
-                            |__/
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
 void ProjectsManagerImpl::closeProject(Project* project)
 {
-    std::cout << "closeProject START" << std::endl;
-
     // get the pointer to the projects tree widget
     ProjectsTreeWidget *ptw = qobject_cast<ProjectsTreeWidget*> (Utils::findWidget("treeWidget_Projects"));
 
     // delete the project tree widget entries
     ptw->deleteProjectItem(project->getName(), project->getLocation());
+
+    // get the pointer to the main window widget
+    MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
+
+    // close all projects networks
+    QList<File>& networks = project->getNetworks();
+    for (int i=0; i<networks.size(); i++) {
+        mw->closeFile(networks[i].getPath());
+    }
 
     // save the project to be opened next time program is executed
     QStringList openedProjects = settings->get("projects/openedProjects").toStringList();
@@ -312,7 +224,6 @@ void ProjectsManagerImpl::closeProject(Project* project)
             break;
         }
     }
-
     if (openedProjects.size()>0) {
         settings->set("projects/openedProjects",openedProjects);
     }
@@ -336,9 +247,6 @@ void ProjectsManagerImpl::closeProject(Project* project)
         recentlyOpenedProjects.append(project->getProjectFilePath());
     }
 
-    // get the pointer to the main window widget
-    MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
-
     // and "commit" the change
     mw->updateRecentlyOpenedProjects();
 
@@ -361,42 +269,24 @@ void ProjectsManagerImpl::closeProject(Project* project)
 }
 
 
-/*
-    _               _      _   _         ___          _        _
- __| |___ ___ ___  /_\  __| |_(_)_ _____| _ \_ _ ___ (_)___ __| |_
-/ _| / _ (_-</ -_)/ _ \/ _|  _| \ V / -_)  _/ '_/ _ \| / -_) _|  _|
-\__|_\___/__/\___/_/ \_\__|\__|_|\_/\___|_| |_| \___// \___\__|\__|
-                                                   |__/
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
 void ProjectsManagerImpl::closeActiveProject()
 {
-    std::cout << "closeActiveProject START" << std::endl;
-
+    // close active project
     closeProject(getActiveProject());
-
-    std::cout << "closeActiveProject STOP" << std::endl;
 }
 
 
-/*
-          _     _      _   _         ___          _        _
- __ _ ___| |_  /_\  __| |_(_)_ _____| _ \_ _ ___ (_)___ __| |_
-/ _` / -_)  _|/ _ \/ _|  _| \ V / -_)  _/ '_/ _ \| / -_) _|  _|
-\__, \___|\__/_/ \_\__|\__|_|\_/\___|_| |_| \___// \___\__|\__|
-|___/                                          |__/
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
 Project* ProjectsManagerImpl::getActiveProject()
 {
-    std::cout << "getActiveProject START" << std::endl;
-
+    // return active project if found, otherwise return 0
     for (int i=0; i<projects.size(); i++) {
         if (projects[i]->isActive()) {
             return projects[i];
@@ -407,19 +297,16 @@ Project* ProjectsManagerImpl::getActiveProject()
 }
 
 
-/*
-         _     _      _   _         ___          _        _
- ___ ___| |_  /_\  __| |_(_)_ _____| _ \_ _ ___ (_)___ __| |_
-(_-</ -_)  _|/ _ \/ _|  _| \ V / -_)  _/ '_/ _ \| / -_) _|  _|
-/__/\___|\__/_/ \_\__|\__|_|\_/\___|_| |_| \___// \___\__|\__|
-                                              |__/
-
-*/
+/* ===============================================================================================================*/
 /**
   *
   */
 void ProjectsManagerImpl::setActiveProject(const QString &projectName, const QString &projectLocation, bool slotCall)
 {
+    // get the pointer to the projects tree widget
+    ProjectsTreeWidget *ptw = qobject_cast<ProjectsTreeWidget*> (Utils::findWidget("treeWidget_Projects"));
+
+    // set all inactive but the one specified in function parameters
     for (int i=0; i<projects.size(); i++) {
         if (projects[i]->getName()==projectName && projects[i]->getLocation()==projectLocation) {
             projects[i]->setActive(true);
@@ -428,242 +315,25 @@ void ProjectsManagerImpl::setActiveProject(const QString &projectName, const QSt
             projects[i]->setActive(false);
     }
 
+    // save the active project into program settings
     QStringList data;
     data.append(projectName);
     data.append(projectLocation);
     settings->set("projects/activeProject",data);
 
-    if (!slotCall) {
-        // get the pointer to the projects tree widget
-        ProjectsTreeWidget *ptw = qobject_cast<ProjectsTreeWidget*> (Utils::findWidget("treeWidget_Projects"));
-
-        // "commit" changes in the projectsTreeWidget
+    // if this function wasn't called from projectsTreeWidget event, commit the change there
+    if (!slotCall)
         ptw->setProjectItemActive(projectName, projectLocation);
-    }
 }
 
 
-/*
-                 ___ _ _
- _ _  _____ __ _| __(_) |___
-| ' \/ -_) V  V / _|| | / -_)
-|_||_\___|\_/\_/|_| |_|_\___|
-
-*/
-/**
-  *
-  */
-bool ProjectsManagerImpl::newFile(const QString &fileToCreate, const QString &fileType)
-{
-    QStringList aux = fileToCreate.split("/");
-    QString fileName = aux.value(aux.size()-1);
-    QString fileCategory = aux.value(aux.size()-2).toLower();
-    QString projectName = aux.value(aux.size()-3);
-    QString projectLocation;
-    for (int i=0; i<aux.size()-3; i++)
-        projectLocation.append(aux[i]+"/");
-
-    // get the pointer to the main window widget
-    MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
-
-    // create the file, inform about potencial problems
-    QFile file(fileToCreate);
-    if (!file.open(QIODevice::WriteOnly)) {
-        QMessageBox::critical( mw, QObject::tr("File could not be created!"), QObject::tr("Probably there were insufficient permisions to create the file in the specified directory."));
-        return false;
-    }
-
-    // close the file
-    file.close();
-
-    // find the apropriate project
-    Project* project = getProject(projectName,projectLocation);
-
-    // if was found
-    if (project != 0) {       
-        // get the pointer to the projects tree widget
-        ProjectsTreeWidget *ptw = qobject_cast<ProjectsTreeWidget*> (Utils::findWidget("treeWidget_Projects"));
-
-        // add the file to the list of files mantained by project class
-        if (fileCategory == "networks") {
-            project->addNetwork(fileName+"|"+fileType+"|true");
-        }
-        else if (fileCategory == "settings") {
-            project->addSetting(fileName+"|true");
-        }
-
-        // add it to the project's xml and display it in projectstreewidget
-        if (writeFileToProjectXml(fileName, fileCategory, fileType, project->getProjectFilePath()))
-            ptw->addFileItems(project);
-
-        // open the project
-        mw->openFile(fileToCreate);
-    }
-
-    return true;
-}
-
-
-/**
-  *
-  */
-bool ProjectsManagerImpl::writeFileToProjectXml(const QString &fileName, const QString &fileCategory, const QString &fileType, const QString &projectFilePath)
-{
-    // get the pointer to the main window widget
-    MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
-
-    // open the project file
-    QFile file(projectFilePath);
-    if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::critical( mw, QObject::tr("Project file could not be opened!"), QObject::tr("Check out if it has set sufficient permissions to read from it."));
-        return false;
-    }
-
-    // initialize the document content from it
-    QDomDocument projectDocument("qgamaproject");
-    projectDocument.setContent(&file);
-    file.close();
-
-    // get main project element
-    QDomElement projectElement = projectDocument.documentElement();
-
-    // get category elements
-    QDomNode categoryNode = projectElement.firstChild();
-    while (!categoryNode.isNull()) {
-        QDomElement categoryElement = categoryNode.toElement();
-
-        if (categoryElement.tagName() == fileCategory) {
-            if (fileCategory == "networks") {
-                QDomElement fileElement = projectDocument.createElement("network");
-                fileElement.setAttribute("type",fileType);
-                fileElement.setAttribute("name",fileName);
-                fileElement.setAttribute("opened","true");
-                categoryElement.appendChild(fileElement);
-            }
-            else if (fileCategory == "settings") {
-                QDomElement fileElement = projectDocument.createElement("setting");
-                fileElement.setAttribute("name",fileName);
-                fileElement.setAttribute("opened","true");
-                categoryElement.appendChild(fileElement);
-            }
-            else if (fileCategory == "solutions") {
-                QDomElement fileElement = projectDocument.createElement("solution");
-                fileElement.setAttribute("name",fileName);
-                fileElement.setAttribute("opened","true");
-                categoryElement.appendChild(fileElement);
-            }
-        }
-
-        categoryNode =  categoryNode.nextSibling();
-    }
-
-    // open the project file
-    if (!file.open(QIODevice::WriteOnly)) {
-        QMessageBox::critical( mw, QObject::tr("Project file could not be opened!"), QObject::tr("Check out if it has set sufficient permissions to write to it."));
-        return false;
-    }
-
-    // "commit" it to the file
-    QTextStream ts(&file);
-    ts << projectDocument.toString();
-
-    // close the file
-    file.close();
-
-    return true;
-}
-
-
-/**
-  *
-  */
-bool ProjectsManagerImpl::readFilesFromProjectXml(Project *project)
-{
-    // get the pointer to the main window widget
-    MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
-
-    // open the project file
-    QFile file(project->getProjectFilePath());
-    if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::critical( mw, QObject::tr("Project file could not be opened!"), QObject::tr("Check out if it has set sufficient permissions to read from it."));
-        return false;
-    }
-
-    // initialize the document content from it
-    QDomDocument projectDocument("qgamaproject");
-    projectDocument.setContent(&file);
-    file.close();
-
-    // get main project element
-    QDomElement projectElement = projectDocument.documentElement();
-
-    // get category elements
-    QDomNode categoryNode = projectElement.firstChild();
-    while (!categoryNode.isNull()) {
-        QDomElement categoryElement = categoryNode.toElement();
-
-        if (categoryElement.tagName() == "networks") {
-            QDomNode networksNode = categoryElement.firstChild();
-
-            while (!networksNode.isNull()) {
-                QDomElement networksElement = networksNode.toElement();
-
-                project->addNetwork(networksElement.attribute("name")+"|"+networksElement.attribute("type")+"|"+networksElement.attribute("opened"));
-
-                networksNode = networksNode.nextSibling();
-            }
-        }
-
-        else if (categoryElement.tagName() == "settings") {
-            QDomNode settingsNode = categoryElement.firstChild();
-
-            while (!settingsNode.isNull()) {
-                QDomElement settingsElement = settingsNode.toElement();
-
-                project->addSetting(settingsElement.attribute("name")+"|"+settingsElement.attribute("opened"));
-
-                settingsNode = settingsNode.nextSibling();
-            }
-        }
-
-
-        else if (categoryElement.tagName() == "solutions") {
-            QDomNode solutionsNode = categoryElement.firstChild();
-
-            while (!solutionsNode.isNull()) {
-                QDomElement solutionsElement = solutionsNode.toElement();
-
-                project->addSolution(solutionsElement.attribute("name")+"|"+solutionsElement.attribute("opened"));
-
-                solutionsNode = solutionsNode.nextSibling();
-            }
-        }
-
-        categoryNode = categoryNode.nextSibling();
-    }
-
-    // open the project file
-    if (!file.open(QIODevice::WriteOnly)) {
-        QMessageBox::critical( mw, QObject::tr("Project file could not be opened!"), QObject::tr("Check out if it has set sufficient permissions to write to it."));
-        return false;
-    }
-
-    // "commit" it to the file
-    QTextStream ts(&file);
-    ts << projectDocument.toString();
-
-    // close the file
-    file.close();
-
-    return true;
-}
-
-
+/* ===============================================================================================================*/
 /**
   *
   */
 Project* ProjectsManagerImpl::getProject(const QString &name, const QString &location)
 {
+    // return the project with the specified name and location if found, otherwise return 0
     for (int i=0; i<projects.size(); ++i) {
         if (projects[i]->getName() == name && projects[i]->getLocation() == location)
             return projects[i];
@@ -673,15 +343,30 @@ Project* ProjectsManagerImpl::getProject(const QString &name, const QString &loc
 }
 
 
+/* ===============================================================================================================*/
 /**
   *
   */
 bool ProjectsManagerImpl::isProjectOpened(const QString &name, const QString &location)
 {
+    // return true if the project with the specified name is already opened and false if not
     for (int i=0; i<projects.size(); ++i) {
         if (projects[i]->getName() == name && projects[i]->getLocation() == location)
             return true;
     }
 
     return false;
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void ProjectsManagerImpl::updateProjectFilesEntries()
+{
+    // update project file XMLs for every opened project
+    for (int i=0; i<projectsCount(); i++) {
+        projects[i]->updateProjectFileEntries();
+    }
 }

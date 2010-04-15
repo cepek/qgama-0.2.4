@@ -32,6 +32,13 @@
 
 namespace QGamaCore {
 
+    class MainWindow;
+    class ProjectsTreeWidget;
+
+
+    /**
+      *
+      */
     class ProjectsManagerImpl : public ProjectsManager
     {
         friend class Factory;
@@ -57,11 +64,7 @@ namespace QGamaCore {
             /// Counter of the active pointers.
             static int pointersCount;
 
-            Project* getActiveProject();
-            Project* getProject(const QString &projectName, const QString &projectLocation);
             bool isProjectOpened(const QString &projectName, const QString &projectLocation);
-            bool writeFileToProjectXml(const QString &fileName, const QString &fileCategory, const QString &fileType, const QString &projectFilePath);
-            bool readFilesFromProjectXml(Project* project);
 
         protected:
 
@@ -71,14 +74,16 @@ namespace QGamaCore {
         public:
 
             bool newProject(const QString &projectType, const QString &projectName, const QString &projectLocation);
-            bool openProject(const QString &projectFilePath, bool markAsActive=true);
+            bool openProject(const QString &projectFilePath, bool markAsActive = true);
 
             void closeProject(Project *project);
             void closeActiveProject();
 
+            Project* getActiveProject();
+            Project* getProject(const QString &projectName, const QString &projectLocation);
             void setActiveProject(const QString &projectName, const QString &projectLocation, bool slotCall=false);
 
-            bool newFile(const QString &fileToCreate, const QString &fileType);
+            void updateProjectFilesEntries();
     }; // class ProjectsManagerImpl
 
 } // namespace QGamaCore

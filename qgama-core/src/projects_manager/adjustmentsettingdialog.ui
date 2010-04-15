@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>AdjustmentSettingDialog</class>
+ <widget class="QDialog" name="AdjustmentSettingDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>526</width>
+    <height>464</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Adjustment Setting</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_4">
+   <item>
+    <widget class="QGroupBox" name="groupBox_Adjustment_Setting">
+     <property name="title">
+      <string>Adjustment Setting:</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="label_Name">
+          <property name="text">
+           <string>&amp;Name:</string>
+          </property>
+          <property name="buddy">
+           <cstring>lineEdit_Name</cstring>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_Name"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QGroupBox" name="groupBox_Parameters">
+            <property name="title">
+             <string>Parameters:</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_Angles">
+               <property name="text">
+                <string>An&amp;gles</string>
+               </property>
+               <property name="buddy">
+                <cstring>comboBox_Angles</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QComboBox" name="comboBox_Angles">
+               <item>
+                <property name="text">
+                 <string>360</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>400</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_Covband">
+               <property name="text">
+                <string>&amp;Cov-Band</string>
+               </property>
+               <property name="buddy">
+                <cstring>spinBox_Covband</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSpinBox" name="spinBox_Covband">
+               <property name="minimum">
+                <number>-1</number>
+               </property>
+               <property name="maximum">
+                <number>200</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_Algorithm">
+               <property name="text">
+                <string>&amp;Algorithm</string>
+               </property>
+               <property name="buddy">
+                <cstring>comboBox_Algorithm</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QComboBox" name="comboBox_Algorithm">
+               <item>
+                <property name="text">
+                 <string>envelope</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>gso</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>cholesky</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>svd</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBox_Corrections">
+            <property name="title">
+             <string>Corrections:</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0" colspan="2">
+              <widget class="QCheckBox" name="checkBox_Apply_Corrections">
+               <property name="text">
+                <string>&amp;Apply corrections</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_Latitude">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>&amp;Latitude</string>
+               </property>
+               <property name="buddy">
+                <cstring>lineEdit_Latitude</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QLineEdit" name="lineEdit_Latitude">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_Ellipsoid">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <property name="text">
+                <string>&amp;Ellipsoid</string>
+               </property>
+               <property name="buddy">
+                <cstring>comboBox_Ellipsoid</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QComboBox" name="comboBox_Ellipsoid">
+               <property name="enabled">
+                <bool>false</bool>
+               </property>
+               <item>
+                <property name="text">
+                 <string>airy</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>airy_mod</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>apl1965</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>andrae1876</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>australian</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>bessel</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>bessel_nam</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>clarke1858a</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>clarke1858b</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>clarke1866</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>clarke1880</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>clarke1880m</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>cpm1799</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>delambre</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>engelis</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>everest1830</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>everest1848</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>everest1856</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>everest1869</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>everest_ss</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>fisher1960</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>fisher1960m</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>fischer1968</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>grs67</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>grs80</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>hayford</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>helmert</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>hough</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>iau76</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>international</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>kaula</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>krassovski</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>lerch</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>mprts</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>mercury</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>merit</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>new_intl</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>nwl1965</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>plessis</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>se_asia</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>sgs85</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>schott</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>sa1969</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>walbeck</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>wgs60</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>wgs66</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>wgs72</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>wgs84</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="Line" name="line">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QGroupBox" name="groupBox_Results">
+            <property name="title">
+             <string>Results:</string>
+            </property>
+            <layout class="QGridLayout" name="gridLayout">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_Language">
+               <property name="text">
+                <string>&amp;Language</string>
+               </property>
+               <property name="buddy">
+                <cstring>comboBox_Language</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QComboBox" name="comboBox_Language">
+               <item>
+                <property name="text">
+                 <string>ca</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>cz</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>du</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>en</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>hu</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>fi</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>fr</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>ru</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>ua</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_Encoding">
+               <property name="text">
+                <string>&amp;Encoding</string>
+               </property>
+               <property name="buddy">
+                <cstring>comboBox_Encoding</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QComboBox" name="comboBox_Encoding">
+               <item>
+                <property name="text">
+                 <string>utf-8</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>iso-8859-2</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>iso-8859-2-flat</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>cp-1250</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>cp-1251</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QCheckBox" name="checkBox_XML">
+               <property name="text">
+                <string>XML</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_Format">
+               <property name="text">
+                <string>&amp;Format:</string>
+               </property>
+               <property name="buddy">
+                <cstring>checkBox_XML</cstring>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QCheckBox" name="checkBox_TXT">
+               <property name="text">
+                <string>TXT</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1">
+              <widget class="QCheckBox" name="checkBox_HTML">
+               <property name="text">
+                <string>HTML</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLabel" name="label_Warning_Icon">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="pixmap">
+           <pixmap resource="../qgama-core.qrc">:/images/icons/fileinfo-16.png</pixmap>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_Warning">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>1</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">background:yellow;</string>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Help|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../qgama-core.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>AdjustmentSettingDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>262</x>
+     <y>441</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>262</x>
+     <y>231</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>AdjustmentSettingDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>262</x>
+     <y>441</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>262</x>
+     <y>231</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

@@ -144,7 +144,9 @@ void NewProjectDialog::createProject()
     QString projectFilePath = folder.absolutePath()+"/"+projectName+".qgp";
 
     prm->newProject(projectType, projectName, projectLocation);
+    std::cout << "PROJEKT VYTVOREN" << std::endl;
     prm->openProject(projectFilePath);
+    std::cout << "PROJEKT OTEVREN" << std::endl;
 
     accept();
 }

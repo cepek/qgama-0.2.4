@@ -24,46 +24,86 @@
 
 #include <QString>
 #include <QStringList>
+#include <QDomDocument>
+
+#include "adjustmentsetting.h"
+#include "file.h"
+
 
 namespace QGamaCore {
 
+    class MainWindow;
+    class ProjectsTreeWidget;
+
+
+    /**
+      *
+      */
     class Project
     {
         private:
+            QDomDocument xml;
+
             QString name;
             QString location;
             QString projectFilePath;
+
             QString type;
             bool active;
 
-            QStringList networks;
-            QStringList settings;
-            QStringList solutions;
+            QList<File> networks;
+            QList<AdjustmentSetting> adjustmentSettings;
+
+            int lastNetworksId;
+            int lastSettingsId;
+            int lastSolutionsId;
+
+            bool loadXml();
+
+            void createNetworkEntry(const File& network);
+            void updateNetworkEntry(const File& network);
+            void createAdjustmentSettingEntry(const AdjustmentSetting &as);
+            void updateAdjustmentSettingEntry(const AdjustmentSetting &as);
+
+            QGamaCore::MainWindow *mw;
+            QGamaCore::ProjectsTreeWidget *ptw;
+
+            static bool createSingleNetworkProjectStructure(const QString &type, const QString &name, const QString &location);
 
         public:
-            Project() { active=false; }
             Project(const QString &name, const QString &location, const QString &projectFilePath);
+            ~Project();
 
             // setters
-            void setActive(bool active) { this->active = active; }
-            void setType(const QString &type) { this->type = type; }
-            void setName(const QString &name) { this->name = name; }
-            void setLocation(const QString &location) { this->location = location; }
+            void setActive(bool active)                             { this->active = active; }
+            void setType(const QString &type)                       { this->type = type; }
+            void setName(const QString &name)                       { this->name = name; }
+            void setLocation(const QString &location)               { this->location = location; }
             void setProjectFilePath(const QString &projectFilePath) { this->projectFilePath = projectFilePath; }
 
             // getters
-            bool isActive() { return active; }
-            QString getType() { return type; }
-            QString getLocation() { return location; }
-            QString getName() { return name; }
-            QString getProjectFilePath() { return projectFilePath; }
-            QStringList& getNetworks() { return networks; }
-            QStringList& getSettings() { return settings; }
-            QStringList& getSolutions() { return solutions; }
+            bool    isActive()              { return active; }
+            QString getType()               { return type; }
+            QString getLocation()           { return location; }
+            QString getName()               { return name; }
+            QString getProjectFilePath()    { return projectFilePath; }
+            int getNextNetworksId()         { return ++lastNetworksId; }
+            int getNextSettingsId()         { return ++lastSettingsId; }
+            int getNextSolutionsId()        { return ++lastSolutionsId; }
 
-            void addNetwork(const QString &network) { networks.append(network); }
-            void addSetting(const QString &setting) { settings.append(setting); }
-            void addSolution(const QString &solution) { settings.append(solution    ); }
+            QList<File>& getNetworks()      { return networks; }
+            File*        getNetwork(int id);
+            bool         newNetwork(const QString &filePath);
+            bool         importNetwork(const QString &filePath);
+            bool         linkNetwork(const QString &filePath);
+
+            QList<AdjustmentSetting>& getAdjustmentSettings() { return adjustmentSettings; }
+            AdjustmentSetting*        getAdjustmentSetting(int id);
+            bool                      newAdjustmentSetting(AdjustmentSetting &as);
+
+            // others
+            void updateProjectFileEntries();
+            static bool createProjectStructure(const QString &type, const QString &name, const QString &location);
     }; // class Project
 
 } // namespace QGamaCore

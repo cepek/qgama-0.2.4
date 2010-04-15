@@ -1,0 +1,13 @@
+*.o
+*.log
+.moc
+.obj
+.rcc
+*.a
+ui
+scripts/version
+bin
+config.h
+Makefile*
+*.pro.user
+*~

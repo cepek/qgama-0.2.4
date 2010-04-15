@@ -43,15 +43,17 @@ namespace QGamaCore {
             QList<Project*> getProjectsList() { return projects; }
             int projectsCount() { return projects.size(); }
 
+            virtual Project* getProject(const QString &projectName, const QString &projectLocation) = 0;
+            virtual Project* getActiveProject() = 0;
+            virtual void setActiveProject(const QString &projectName, const QString &projectLocation, bool slotCall=false) = 0;
+
             virtual bool newProject(const QString &projectType, const QString &projectName, const QString &projectLocation) = 0;
-            virtual bool openProject(const QString &projectFilePath, bool markAsActive=true) = 0;
+            virtual bool openProject(const QString &projectFilePath, bool markAsActive = true) = 0;
 
             virtual void closeProject(Project *project) = 0;
             virtual void closeActiveProject() = 0;
 
-            virtual void setActiveProject(const QString &projectName, const QString &projectLocation, bool slotCall=false) = 0;
-
-            virtual bool newFile(const QString &fileToCreate, const QString &fileType) = 0;
+            virtual void updateProjectFilesEntries() = 0;
     }; // class ProjectsManager
 
 } // namespace QGamaCore

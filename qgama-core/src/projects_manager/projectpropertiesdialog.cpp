@@ -1,6 +1,10 @@
 #include "projectpropertiesdialog.h"
 #include "ui_projectpropertiesdialog.h"
 
+
+/**
+  *
+  */
 ProjectPropertiesDialog::ProjectPropertiesDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ProjectPropertiesDialog)
@@ -8,11 +12,19 @@ ProjectPropertiesDialog::ProjectPropertiesDialog(QWidget *parent) :
     ui->setupUi(this);
 }
 
+
+/**
+  *
+  */
 ProjectPropertiesDialog::~ProjectPropertiesDialog()
 {
     delete ui;
 }
 
+
+/**
+  *
+  */
 void ProjectPropertiesDialog::changeEvent(QEvent *e)
 {
     QDialog::changeEvent(e);
