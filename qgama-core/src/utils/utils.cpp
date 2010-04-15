@@ -19,16 +19,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <QApplication>
-#include <QList>
-#include <QPluginLoader>
-#include <QObject>
-#include <QMdiArea>
-#include <QMdiSubWindow>
-#include <QFileInfo>
+#include <QtGui>
 
 #include "utils.h"
-#include "../main_window/texteditor.h"
+#include "../main_window/document.h"
 
 #include <iostream>
 
@@ -101,7 +95,7 @@ QMdiSubWindow* Utils::findMdiSubWindow(const QString &file)
 
     // iterate through subwindows list, find the corresponding file
     for (QList<QMdiSubWindow*>::iterator i=subWindows.begin(); i!=subWindows.end(); ++i) {
-        TextEditor *mdiChild = qobject_cast<TextEditor*> ((*i)->widget());
+        Document *mdiChild = qobject_cast<Document*> ((*i)->widget());
         // if exists, return its pointer
         if (mdiChild->currentFile() == filePath)
             return *i;

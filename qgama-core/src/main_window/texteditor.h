@@ -30,9 +30,6 @@
 
 namespace QGamaCore {
 
-    class MainWindow;
-
-
     /**
       *
       */
@@ -43,24 +40,14 @@ namespace QGamaCore {
         public:
             TextEditor(const QString &type);
             ~TextEditor();
-
-            bool loadFile(const QString &fileName);
-
-        protected:
-            void closeEvent(QCloseEvent *event);
-
-        signals:
-            void saveStateChanged();
-
-        private slots:
-            virtual void setModified();
-
-        protected:
-            virtual bool maybeSave();
-            XmlSyntaxHighlighter highlighter;
+            virtual QWidget* getWidget();
+            virtual QString getContent();
 
         protected:
             QTextEdit editor;
+            XmlSyntaxHighlighter highlighter;
+
+            virtual void setContent(const QString &content);
     }; // class TextEditor
 
 } // namespace QGamaCore

@@ -5,10 +5,10 @@
 #include <QWidget>
 #include <QObject>
 
-#include "mainwindow.h"
-
 
 namespace QGamaCore {
+
+    class MainWindow;
 
 
     /**
@@ -19,41 +19,49 @@ namespace QGamaCore {
         Q_OBJECT
 
         public:
-            Document();
+            Document(const QString &type);
             ~Document();
 
-
             bool loadFile(const QString &fileName);
+
             bool save();
             bool saveAs();
             bool saveFile(const QString &fileName);
+
             QString userFriendlyCurrentFile();
             QString currentFile() { return curFile; }
             QString documentType() { return docType; }
-            virtual QString getContents() { return ""; }
-
-        protected:
-            void closeEvent(QCloseEvent *event);
+            virtual QString getContent() = 0;
+            virtual QWidget* getWidget() = 0;
 
         signals:
             void saveStateChanged();
 
+        public slots:
+            void showMaximized() { getWidget()->showMaximized(); }
+            void close() { getWidget()->close(); }
+
         protected slots:
             void modificationChanged(bool changed);
-        protected:
-            virtual bool isModified() { return false; }
 
         private:
             bool maybeSave();
+
             void setCurrentFile(const QString &fileName);
 
             QString curFile;
             QString docType;
 
         protected:
-            QString strippedName(const QString &fullFileName);
-            MainWindow *mw;
+            void closeEvent(QCloseEvent *event);
 
+            virtual bool isModified() { return false; }
+
+            QString strippedName(const QString &fullFileName);
+
+            virtual void setContent(const QString &content) = 0;
+
+            MainWindow *mw;
     }; // class Document
 
 } // namespace QGamaCore

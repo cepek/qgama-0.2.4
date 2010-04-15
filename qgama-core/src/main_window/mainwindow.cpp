@@ -30,6 +30,7 @@
 #include "aboutgnugamadialog.h"
 #include "../projects_manager/newprojectdialog.h"
 #include "../projects_manager/newnetworkwizard.h"
+#include "document.h"
 #include "texteditor.h"
 #include "../utils/utils.h"
 #include "../factory.h"
@@ -381,7 +382,7 @@ void MainWindow::openFile(const QString &file, const QString &fileType)
 
             // add subwindow and open the file in it
             TextEditor *child = new TextEditor("network");
-            QMdiSubWindow *subWindow = ui->mdiArea->addSubWindow(child);
+            QMdiSubWindow *subWindow = ui->mdiArea->addSubWindow(child->getWidget());
             if (child->loadFile(file))
                 child->showMaximized();
             else
@@ -672,13 +673,13 @@ void MainWindow::closeFile()
     QString fileToClose;
     QString fileType;
     if (ui->mdiArea->subWindowList().size()==1) {
-        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->subWindowList()[0]->widget());
+        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->subWindowList()[0]->widget());
         fileToClose = textEditor->currentFile();
         fileType = textEditor->documentType();
         ui->mdiArea->closeAllSubWindows();
     }
     else {
-        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->activeSubWindow()->widget());
+        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->activeSubWindow()->widget());
         fileToClose = textEditor->currentFile();
         fileType = textEditor->documentType();
         ui->mdiArea->closeActiveSubWindow();
@@ -733,11 +734,11 @@ void MainWindow::closeFile(const QString &filePath)
 void MainWindow::save()
 {
     if (ui->mdiArea->subWindowList().size()==1) {
-        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->subWindowList()[0]->widget());
+        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->subWindowList()[0]->widget());
         textEditor->save();
     }
     else {
-        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->activeSubWindow()->widget());
+        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->activeSubWindow()->widget());
         textEditor->save();
     }
 }
@@ -750,11 +751,11 @@ void MainWindow::save()
 void MainWindow::saveAs()
 {
     if (ui->mdiArea->subWindowList().size()==1) {
-        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->subWindowList()[0]->widget());
+        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->subWindowList()[0]->widget());
         textEditor->saveAs();
     }
     else {
-        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->activeSubWindow()->widget());
+        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->activeSubWindow()->widget());
         textEditor->saveAs();
     }
 }
@@ -767,7 +768,7 @@ void MainWindow::saveAs()
 void MainWindow::saveAll()
 {
     for (int i=0; i<ui->mdiArea->subWindowList().size(); i++) {
-        TextEditor *textEditor = qobject_cast<TextEditor*> (ui->mdiArea->subWindowList()[i]->widget());
+        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->subWindowList()[i]->widget());
         textEditor->save();
     }
 }
