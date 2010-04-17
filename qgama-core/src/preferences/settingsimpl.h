@@ -19,8 +19,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef SETTINGSIMPL_H
-#define SETTINGSIMPL_H
+#ifndef QGAMACORE__SETTINGSIMPL_H
+#define QGAMACORE__SETTINGSIMPL_H
 
 #include <QMap>
 #include <QSettings>
@@ -75,4 +75,4 @@ namespace QGamaCore {
 } // namespace QGamaCore
 
 
-#endif // QGAMASETTINGSIMPL_H
+#endif // QGAMACORE__QGAMASETTINGSIMPL_H

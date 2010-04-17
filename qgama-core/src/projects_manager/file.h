@@ -1,5 +1,5 @@
-#ifndef FILE_H
-#define FILE_H
+#ifndef QGAMACORE__FILE_H
+#define QGAMACORE__FILE_H
 
 #include <QString>
 
@@ -46,4 +46,4 @@ namespace QGamaCore {
 } // namespace QGamaCore
 
 
-#endif // FILE_H
+#endif // QGAMACORE__FILE_H

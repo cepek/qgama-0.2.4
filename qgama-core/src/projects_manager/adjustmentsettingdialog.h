@@ -1,5 +1,5 @@
-#ifndef ADJUSTMENTSETTINGDIALOG_H
-#define ADJUSTMENTSETTINGDIALOG_H
+#ifndef QGAMACORE__ADJUSTMENTSETTINGDIALOG_H
+#define QGAMACORE__ADJUSTMENTSETTINGDIALOG_H
 
 #include <QDialog>
 #include <ui_adjustmentsettingdialog.h>
@@ -51,4 +51,4 @@ namespace QGamaCore {
 
 } // namespace QGamaCore
 
-#endif // ADJUSTMENTSETTINGDIALOG_H
+#endif // QGAMACORE__ADJUSTMENTSETTINGDIALOG_H

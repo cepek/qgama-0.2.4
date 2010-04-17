@@ -1,5 +1,5 @@
-#ifndef HTMLVIEWER_H
-#define HTMLVIEWER_H
+#ifndef QGAMACORE__HTMLVIEWER_H
+#define QGAMACORE__HTMLVIEWER_H
 
 #include <QWebView>
 #include <QString>
@@ -24,4 +24,4 @@ namespace QGamaCore {
 
 } // namespace
 
-#endif // HTMLVIEWER_H
+#endif // QGAMACORE__HTMLVIEWER_H

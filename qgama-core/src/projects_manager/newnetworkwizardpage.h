@@ -19,8 +19,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef NEWNETWORKWIZARDPAGE_H
-#define NEWNETWORKWIZARDPAGE_H
+#ifndef QGAMACORE__NEWNETWORKWIZARDPAGE_H
+#define QGAMACORE__NEWNETWORKWIZARDPAGE_H
 
 #include <QWizardPage>
 #include <ui_newnetworkwizardpage.h>
@@ -64,4 +64,4 @@ namespace QGamaCore {
 } // namespace QGamaCore
 
 
-#endif // NEWNETWORKWIZARDPAGE_H
+#endif // QGAMACORE__NEWNETWORKWIZARDPAGE_H

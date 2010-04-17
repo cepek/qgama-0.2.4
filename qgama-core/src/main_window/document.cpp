@@ -3,7 +3,7 @@
 #include "mainwindow.h"
 
 #include "document.h"
-#include "../utils/utils.h"
+#include "../utils/applicationcomponentprovider.h"
 
 using namespace QGamaCore;
 
@@ -14,8 +14,9 @@ using namespace QGamaCore;
   */
 Document::Document(const QString &type) :
     docType(type),
-    mw(qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow")))
+    mw(ApplicationComponentProvider::getMainWindow())
 {
+    setAttribute(Qt::WA_DeleteOnClose);
     connect(this, SIGNAL(saveStateChanged()), mw, SLOT(subWindowsStatesChanged()));
 }
 
@@ -47,8 +48,10 @@ QString Document::strippedName(const QString &fullFileName)
 
 void Document::modificationChanged(bool changed) {
     // add asterisk to window title
-    getWidget()->setWindowModified(changed);
-    mw->setWindowModified(changed);
+    if (!curFile.isEmpty()) {
+        setWindowModified(changed);
+        mw->setWindowModified(changed);
+    }
 
     emit saveStateChanged();
 }
@@ -63,8 +66,9 @@ void Document::setCurrentFile(const QString &fileName)
     curFile = QFileInfo(fileName).canonicalFilePath();
 
     //document()->setModified(false);
+    setDocumentModified(false);
 
-    getWidget()->setWindowTitle(userFriendlyCurrentFile()+"[*]");
+    setWindowTitle(userFriendlyCurrentFile()+"[*]");
     mw->setWindowTitle(mw->windowTitle().split(" - ").value(0).trimmed()+" - "+userFriendlyCurrentFile()+"[*]");
 
     emit modificationChanged(false);
@@ -122,7 +126,7 @@ bool Document::save()
 bool Document::saveAs()
 {
     // save as dialog
-    QString fileName = QFileDialog::getSaveFileName(getWidget(), tr("Save As"), curFile);
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save As"), curFile);
     if (fileName.isEmpty())
         return false;
 
@@ -136,6 +140,7 @@ bool Document::saveAs()
   */
 bool Document::saveFile(const QString &fileName)
 {
+    qDebug() << "Document::saveFile() START";
     // try to open the file
     QFile file(fileName);
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
@@ -164,7 +169,7 @@ bool Document::saveFile(const QString &fileName)
   */
 bool Document::maybeSave()
 {
-    if (isModified()) {
+    if (isDocumentModified()) {
         QMessageBox::StandardButton ret = QMessageBox::warning(0, tr("Unsaved changes!"), tr("'%1' has been modified.\nDo you want to save your changes?") .arg(userFriendlyCurrentFile()), QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
         if (ret == QMessageBox::Save)
             return save();

@@ -25,7 +25,7 @@
 #include "projectsmanagerimpl.h"
 #include "projectstreewidget.h"
 #include "../../../config.h"
-#include "../utils/utils.h"
+#include "../utils/applicationcomponentprovider.h"
 #include "../factory.h"
 #include "../main_window/mainwindow.h"
 #include "file.h"
@@ -134,7 +134,7 @@ bool ProjectsManagerImpl::newProject(const QString &projectType, const QString &
 bool ProjectsManagerImpl::openProject(const QString &projectFilePath, bool markAsActive)
 {
     // get the pointer to the projects tree widget
-    ProjectsTreeWidget *ptw = qobject_cast<ProjectsTreeWidget*> (Utils::findWidget("treeWidget_Projects"));
+    ProjectsTreeWidget *ptw = ApplicationComponentProvider::getProjectsTreeWidget();
 
     // get the project location and name from the projectFile absolute path
     QStringList path = projectFilePath.split("/");
@@ -170,7 +170,7 @@ bool ProjectsManagerImpl::openProject(const QString &projectFilePath, bool markA
         }
 
         // get the pointer to the main window widget
-        MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
+        MainWindow *mw = ApplicationComponentProvider::getMainWindow();
 
         // increase the counter of the opened projects
         mw->increaseProjectsCount();
@@ -202,13 +202,13 @@ bool ProjectsManagerImpl::openProject(const QString &projectFilePath, bool markA
 void ProjectsManagerImpl::closeProject(Project* project)
 {
     // get the pointer to the projects tree widget
-    ProjectsTreeWidget *ptw = qobject_cast<ProjectsTreeWidget*> (Utils::findWidget("treeWidget_Projects"));
+    ProjectsTreeWidget *ptw = ApplicationComponentProvider::getProjectsTreeWidget();
 
     // delete the project tree widget entries
     ptw->deleteProjectItem(project->getName(), project->getLocation());
 
     // get the pointer to the main window widget
-    MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
+    MainWindow *mw = ApplicationComponentProvider::getMainWindow();
 
     // close all projects networks
     QList<File>& networks = project->getNetworks();
@@ -304,7 +304,7 @@ Project* ProjectsManagerImpl::getActiveProject()
 void ProjectsManagerImpl::setActiveProject(const QString &projectName, const QString &projectLocation, bool slotCall)
 {
     // get the pointer to the projects tree widget
-    ProjectsTreeWidget *ptw = qobject_cast<ProjectsTreeWidget*> (Utils::findWidget("treeWidget_Projects"));
+    ProjectsTreeWidget *ptw = ApplicationComponentProvider::getProjectsTreeWidget();
 
     // set all inactive but the one specified in function parameters
     for (int i=0; i<projects.size(); i++) {

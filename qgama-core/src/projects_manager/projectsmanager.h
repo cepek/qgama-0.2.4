@@ -19,8 +19,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PROJECTSMANAGER_H
-#define PROJECTSMANAGER_H
+#ifndef QGAMACORE__PROJECTSMANAGER_H
+#define QGAMACORE__PROJECTSMANAGER_H
 
 #include <QList>
 #include <QTreeWidgetItem>
@@ -59,4 +59,4 @@ namespace QGamaCore {
 } // namespace QGamaCore
 
 
-#endif // PROJECTSMANAGER_H
+#endif // QGAMACORE__PROJECTSMANAGER_H

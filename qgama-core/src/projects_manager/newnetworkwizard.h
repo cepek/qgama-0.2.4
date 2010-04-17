@@ -1,5 +1,5 @@
-#ifndef NEWNETWORKWIZARD_H
-#define NEWNETWORKWIZARD_H
+#ifndef QGAMACORE__NEWNETWORKWIZARD_H
+#define QGAMACORE__NEWNETWORKWIZARD_H
 
 #include <QWizard>
 
@@ -24,4 +24,4 @@ namespace QGamaCore {
 
 } // namespace QGamaCore
 
-#endif // NEWNETWORKWIZARD_H
+#endif // QGAMACORE__NEWNETWORKWIZARD_H

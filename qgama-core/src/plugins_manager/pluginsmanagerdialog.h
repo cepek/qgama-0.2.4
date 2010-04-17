@@ -19,8 +19,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PLUGINSMANAGERDIALOG_H
-#define PLUGINSMANAGERDIALOG_H
+#ifndef QGAMACORE__PLUGINSMANAGERDIALOG_H
+#define QGAMACORE__PLUGINSMANAGERDIALOG_H
 
 #include <QDialog>
 #include <QMap>
@@ -75,4 +75,4 @@ namespace QGamaCore {
 } // namespace QGamaCore
 
 
-#endif // PLUGINSMANAGERDIALOG_H
+#endif // QGAMACORE__PLUGINSMANAGERDIALOG_H

@@ -19,8 +19,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef QGAMACORE__MAINWINDOW_H
+#define QGAMACORE__MAINWINDOW_H
 
 #include <QMainWindow>
 #include <ui_mainwindow.h>
@@ -118,6 +118,7 @@ namespace QGamaCore {
             void activeSubWindowChanged(QMdiSubWindow*);
             void activateDesiredSubwindow(QAction*);
             void print();
+            void updateFileMenuEntries(Project *project);
 
             // Edit Menu
             void pluginManagerDialog();
@@ -143,4 +144,4 @@ namespace QGamaCore {
 } // namespace QGamaCore
 
 
-#endif // MAINWINDOW_H
+#endif // QGAMACORE__MAINWINDOW_H

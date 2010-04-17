@@ -60,7 +60,8 @@ TARGET = qgama
 QT += xml \
     xmlpatterns \
     webkit
-#CONFIG += release
+
+# CONFIG += release
 TEMPLATE = app
 DESTDIR = ../../bin
 INCLUDEPATH += ui \
@@ -73,7 +74,7 @@ SOURCES += main.cpp \
     preferences/preferencesdialog.cpp \
     plugins_manager/pluginsmanagerdialog.cpp \
     plugins_manager/pluginsmanagerimpl.cpp \
-    utils/utils.cpp \
+    utils/applicationcomponentprovider.cpp \
     utils/xmlsyntaxhighlighter.cpp \
     main_window/mainwindow.cpp \
     main_window/aboutqgamadialog.cpp \
@@ -90,7 +91,9 @@ SOURCES += main.cpp \
     projects_manager/newnetworkwizardpage3.cpp \
     projects_manager/adjustmentsettingdialog.cpp \
     main_window/htmlviewer.cpp \
-    main_window/document.cpp
+    main_window/document.cpp \
+    adjustment/gamalocal.cpp \
+    network/solvenetworkdialog.cpp
 HEADERS += factory.h \
     preferences/settings.h \
     preferences/settingsimpl.h \
@@ -99,7 +102,7 @@ HEADERS += factory.h \
     plugins_manager/pluginsmanager.h \
     plugins_manager/pluginsmanagerimpl.h \
     plugins_manager/plugininterface.h \
-    utils/utils.h \
+    utils/applicationcomponentprovider.h \
     utils/xmlsyntaxhighlighter.h \
     main_window/mainwindow.h \
     main_window/aboutqgamadialog.h \
@@ -119,7 +122,10 @@ HEADERS += factory.h \
     projects_manager/adjustmentsettingdialog.h \
     projects_manager/file.h \
     main_window/htmlviewer.h \
-    main_window/document.h
+    main_window/document.h \
+    adjustment/gamalocal.h \
+    network/solvenetworkdialog.h \
+    exception.h
 FORMS += preferences/preferencesdialog.ui \
     plugins_manager/pluginsmanagerdialog.ui \
     main_window/mainwindow.ui \
@@ -130,7 +136,8 @@ FORMS += preferences/preferencesdialog.ui \
     projects_manager/newnetworkwizardpage2.ui \
     projects_manager/projectpropertiesdialog.ui \
     projects_manager/newnetworkwizardpage3.ui \
-    projects_manager/adjustmentsettingdialog.ui
+    projects_manager/adjustmentsettingdialog.ui \
+    network/solvenetworkdialog.ui
 RESOURCES += qgama-core.qrc
 TRANSLATIONS = ../translations/qgamacore_cs_CZ.ts
 UI_DIR = ui

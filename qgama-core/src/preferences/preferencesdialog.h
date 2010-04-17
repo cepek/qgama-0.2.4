@@ -19,8 +19,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PREFERENCESDIALOG_H
-#define PREFERENCESDIALOG_H
+#ifndef QGAMACORE__PREFERENCESDIALOG_H
+#define QGAMACORE__PREFERENCESDIALOG_H
 
 #include <QDialog>
 #include <ui_preferencesdialog.h>
@@ -72,4 +72,4 @@ namespace QGamaCore {
 } // namespace QGamaCore
 
 
-#endif // PREFERENCESDIALOG_H
+#endif // QGAMACORE__PREFERENCESDIALOG_H

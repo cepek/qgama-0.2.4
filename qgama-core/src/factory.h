@@ -1,5 +1,5 @@
-#ifndef FACTORY_H
-#define FACTORY_H
+#ifndef QGAMACORE__FACTORY_H
+#define QGAMACORE__FACTORY_H
 
 #include "preferences/settingsimpl.h"
 #include "preferences/settings.h"
@@ -35,4 +35,4 @@ namespace QGamaCore {
 
 } // namespace QGamaCore
 
-#endif // FACTORY_H
+#endif // QGAMACORE__FACTORY_H

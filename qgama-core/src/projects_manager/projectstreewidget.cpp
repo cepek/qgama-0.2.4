@@ -22,7 +22,7 @@
 #include <QtGui>
 
 #include "projectstreewidget.h"
-#include "../utils/utils.h"
+#include "../utils/applicationcomponentprovider.h"
 #include "../main_window/mainwindow.h"
 #include "../factory.h"
 #include "adjustmentsetting.h"
@@ -40,14 +40,13 @@ using namespace QGamaCore;
 ProjectsTreeWidget::ProjectsTreeWidget(QWidget *parent) :
         QTreeWidget(parent),
         prm(Factory::getProjectsManager()),
-        settings(Factory::getSettings())
+        settings(Factory::getSettings()),
+        mw(ApplicationComponentProvider::getMainWindow())
 {
-    // set the main window pointer
-    mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
-
     // make connections
     connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(openFileDoubleClick(QTreeWidgetItem*,int)));
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(changeActiveProject(QTreeWidgetItem*,QTreeWidgetItem*)));
+    connect(this, SIGNAL(updateFileMenuEntries(Project*)), mw, SLOT(updateFileMenuEntries(Project*)));
 
     // set initial gui settings
     this->setSortingEnabled(true);
@@ -75,7 +74,7 @@ ProjectsTreeWidget::~ProjectsTreeWidget()
   */
 void ProjectsTreeWidget::contextMenuEvent(QContextMenuEvent *event)
 {
-    std::cout << "contextMenuEvent start" << std::endl;
+    qDebug() << "ProjectsTreeWidget::contextMenuEvent() - START";
 
     QTreeWidgetItem *item = itemAt(event->pos());
 
@@ -129,6 +128,8 @@ void ProjectsTreeWidget::contextMenuEvent(QContextMenuEvent *event)
         connect(&menu, SIGNAL(triggered(QAction*)), this, SLOT(processContextMenuAction(QAction*)));
         menu.exec(event->globalPos());
     }
+
+    qDebug() << "ProjectsTreeWidget::contextMenuEvent() - STOP";
 }
 
 
@@ -183,7 +184,7 @@ void ProjectsTreeWidget::processContextMenuAction(QAction *action)
   */
 void ProjectsTreeWidget::changeActiveProject(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
-    std::cout << "changeActiveProject START" << std::endl;
+    qDebug() << "ProjectsTreeWidget::changeActiveProject() - START";
 
     QString name;
     QString location;
@@ -211,28 +212,15 @@ void ProjectsTreeWidget::changeActiveProject(QTreeWidgetItem *current, QTreeWidg
         }
 
         // project the change into some File menu actions
-        QMenu *menuFile = qobject_cast<QMenu*> (Utils::findWidget("menu_File"));
-        QList<QAction*> actions = menuFile->actions();
-        for (QList<QAction*>::iterator i=actions.begin(); i!=actions.end(); ++i) {
-            if ((*i)->objectName() == "action_Close_Project" || (*i)->objectName() == "action_Project_Properties") {
-                QString text = (*i)->text();
-                text = text.left(text.indexOf("(")).trimmed();
-                (*i)->setText(" "+text+" ("+name+")");
-            }
-            else if ((*i)->objectName() == "action_New_Network") {
-                Project *project = prm->getProject(name,location);
-                if (project->getType()=="SingleNetworkProject" && project->getNetworks().size()==1)
-                    (*i)->setEnabled(false);
-                else
-                    (*i)->setEnabled(true);
-            }
-        }
+        Project *project = prm->getProject(name,location);
+        if (project!=0)
+            emit updateFileMenuEntries(project);
 
         // set selected project to be the active one in Projects Manager
         prm->setActiveProject(name,location,true);
     }
 
-    std::cout << "changeActiveProject STOP" << std::endl;
+    qDebug() << "ProjectsTreeWidget::changeActiveProject() - STOP";
 }
 
 
@@ -291,7 +279,7 @@ void ProjectsTreeWidget::deleteProjectItem(const QString &projectName, const QSt
   */
 void ProjectsTreeWidget::addProjectItem(Project *project)
 {
-    std::cout << "addProjectItem START" << std::endl;
+    qDebug() << "ProjectsTreeWidget::addProjectItem() - START";
 
     QString projectName = project->getName();
     QString projectLocation = project->getLocation();
@@ -324,7 +312,7 @@ void ProjectsTreeWidget::addProjectItem(Project *project)
     itemSolutions->setData(0,Id,"Solutions");
     itemSolutions->setIcon(0,QIcon(":/images/icons/standardbutton-open-32.png"));
 
-    std::cout << "addProjectItem STOP" << std::endl;
+    qDebug() << "ProjectsTreeWidget::addProjectItem() - STOP";
 }
 
 
@@ -334,16 +322,16 @@ void ProjectsTreeWidget::addProjectItem(Project *project)
   */
 void ProjectsTreeWidget::setProjectItemActive(const QString &projectName, const QString &projectLocation)
 {
-    std::cout << "setProjectItemActive START" << std::endl;
+    qDebug() << "ProjectsTreeWidget::setProjectItemActive() - START";
 
     // find the corresponding project item
     QTreeWidgetItem *item = findProjectItem(projectName, projectLocation);
     if (item!=0) {
         // change it to be active
-        emit changeActiveProject(item,0);
+        setCurrentItem(item);
     }
 
-    std::cout << "setProjectItemActive STOP" << std::endl;
+    qDebug() << "ProjectsTreeWidget::setProjectItemActive() - STOP";
 }
 
 
@@ -353,7 +341,7 @@ void ProjectsTreeWidget::setProjectItemActive(const QString &projectName, const 
   */
 void ProjectsTreeWidget::addFileItems(Project *project, bool highlightOpened)
 {
-    std::cout << "addFileItems START" << std::endl;
+    qDebug() << "ProjectsTreeWidget::addFileItems() - START";
 
     // add networks
     QList<File> &networks = project->getNetworks();
@@ -367,10 +355,11 @@ void ProjectsTreeWidget::addFileItems(Project *project, bool highlightOpened)
         item->setData(0,Id,"network");
         item->setData(0,NetworkId,network.getId());
         item->setIcon(0,QIcon(":/images/icons/network-32.png"));
+
         if (network.getOpened()=="true") {
             mw->openFile(network.getPath(),"network");
             if (highlightOpened)
-                highlightActiveFile(item);
+                setCurrentItem(item);
         }
         network.setDisplayed(true);
     }
@@ -382,22 +371,17 @@ void ProjectsTreeWidget::addFileItems(Project *project, bool highlightOpened)
         if (adjustmentSetting.isDisplayed())
             continue;
 
-        std::cout << "1" << std::endl;
-        std::cout << project->getName().toStdString() << std::endl;
-        std::cout << project->getLocation().toStdString() << std::endl;
-
         QTreeWidgetItem *item = new QTreeWidgetItem(findFileCategoryItem(project->getName(),project->getLocation(),"Settings"));
-        std::cout << "2" << std::endl;
         item->setText(0,adjustmentSetting.getName());
         item->setData(0,Id,"setting");
         item->setData(0,AdjustmentSettingId,adjustmentSetting.getId());
         item->setIcon(0,QIcon(":/images/icons/setting-32.png"));
         adjustmentSetting.setDisplayed(true);
         if (highlightOpened)
-            highlightActiveFile(item);
+            setCurrentItem(item);
     }
 
-    std::cout << "addFileItems STOP" << std::endl;
+    qDebug() << "ProjectsTreeWidget::addFileItems() - STOP";
 }
 
 
@@ -407,7 +391,7 @@ void ProjectsTreeWidget::addFileItems(Project *project, bool highlightOpened)
   */
 void ProjectsTreeWidget::cancelAllHighlightings()
 {    
-    std::cout << "cancelAllHiglightings START" << std::endl;
+    qDebug() << "ProjectsTreeWidget::cancelAllHighlightings() - START";
 
     if (topLevelItemCount()>0) {
         QFont font = topLevelItem(0)->font(0);
@@ -415,19 +399,19 @@ void ProjectsTreeWidget::cancelAllHighlightings()
 
         // 1. generation
         for (int i=0; i<topLevelItemCount(); ++i) {
-             topLevelItem(i)->setSelected(false);
+             //topLevelItem(i)->setSelected(false);
              topLevelItem(i)->setFont(0,font);
 
              // 2. generation
              if (topLevelItem(i)->childCount() != 0) {
                  for (int j=0; j<topLevelItem(i)->childCount(); ++j) {
-                     topLevelItem(i)->child(j)->setSelected(false);
+                     //topLevelItem(i)->child(j)->setSelected(false);
                      topLevelItem(i)->child(j)->setFont(0,font);
 
                      // 3. generation
                      if (topLevelItem(i)->child(j)->childCount() != 0) {
                          for (int k=0; k<topLevelItem(i)->child(j)->childCount(); ++k) {
-                             topLevelItem(i)->child(j)->child(k)->setSelected(false);
+                             //topLevelItem(i)->child(j)->child(k)->setSelected(false);
                              topLevelItem(i)->child(j)->child(k)->setFont(0,font);
                          }
                      }
@@ -435,7 +419,8 @@ void ProjectsTreeWidget::cancelAllHighlightings()
              }
          }
     }
-    std::cout << "cancelAllHiglightings STOP" << std::endl;
+
+    qDebug() << "ProjectsTreeWidget::cancelAllHighlightings() - STOP";
 }
 
 
@@ -445,7 +430,7 @@ void ProjectsTreeWidget::cancelAllHighlightings()
   */
 void ProjectsTreeWidget::highlightActiveProject(QTreeWidgetItem *item)
 {
-    std::cout << "highlightActiveProject START" << std::endl;
+    qDebug() << "ProjectsTreeWidget::highlightActiveProject() - START";
 
     // cancel all highlightings
     cancelAllHighlightings();
@@ -456,31 +441,11 @@ void ProjectsTreeWidget::highlightActiveProject(QTreeWidgetItem *item)
     item->setFont(0,font);
 
     // set it expanded and selected
-    item->setExpanded(true);
-    item->setSelected(true);
+    //item->setSelected(true);
 
-    std::cout << "highlightActiveProject STOP" << std::endl;
+    qDebug() << "ProjectsTreeWidget::highlightActiveProject() - STOP";
 }
 
-
-/* ===============================================================================================================*/
-/**
-  *
-  */
-void ProjectsTreeWidget::highlightActiveFile(QTreeWidgetItem *item)
-{
-    std::cout << "highlightactivefile START" << std::endl;
-
-    // highlight project
-    highlightActiveProject(item->parent()->parent());
-    // unselect project item
-    item->parent()->parent()->setSelected(false);
-    // set the file item selected and its parent expanded
-    item->setSelected(true);
-    item->parent()->setExpanded(true);
-
-    std::cout << "highlightactivefile STOP" << std::endl;
-}
 
 /* ===============================================================================================================*/
 /**
@@ -488,7 +453,7 @@ void ProjectsTreeWidget::highlightActiveFile(QTreeWidgetItem *item)
   */
 void ProjectsTreeWidget::collapseNonActiveProjects()
 {
-    std::cout << "collapseNonActiveProjects START" << std::endl;
+    qDebug() << "ProjectsTreeWidget::collapseNonActiveProjects() - START";
 
     // get the active project
     Project *project = prm->getActiveProject();
@@ -503,5 +468,5 @@ void ProjectsTreeWidget::collapseNonActiveProjects()
         }
     }
 
-    std::cout << "collapseNonActiveProjects STOP" << std::endl;
+    qDebug() << "ProjectsTreeWidget::collapseNonActiveProjects() - STOP";
 }

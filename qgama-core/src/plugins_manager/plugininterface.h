@@ -19,8 +19,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PLUGININTERFACE_H
-#define PLUGININTERFACE_H
+#ifndef QGAMACORE__PLUGININTERFACE_H
+#define QGAMACORE__PLUGININTERFACE_H
 
 #include <QtPlugin>
 #include <QObject>
@@ -57,4 +57,4 @@ namespace QGamaCore {
 Q_DECLARE_INTERFACE(QGamaCore::PluginInterface,"Jiri_Novak.QGamaCore.PluginInterface/1.0")
 
 
-#endif // PLUGININTERFACE_H
+#endif // QGAMACORE__PLUGININTERFACE_H

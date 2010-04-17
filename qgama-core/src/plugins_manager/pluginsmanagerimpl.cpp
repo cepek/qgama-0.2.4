@@ -28,7 +28,7 @@
 #include "pluginsmanagerimpl.h"
 #include "pluginsmanagerdialog.h"
 #include "plugininterface.h"
-#include "../utils/utils.h"
+#include "../utils/applicationcomponentprovider.h"
 #include "../main_window/mainwindow.h"
 #include "../factory.h"
 
@@ -40,6 +40,8 @@ PluginsManagerImpl* PluginsManagerImpl::self = 0;
 
 // inicialization of the private counter of pointers
 int PluginsManagerImpl::pointersCount = 0;
+
+enum { Enabled, NotEnabled };
 
 
 /** Implicit constructor.
@@ -116,7 +118,7 @@ void PluginsManagerImpl::loadPlugin(const QString &name)
             plugins.insert(name,loader);
 
             // add entry to the PluginManagerDialog
-            PluginsManagerDialog *pmd = qobject_cast<PluginsManagerDialog*> (Utils::findTopLevelWidget("PluginsManagerDialog"));
+            PluginsManagerDialog *pmd = ApplicationComponentProvider::getPluginsManagerDialog();
             if (settings->get("plugins/enabledPlugins").toStringList().contains(name))
                 pmd->addLoadedPlugin(name,Enabled,plugin);
             else
@@ -196,7 +198,7 @@ void PluginsManagerImpl::populateMenus(PluginInterface *plugin)
             QString shortcutKeys = item.value(5);
 
             // finding the correspondent menu
-            MainWindow *mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
+            MainWindow *mw = ApplicationComponentProvider::getMainWindow();
             QMenu *menu = mw->findChild<QMenu*>("menu_" + menuName);
 
             menu->addSeparator();
@@ -211,7 +213,7 @@ void PluginsManagerImpl::populateMenus(PluginInterface *plugin)
             if (slot.value(0) == "this")
                 QObject::connect(action,SIGNAL(triggered()),plugin,"1"+slot.value(1).toAscii());
             else {
-                QObject *object = qobject_cast<QObject*> (Utils::findTopLevelWidget(slot.value(0)));
+                QObject *object = qobject_cast<QObject*> (ApplicationComponentProvider::findTopLevelWidget(slot.value(0)));
                 QObject::connect(action,SIGNAL(triggered()),object,"1"+slot.value(1).toAscii());
             }
         }

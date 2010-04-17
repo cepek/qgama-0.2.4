@@ -19,8 +19,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PLUGINSMANAGER_H
-#define PLUGINSMANAGER_H
+#ifndef QGAMACORE__PLUGINSMANAGER_H
+#define QGAMACORE__PLUGINSMANAGER_H
 
 #include <QPluginLoader>
 #include <QDir>
@@ -68,4 +68,4 @@ namespace QGamaCore {
     }; // class PluginsManager
 } // namespace QGamaCore
 
-#endif // PLUGINSMANAGER_H
+#endif // QGAMACORE__PLUGINSMANAGER_H

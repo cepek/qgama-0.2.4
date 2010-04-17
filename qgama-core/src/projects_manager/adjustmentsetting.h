@@ -1,5 +1,5 @@
-#ifndef ADJUSTMENTSETTING_H
-#define ADJUSTMENTSETTING_H
+#ifndef QGAMACORE__ADJUSTMENTSETTING_H
+#define QGAMACORE__ADJUSTMENTSETTING_H
 
 #include <QString>
 
@@ -57,4 +57,4 @@ namespace QGamaCore {
 
 } // namespace QGamaCore
 
-#endif // ADJUSTMENTSETTING_H
+#endif // QGAMACORE__ADJUSTMENTSETTING_H

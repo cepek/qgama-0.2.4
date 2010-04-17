@@ -25,7 +25,7 @@
 
 #include "project.h"
 #include "../main_window/mainwindow.h"
-#include "../utils/utils.h"
+#include "../utils/applicationcomponentprovider.h"
 #include "../projects_manager/adjustmentsetting.h"
 
 using namespace QGamaCore;
@@ -52,8 +52,8 @@ Project::Project(const QString &name, const QString &location, const QString &pr
     loadXml();
 
     // set pointers to the widgets
-    mw = qobject_cast<MainWindow*> (Utils::findTopLevelWidget("MainWindow"));
-    ptw = qobject_cast<ProjectsTreeWidget*> (Utils::findWidget("treeWidget_Projects"));
+    mw = ApplicationComponentProvider::getMainWindow();
+    ptw = ApplicationComponentProvider::getProjectsTreeWidget();
 }
     
 
@@ -152,7 +152,7 @@ void Project::updateProjectFileEntries()
     // have a look which networks from projects are still opened
     for (int i=0; i<networks.size(); i++) {
         // try to find the corresponding subwindow
-        QMdiSubWindow *existing = Utils::findMdiSubWindow(networks[i].getPath());
+        QMdiSubWindow *existing = ApplicationComponentProvider::findMdiSubWindow(networks[i].getPath());
 
         // if still exists, set the network to be opened on another program's startup and vice versa
         if (existing)

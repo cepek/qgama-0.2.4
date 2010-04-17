@@ -27,9 +27,11 @@
 #include "pluginsmanagerdialog.h"
 #include "../factory.h"
 #include "../plugins_manager/plugininterface.h"
-#include "../utils/utils.h"
+#include "../utils/applicationcomponentprovider.h"
 
 using namespace QGamaCore;
+
+enum { Enabled, Disabled };
 
 
 PluginsManagerDialog::PluginsManagerDialog(QWidget *parent) :

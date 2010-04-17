@@ -21,14 +21,10 @@
 **
 ****************************************************************************/
 
-#ifndef QGAMACORE__TEXTEDITOR_H
-#define QGAMACORE__TEXTEDITOR_H
+#ifndef QGAMACORE__GAMALOCAL_H
+#define QGAMACORE__GAMALOCAL_H
 
-#include <QTextEdit>
-#include <QLabel>
-
-#include "document.h"
-#include "../utils/xmlsyntaxhighlighter.h"
+#include "../projects_manager/adjustmentsetting.h"
 
 
 namespace QGamaCore {
@@ -36,29 +32,16 @@ namespace QGamaCore {
     /**
       *
       */
-    class TextEditor : public Document
+    class GamaLocal
     {
-        Q_OBJECT
+        private:
+            GamaLocal() {}
 
         public:
-            TextEditor(const QString &type);
-            ~TextEditor();
-            virtual QString getContent();
-
-        protected:
-            virtual void setContent(const QString &content);
-            virtual bool isDocumentModified();
-            virtual void setDocumentModified(bool modified);
-            virtual void initializeUi();
-
-        private:
-            QTextEdit editor;
-            XmlSyntaxHighlighter highlighter;
-            QLabel label_status;
-            QLabel label_validation;
-    }; // class TextEditor
+            static int solveNetwork(const QString &network, AdjustmentSetting *as);
+    }; // class GamaLocal
 
 } // namespace QGamaCore
 
 
-#endif // QGAMACORE__TEXTEDITOR_H
+#endif // QGAMACORE__GAMALOCAL_H

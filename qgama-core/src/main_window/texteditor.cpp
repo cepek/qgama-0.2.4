@@ -22,7 +22,7 @@
 #include <QtGui>
 
 #include "texteditor.h"
-#include "../utils/utils.h"
+#include "../utils/applicationcomponentprovider.h"
 #include "mainwindow.h"
 
 #include <iostream>
@@ -42,7 +42,8 @@ TextEditor::TextEditor(const QString &type) :
     // makes Qt delete this widget when the widget has accepted the close event
     editor.setAttribute(Qt::WA_DeleteOnClose);
 
-    connect(editor.document(), SIGNAL(modificationChanged(bool)), this, SLOT(modificationChanged(bool)));
+    // initialize Ui
+    initializeUi();
 }
 
 
@@ -71,7 +72,7 @@ void TextEditor::setContent(const QString &content)
   */
 QString TextEditor::getContent()
 {
-    editor.toPlainText();
+    return editor.toPlainText();
 }
 
 
@@ -79,8 +80,40 @@ QString TextEditor::getContent()
 /**
   *
   */
-
-QWidget* TextEditor::getWidget()
+void TextEditor::setDocumentModified(bool modified)
 {
-    return &editor;
+    editor.document()->setModified(modified);
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+bool TextEditor::isDocumentModified()
+{
+    return editor.document()->isModified();
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void TextEditor::initializeUi()
+{
+    QVBoxLayout *layout = new QVBoxLayout(this);
+    layout->setMargin(0);
+    layout->addWidget(&editor,1);
+    QHBoxLayout *verticalLayout = new QHBoxLayout();
+    label_status.setText("Status of validation: ");
+    label_status.setVisible(false);
+    label_validation.setVisible(false);
+    verticalLayout->addWidget(&label_status,0);
+    verticalLayout->addWidget(&label_validation,1);
+    verticalLayout->setMargin(0);
+    layout->addLayout(verticalLayout);
+    setLayout(layout);
+
+    connect(editor.document(), SIGNAL(modificationChanged(bool)), this, SLOT(modificationChanged(bool)));
 }

@@ -21,6 +21,7 @@
 
 #include <QtGui>
 #include <QtWebKit>
+#include <assert.h>
 
 #include "mainwindow.h"
 #include "../../../config.h"
@@ -32,13 +33,12 @@
 #include "../projects_manager/newnetworkwizard.h"
 #include "document.h"
 #include "texteditor.h"
-#include "../utils/utils.h"
+#include "../utils/applicationcomponentprovider.h"
 #include "../factory.h"
 #include "../projects_manager/projectpropertiesdialog.h"
 #include "../projects_manager/project.h"
 #include "../projects_manager/adjustmentsettingdialog.h"
-
-//#include <gama-local-main.h>
+#include "../adjustment/gamalocal.h"
 
 #include <iostream>
 
@@ -370,7 +370,7 @@ void MainWindow::openFile(const QString &file, const QString &fileType)
 {
     if (!file.isEmpty()) {
         // if it was already opened, set active window to it
-        QMdiSubWindow *existing = Utils::findMdiSubWindow(file);
+        QMdiSubWindow *existing = ApplicationComponentProvider::findMdiSubWindow(file);
         if (existing) {
             ui->mdiArea->setActiveSubWindow(existing);
             return;
@@ -382,7 +382,7 @@ void MainWindow::openFile(const QString &file, const QString &fileType)
 
             // add subwindow and open the file in it
             TextEditor *child = new TextEditor("network");
-            QMdiSubWindow *subWindow = ui->mdiArea->addSubWindow(child->getWidget());
+            QMdiSubWindow *subWindow = ui->mdiArea->addSubWindow(child);
             if (child->loadFile(file))
                 child->showMaximized();
             else
@@ -497,7 +497,7 @@ void MainWindow::increaseProjectsCount()
   */
 void MainWindow::updateRecentlyOpenedProjects()
 {
-    std::cout << "updateRecentlyOpenedProjects() start" << std::endl;
+    qDebug() << "MainWindow::updateRecentlyOpenedProjects() - START";
 
     QStringList recentlyOpenedProjects = settings->get("projects/recentlyOpenedProjects").toStringList();
     int n = recentlyOpenedProjects.size();
@@ -527,7 +527,7 @@ void MainWindow::updateRecentlyOpenedProjects()
         }
     }
 
-    std::cout << "updateRecentlyOpenedProjects() stop" << std::endl;
+    qDebug() << "MainWindow::updateRecentlyOpenedProjects() - STOP";
 }
 
 
@@ -537,7 +537,7 @@ void MainWindow::updateRecentlyOpenedProjects()
   */
 void MainWindow::updateRecentlyOpenedFiles()
 {
-    std::cout << "updateRecentlyOpenedFiles() start" << std::endl;
+    qDebug() << "MainWindow::updateRecentlyOpenedFiles() - START";
 
     QStringList recentlyOpenedFiles = settings->get("projects/recentlyOpenedFiles").toStringList();
     int n = recentlyOpenedFiles.size();
@@ -573,7 +573,7 @@ void MainWindow::updateRecentlyOpenedFiles()
         }
     }
 
-    std::cout << "updateRecentlyOpenedFiles() stop" << std::endl;
+    qDebug() << "MainWindow::updateRecentlyOpenedFiles() - STOP";
 }
 
 
@@ -646,20 +646,15 @@ void MainWindow::projectProperties()
   */
 void MainWindow::solve()
 {
-    /*
-    char* argv[4];
+    qDebug() << "MainWindow::solve() - START";
 
-    argv[0] = "gama-local";
-    argv[1] = "../../../QGamaProjects/QGamaProject1/Networks/New1DNetwork.xml";
-    argv[2] = "--text";
-    argv[3] = "../../../QGamaProjects/QGamaProject1/Solutions/New1DNetworkSolution.xml";
+    Document *document = qobject_cast<Document*> (ui->mdiArea->subWindowList()[0]->widget());
+    Q_ASSERT(document!=0 && "document pointer is 0");
+    if (document!=0) {
+        GamaLocal::solveNetwork(document->currentFile(),prm->getActiveProject()->getAdjustmentSetting(1));
+    }
 
-    std::cout << "Starting solving" << std::endl;
-    std::cout << GaMa_Main(4,argv) << std::endl;
-    std::cout << "Ended solving" << std::endl;
-
-    openFile("../../../QGamaProjects/QGamaProject1/Solutions/New1DNetworkSolution.xml");
-    */
+    qDebug() << "MainWindow::solve() - STOP";
 }
 
 
@@ -670,18 +665,24 @@ void MainWindow::solve()
 void MainWindow::closeFile()
 {
     // close the file
-    QString fileToClose;
-    QString fileType;
+    QString fileToClose = "";
+    QString fileType = "";
     if (ui->mdiArea->subWindowList().size()==1) {
-        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->subWindowList()[0]->widget());
-        fileToClose = textEditor->currentFile();
-        fileType = textEditor->documentType();
+        Document *document = qobject_cast<Document*> (ui->mdiArea->subWindowList()[0]->widget());
+        Q_ASSERT(document!=0 && "document pointer is 0");
+        if (document!=0) {
+            fileToClose = document->currentFile();
+            fileType = document->documentType();
+        }
         ui->mdiArea->closeAllSubWindows();
     }
     else {
-        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->activeSubWindow()->widget());
-        fileToClose = textEditor->currentFile();
-        fileType = textEditor->documentType();
+        Document *document = qobject_cast<Document*> (ui->mdiArea->activeSubWindow()->widget());
+        Q_ASSERT(document!=0 && "document pointer is 0");
+        if (document!=0) {
+            fileToClose = document->currentFile();
+            fileType = document->documentType();
+        }
         ui->mdiArea->closeActiveSubWindow();
     }
 
@@ -694,21 +695,23 @@ void MainWindow::closeFile()
     
     // save the file to the list of the last five recently opened files
     QStringList recentlyOpenedFiles = settings->get("projects/recentlyOpenedFiles").toStringList();
-    if (!recentlyOpenedFiles.contains(fileToClose+"|"+fileType)) {
-        if (recentlyOpenedFiles.size()==5) {
-            recentlyOpenedFiles.removeAt(0);
+    if (!fileToClose.isEmpty() && !fileType.isEmpty()) {
+        if (!recentlyOpenedFiles.contains(fileToClose+"|"+fileType)) {
+            if (recentlyOpenedFiles.size()==5) {
+                recentlyOpenedFiles.removeAt(0);
+            }
+            recentlyOpenedFiles.append(fileToClose+"|"+fileType);
+            settings->set("projects/recentlyOpenedFiles",recentlyOpenedFiles);
         }
-        recentlyOpenedFiles.append(fileToClose+"|"+fileType);
-        settings->set("projects/recentlyOpenedFiles",recentlyOpenedFiles);
-    }
-    else {
-        int index = recentlyOpenedFiles.indexOf(fileToClose+"|"+fileType);
-        recentlyOpenedFiles.removeAt(index);
-        recentlyOpenedFiles.append(fileToClose+"|"+fileType);
-    }
+        else {
+            int index = recentlyOpenedFiles.indexOf(fileToClose+"|"+fileType);
+            recentlyOpenedFiles.removeAt(index);
+            recentlyOpenedFiles.append(fileToClose+"|"+fileType);
+        }
 
-    // and "commit" the change
-    updateRecentlyOpenedFiles();
+        // and "commit" the change
+        updateRecentlyOpenedFiles();
+    }
 }
 
 
@@ -719,7 +722,7 @@ void MainWindow::closeFile()
 void MainWindow::closeFile(const QString &filePath)
 {
     // change focus to the corresponding subwindow if exists and close it
-    QMdiSubWindow *existing = Utils::findMdiSubWindow(filePath);
+    QMdiSubWindow *existing = ApplicationComponentProvider::findMdiSubWindow(filePath);
     if (existing) {
         ui->mdiArea->setActiveSubWindow(existing);
         closeFile();
@@ -734,12 +737,14 @@ void MainWindow::closeFile(const QString &filePath)
 void MainWindow::save()
 {
     if (ui->mdiArea->subWindowList().size()==1) {
-        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->subWindowList()[0]->widget());
-        textEditor->save();
+        Document *document = qobject_cast<Document*> (ui->mdiArea->subWindowList()[0]->widget());
+        if (document!=0)
+            document->save();
     }
     else {
-        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->activeSubWindow()->widget());
-        textEditor->save();
+        Document *document = qobject_cast<Document*> (ui->mdiArea->activeSubWindow()->widget());
+        if (document!=0)
+            document->save();
     }
 }
 
@@ -751,12 +756,14 @@ void MainWindow::save()
 void MainWindow::saveAs()
 {
     if (ui->mdiArea->subWindowList().size()==1) {
-        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->subWindowList()[0]->widget());
-        textEditor->saveAs();
+        Document *document = qobject_cast<Document*> (ui->mdiArea->subWindowList()[0]->widget());
+        if (document!=0)
+            document->saveAs();
     }
     else {
-        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->activeSubWindow()->widget());
-        textEditor->saveAs();
+        Document *document = qobject_cast<Document*> (ui->mdiArea->activeSubWindow()->widget());
+        if (document!=0)
+            document->saveAs();
     }
 }
 
@@ -768,8 +775,9 @@ void MainWindow::saveAs()
 void MainWindow::saveAll()
 {
     for (int i=0; i<ui->mdiArea->subWindowList().size(); i++) {
-        Document *textEditor = qobject_cast<Document*> (ui->mdiArea->subWindowList()[i]->widget());
-        textEditor->save();
+        Document *document = qobject_cast<Document*> (ui->mdiArea->subWindowList()[i]->widget());
+        if (document!=0)
+            document->save();
     }
 }
 
@@ -859,4 +867,28 @@ void MainWindow::newSetting()
 {
     AdjustmentSettingDialog dialog(0,this);
     dialog.exec();
+}
+
+
+/**
+  *
+  */
+void MainWindow::updateFileMenuEntries(Project *project)
+{
+    qDebug() << "MainWindow::updateFileMenuEntries() - START";
+
+    QString text = ui->action_Close_Project->text();
+    text = text.left(text.indexOf("(")).trimmed();
+    ui->action_Close_Project->setText(" "+text+" ("+project->getName()+")");
+
+    text = ui->action_Project_Properties->text();
+    text = text.left(text.indexOf("(")).trimmed();
+    ui->action_Project_Properties->setText(" "+text+" ("+project->getName()+")");
+
+    if (project->getType()=="SingleNetworkProject" && project->getNetworks().size()==1)
+        ui->action_New_Network->setEnabled(false);
+    else
+        ui->action_New_Network->setEnabled(true);
+
+    qDebug() << "MainWindow::updateFileMenuEntries() - STOP";
 }

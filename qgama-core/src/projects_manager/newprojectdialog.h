@@ -19,8 +19,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef NEWPROJECTDIALOG_H
-#define NEWPROJECTDIALOG_H
+#ifndef QGAMACORE__NEWPROJECTDIALOG_H
+#define QGAMACORE__NEWPROJECTDIALOG_H
 
 #include <QDialog>
 #include <QDir>
@@ -74,4 +74,4 @@ namespace QGamaCore {
 } // namespace QGamaCore
 
 
-#endif // NEWPROJECTDIALOG_H
+#endif // QGAMACORE__NEWPROJECTDIALOG_H

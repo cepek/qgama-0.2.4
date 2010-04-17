@@ -1,5 +1,5 @@
-#ifndef XMLSYNTAXHIGHLIGHTER_H
-#define XMLSYNTAXHIGHLIGHTER_H
+#ifndef QGAMACORE__XMLSYNTAXHIGHLIGHTER_H
+#define QGAMACORE__XMLSYNTAXHIGHLIGHTER_H
 
 #include <QtGui/QSyntaxHighlighter>
 
@@ -28,4 +28,4 @@ class XmlSyntaxHighlighter : public QSyntaxHighlighter
         QTextCharFormat commentFormat;
 };
 
-#endif // XMLSYNTAXHIGHLIGHTER_H
+#endif // QGAMACORE__XMLSYNTAXHIGHLIGHTER_H

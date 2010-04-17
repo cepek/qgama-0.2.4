@@ -19,8 +19,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef ABOUTQGAMADIALOG_H
-#define ABOUTQGAMADIALOG_H
+#ifndef QGAMACORE__ABOUTQGAMADIALOG_H
+#define QGAMACORE__ABOUTQGAMADIALOG_H
 
 #include <QDialog>
 #include <ui_aboutqgamadialog.h>
@@ -62,4 +62,4 @@ namespace QGamaCore {
 } // namespace QGamaCore
 
 
-#endif // ABOUTQGAMADIALOG_H
+#endif // QGAMACORE__ABOUTQGAMADIALOG_H

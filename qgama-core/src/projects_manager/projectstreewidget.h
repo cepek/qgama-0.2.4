@@ -19,8 +19,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#ifndef PROJECTSTREEWIDGET_H
-#define PROJECTSTREEWIDGET_H
+#ifndef QGAMACORE__PROJECTSTREEWIDGET_H
+#define QGAMACORE__PROJECTSTREEWIDGET_H
 
 #include <QTreeWidget>
 #include <QWidget>
@@ -70,9 +70,11 @@ namespace QGamaCore {
 
             void cancelAllHighlightings();
             void highlightActiveProject(QTreeWidgetItem *item);
-            void highlightActiveFile(QTreeWidgetItem *item);
 
             QGamaCore::MainWindow *mw;
+
+        signals:
+            void updateFileMenuEntries(Project *project);
 
         private slots:
             void openFileDoubleClick(QTreeWidgetItem *current, int);
@@ -82,4 +84,4 @@ namespace QGamaCore {
 
 } // namespace QGamaCore
 
-#endif // PROJECTSTREEWIDGET_H
+#endif // QGAMACORE__PROJECTSTREEWIDGET_H

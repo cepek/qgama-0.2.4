@@ -1,5 +1,5 @@
-#ifndef NEWNETWORKWIZARDPAGE3_H
-#define NEWNETWORKWIZARDPAGE3_H
+#ifndef QGAMACORE__NEWNETWORKWIZARDPAGE3_H
+#define QGAMACORE__NEWNETWORKWIZARDPAGE3_H
 
 #include <QWizardPage>
 #include <ui_newnetworkwizardpage3.h>
@@ -59,4 +59,4 @@ namespace QGamaCore {
 } // namespace NewNetworkWizardPage3
 
 
-#endif // NEWNETWORKWIZARDPAGE3_H
+#endif // QGAMACORE__NEWNETWORKWIZARDPAGE3_H

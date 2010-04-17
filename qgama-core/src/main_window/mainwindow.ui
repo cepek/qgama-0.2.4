@@ -17,7 +17,7 @@
    <string/>
   </property>
   <property name="windowIcon">
-   <iconset resource="../qgama-core.qrc">
+   <iconset>
     <normaloff>:/images/icons/babieca-64.png</normaloff>:/images/icons/babieca-64.png</iconset>
   </property>
   <property name="toolTip">
@@ -117,7 +117,7 @@
      <addaction name="action_Delete_point"/>
      <addaction name="separator"/>
      <addaction name="action_Show_points"/>
-     <addaction name="action_Clear_all_points"/>
+     <addaction name="action_Clear_All_Points"/>
     </widget>
     <widget class="QMenu" name="menu_Observations">
      <property name="enabled">
@@ -126,25 +126,24 @@
      <property name="title">
       <string> &amp;Observations</string>
      </property>
-     <addaction name="action_Insert_observation"/>
-     <addaction name="action_Edit_observation"/>
-     <addaction name="action_Delete_observation"/>
+     <addaction name="action_Insert_Observation"/>
+     <addaction name="action_Edit_Observation"/>
+     <addaction name="action_Delete_Observation"/>
      <addaction name="separator"/>
      <addaction name="action_Edit_CovMatrix"/>
      <addaction name="separator"/>
-     <addaction name="action_Insert_cluster"/>
-     <addaction name="action_Edit_cluster"/>
-     <addaction name="action_Delete_cluster"/>
+     <addaction name="action_Insert_Cluster"/>
+     <addaction name="action_Edit_Cluster"/>
+     <addaction name="action_Delete_Cluster"/>
      <addaction name="separator"/>
-     <addaction name="action_Show_all_observations"/>
-     <addaction name="action_Clear_all_observations"/>
+     <addaction name="action_Show_All_Observations"/>
+     <addaction name="action_Clear_All_Observations"/>
     </widget>
     <widget class="QMenu" name="menu_Settings">
      <property name="title">
       <string> &amp;Settings</string>
      </property>
      <addaction name="action_Add_Setting"/>
-     <addaction name="action_Edit_Setting"/>
     </widget>
     <addaction name="menu_Points"/>
     <addaction name="menu_Observations"/>
@@ -675,7 +674,7 @@
   </widget>
   <action name="action_New_Network">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/new-file-32.png</normaloff>:/images/icons/new-file-32.png</iconset>
    </property>
    <property name="text">
@@ -699,7 +698,7 @@
   </action>
   <action name="action_Open_File">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/standardbutton-open-32.png</normaloff>:/images/icons/standardbutton-open-32.png</iconset>
    </property>
    <property name="text">
@@ -720,7 +719,7 @@
   </action>
   <action name="action_Preferences">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/configure-16.png</normaloff>:/images/icons/configure-16.png</iconset>
    </property>
    <property name="text">
@@ -741,7 +740,7 @@
   </action>
   <action name="action_Plugins">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/plugin-manager-16.png</normaloff>:/images/icons/plugin-manager-16.png</iconset>
    </property>
    <property name="text">
@@ -759,7 +758,7 @@
   </action>
   <action name="action_Quit">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/exit-16.png</normaloff>:/images/icons/exit-16.png</iconset>
    </property>
    <property name="text">
@@ -795,7 +794,7 @@
   </action>
   <action name="action_New_Project">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/new-project-32.png</normaloff>:/images/icons/new-project-32.png</iconset>
    </property>
    <property name="text">
@@ -810,7 +809,7 @@
   </action>
   <action name="action_Open_Project">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/open-project-32.png</normaloff>:/images/icons/open-project-32.png</iconset>
    </property>
    <property name="text">
@@ -825,7 +824,7 @@
   </action>
   <action name="action_Close_Project">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/standardbutton-cancel-32.png</normaloff>:/images/icons/standardbutton-cancel-32.png</iconset>
    </property>
    <property name="text">
@@ -842,7 +841,7 @@
   </action>
   <action name="action_Save">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/standardbutton-save-32.png</normaloff>:/images/icons/standardbutton-save-32.png</iconset>
    </property>
    <property name="text">
@@ -865,7 +864,7 @@
   </action>
   <action name="action_Save_All">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/save_all-32.png</normaloff>:/images/icons/save_all-32.png</iconset>
    </property>
    <property name="text">
@@ -877,7 +876,7 @@
   </action>
   <action name="action_Print">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/print-32.png</normaloff>:/images/icons/print-32.png</iconset>
    </property>
    <property name="text">
@@ -958,7 +957,7 @@
   </action>
   <action name="action_Projects">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/draft-32.png</normaloff>:/images/icons/draft-32.png</iconset>
    </property>
    <property name="text">
@@ -973,7 +972,7 @@
   </action>
   <action name="action_Close_File">
    <property name="icon">
-    <iconset resource="../qgama-core.qrc">
+    <iconset>
      <normaloff>:/images/icons/standardbutton-close-32.png</normaloff>:/images/icons/standardbutton-close-32.png</iconset>
    </property>
    <property name="text">
@@ -1006,22 +1005,22 @@
     <string> &amp;Show points</string>
    </property>
   </action>
-  <action name="action_Clear_all_points">
+  <action name="action_Clear_All_Points">
    <property name="text">
     <string> &amp;Clear all points</string>
    </property>
   </action>
-  <action name="action_Insert_observation">
+  <action name="action_Insert_Observation">
    <property name="text">
     <string> &amp;Insert observation</string>
    </property>
   </action>
-  <action name="action_Edit_observation">
+  <action name="action_Edit_Observation">
    <property name="text">
     <string> &amp;Edit observation</string>
    </property>
   </action>
-  <action name="action_Delete_observation">
+  <action name="action_Delete_Observation">
    <property name="text">
     <string> &amp;Delete observation</string>
    </property>
@@ -1031,27 +1030,27 @@
     <string> Edit &amp;CovMatrix</string>
    </property>
   </action>
-  <action name="action_Insert_cluster">
+  <action name="action_Insert_Cluster">
    <property name="text">
     <string> &amp;Insert cluster</string>
    </property>
   </action>
-  <action name="action_Edit_cluster">
+  <action name="action_Edit_Cluster">
    <property name="text">
     <string> &amp;Edit cluster</string>
    </property>
   </action>
-  <action name="action_Delete_cluster">
+  <action name="action_Delete_Cluster">
    <property name="text">
     <string> &amp;Delete cluster</string>
    </property>
   </action>
-  <action name="action_Show_all_observations">
+  <action name="action_Show_All_Observations">
    <property name="text">
     <string> &amp;Show meassurements</string>
    </property>
   </action>
-  <action name="action_Clear_all_observations">
+  <action name="action_Clear_All_Observations">
    <property name="text">
     <string> &amp;Clear all observations</string>
    </property>
@@ -1059,11 +1058,6 @@
   <action name="action_Add_Setting">
    <property name="text">
     <string> &amp;New Setting</string>
-   </property>
-  </action>
-  <action name="action_Edit_Setting">
-   <property name="text">
-    <string> &amp;Edit Setting</string>
    </property>
   </action>
   <action name="action_Solve">
@@ -1086,8 +1080,6 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="../qgama-core.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
