@@ -11,3 +11,4 @@ config.h
 Makefile*
 *.pro.user
 *~
+.gitignore
