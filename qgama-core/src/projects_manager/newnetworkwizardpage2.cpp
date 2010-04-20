@@ -39,9 +39,6 @@ NewNetworkWizardPage2::NewNetworkWizardPage2(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->label_Warning_Icon->setVisible(false);
-    ui->label_Warning->setVisible(false);
-
     connect(ui->lineEdit_Name, SIGNAL(textChanged(QString)),this, SIGNAL(completeChanged()));
 }
 
@@ -79,6 +76,9 @@ void NewNetworkWizardPage2::changeEvent(QEvent *e)
   */
 void NewNetworkWizardPage2::initializePage()
 {
+    ui->label_Warning_Icon->setVisible(false);
+    ui->label_Warning->setVisible(false);
+
     networkType = settings->get("temporary/NFWPselectedNetworkType").toString();
     projectName = settings->get("temporary/NFWPselectedProjectName").toString();
     projectLocation = settings->get("temporary/NFWPselectedProjectLocation").toString();

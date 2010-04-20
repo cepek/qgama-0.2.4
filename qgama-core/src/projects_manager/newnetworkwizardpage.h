@@ -44,12 +44,15 @@ namespace QGamaCore {
         Q_OBJECT
 
         public:
+            enum { Id=32, Description=33, Location=34, ProjectFilePath=35, ProjectType=36 };
+
             NewNetworkWizardPage(QWidget *parent = 0);
             ~NewNetworkWizardPage();
 
         protected:
             void changeEvent(QEvent *e);
             bool validatePage();
+            void initializePage();
             int nextId() const;
 
         private:

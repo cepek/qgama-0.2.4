@@ -160,7 +160,7 @@ bool ProjectsManagerImpl::openProject(const QString &projectFilePath, bool markA
 
         // mark opened project as active if desired
         if (markAsActive)
-            setActiveProject(projectName, projectLocation);
+            setActiveProject(project);
 
         // save the project to be opened next time program is executed
         QStringList openedProjects = settings->get("projects/openedProjects").toStringList();
@@ -188,7 +188,7 @@ bool ProjectsManagerImpl::openProject(const QString &projectFilePath, bool markA
 
     // if was already opened
     else {
-        setActiveProject(projectName, projectLocation);
+        setActiveProject(getProject(projectName, projectLocation));
     }
 
     return true;
@@ -205,7 +205,7 @@ void ProjectsManagerImpl::closeProject(Project* project)
     ProjectsTreeWidget *ptw = ApplicationComponentProvider::getProjectsTreeWidget();
 
     // delete the project tree widget entries
-    ptw->deleteProjectItem(project->getName(), project->getLocation());
+    ptw->deleteProjectItem(project);
 
     // get the pointer to the main window widget
     MainWindow *mw = ApplicationComponentProvider::getMainWindow();
@@ -260,9 +260,8 @@ void ProjectsManagerImpl::closeProject(Project* project)
 
     // if it wasn't the last project, change the focus to the preceding one
     int n = projects.size();
-    if (n!=0) {
-        setActiveProject(projects[n-1]->getName(), projects[n-1]->getLocation());
-    }
+    if (n!=0)
+        setActiveProject(projects[n-1]);
 
     // increase the counter of the opened projects
     mw->decreaseProjectsCount();
@@ -301,29 +300,27 @@ Project* ProjectsManagerImpl::getActiveProject()
 /**
   *
   */
-void ProjectsManagerImpl::setActiveProject(const QString &projectName, const QString &projectLocation, bool slotCall)
+void ProjectsManagerImpl::setActiveProject(Project *project, bool slotCall)
 {
     // get the pointer to the projects tree widget
     ProjectsTreeWidget *ptw = ApplicationComponentProvider::getProjectsTreeWidget();
+    Q_ASSERT(ptw!=0 && "projectsTreeWidget pointer is 0!");
+    Q_ASSERT(project!=0 && "project pointer is 0!");
 
     // set all inactive but the one specified in function parameters
-    for (int i=0; i<projects.size(); i++) {
-        if (projects[i]->getName()==projectName && projects[i]->getLocation()==projectLocation) {
-            projects[i]->setActive(true);
-         }
-        else
-            projects[i]->setActive(false);
-    }
+    for (int i=0; i<projects.size(); i++)
+        projects[i]->setActive(false);
+    project->setActive(true);
 
     // save the active project into program settings
     QStringList data;
-    data.append(projectName);
-    data.append(projectLocation);
+    data.append(project->getName());
+    data.append(project->getLocation());
     settings->set("projects/activeProject",data);
 
     // if this function wasn't called from projectsTreeWidget event, commit the change there
     if (!slotCall)
-        ptw->setProjectItemActive(projectName, projectLocation);
+        ptw->setProjectItemActive(project);
 }
 
 

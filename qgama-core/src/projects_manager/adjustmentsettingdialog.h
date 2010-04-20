@@ -5,6 +5,7 @@
 #include <ui_adjustmentsettingdialog.h>
 
 #include "adjustmentsetting.h"
+#include "projectstreewidget.h"
 
 
 namespace QGamaCore {
@@ -38,9 +39,10 @@ namespace QGamaCore {
             void accept();
 
         private:
-            Ui::AdjustmentSettingDialog *ui;
+            QGamaCore::Ui::AdjustmentSettingDialog *ui;
             QGamaCore::ProjectsManager *prm;
             QGamaCore::AdjustmentSetting *as;
+            QGamaCore::ProjectsTreeWidget *ptw;
             QString mode;
 
         private slots:

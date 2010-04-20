@@ -29,6 +29,7 @@
 
 #include "document.h"
 #include "../utils/xmlsyntaxhighlighter.h"
+#include "../projects_manager/project.h"
 
 
 namespace QGamaCore {
@@ -41,12 +42,12 @@ namespace QGamaCore {
         Q_OBJECT
 
         public:
-            TextEditor(const QString &type);
+            TextEditor(const QString &type, Project *pr);
             ~TextEditor();
             virtual QString getContent();
+            virtual void setContent(const QString &content);
 
         protected:
-            virtual void setContent(const QString &content);
             virtual bool isDocumentModified();
             virtual void setDocumentModified(bool modified);
             virtual void initializeUi();

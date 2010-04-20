@@ -81,7 +81,7 @@ namespace QGamaCore {
 
             Project* getActiveProject();
             Project* getProject(const QString &projectName, const QString &projectLocation);
-            void setActiveProject(const QString &projectName, const QString &projectLocation, bool slotCall=false);
+            void setActiveProject(Project *project, bool slotCall=false);
 
             void updateProjectFilesEntries();
     }; // class ProjectsManagerImpl

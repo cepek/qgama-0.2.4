@@ -5,6 +5,7 @@
 #include "../factory.h"
 #include "project.h"
 #include "adjustmentsetting.h"
+#include "../utils/applicationcomponentprovider.h"
 
 using namespace QGamaCore;
 
@@ -16,7 +17,8 @@ AdjustmentSettingDialog::AdjustmentSettingDialog(AdjustmentSetting *as, QWidget 
     QDialog(parent),
     ui(new QGamaCore::Ui::AdjustmentSettingDialog),
     prm(Factory::getProjectsManager()),
-    as(as)
+    as(as),
+    ptw(ApplicationComponentProvider::getProjectsTreeWidget())
 {
     // setup ui
     ui->setupUi(this);
@@ -175,10 +177,13 @@ void AdjustmentSettingDialog::showHelp()
   */
 void AdjustmentSettingDialog::accept()
 {
+    Project *project = prm->getActiveProject();
+    Q_ASSERT(project!=0 && "project pointer is 0!");
+
     if (mode == "Create") {
         AdjustmentSetting adjSet;
         as = &adjSet;
-        as->setId(prm->getActiveProject()->getNextSettingsId());
+        as->setId(project->getNextSettingsId());
     }
 
     // save the values from dialog
@@ -207,8 +212,11 @@ void AdjustmentSettingDialog::accept()
     as->setOutput(output);
 
     if (mode == "Create") {
-        prm->getActiveProject()->newAdjustmentSetting(*as);
+        project->newAdjustmentSetting(*as);
     }
+
+    // rename the item in the projects tree widget
+    ptw->renameItem(project,"Settings",as->getId(),as->getName());
 
     // accept dialog
     done(Accepted);

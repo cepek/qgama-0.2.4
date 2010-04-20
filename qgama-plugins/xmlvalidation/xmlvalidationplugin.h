@@ -30,7 +30,7 @@ public:
     QWidget* configuration() const;
 
 private:
-    XMLValidationDialog *vd;
+    void validate();
 
 private slots:
     void openDialog();

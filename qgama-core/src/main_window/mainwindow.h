@@ -71,6 +71,7 @@ namespace QGamaCore {
             void updateRecentlyOpenedFiles();
             void increaseProjectsCount();
             void decreaseProjectsCount();
+            Document* getActiveDocument();
 
         protected:
             void changeEvent(QEvent *event);
@@ -94,12 +95,31 @@ namespace QGamaCore {
 
             void readSettings();
             void makeConnections();
+            void initializeUi();
+            void openNewSubWindow(const QString &filePath, const QString &fileType, Project *project, const QString &content = "");
+            QMdiSubWindow* getActiveSubWindow();
+            void setActiveSubWindow(const QString &filePath);
+            bool calculating;
 
         public slots:
-            void openFile(const QString &file, const QString &fileType);
+            void openFile(const QString &filePath, const QString &fileType, Project *project = 0);
             void closeFile(const QString &filePath);
 
         private slots:
+            // subwindows
+            void closeSubWindow(int number);
+
+            // callbacks
+            void onSubWindowStateChanged();
+            void onSubWindowActivated(QMdiSubWindow* subWindow);
+            void onWindowItemClicked(QAction* action);
+            void onFileClosed(const QString &fileToClose, const QString &fileType);
+            void onSubWindowOpen(const QString &filePath, const QString &fileType);
+
+            // adjusting
+            void onAdjustmentSuccess(const QString xmlStream, const QString txtStream, Document *document, AdjustmentSetting *as);
+            void onAdjustmentFailure(const QString errorMessage);
+
             // File menu
             void newProject();
             void openProject();
@@ -114,9 +134,6 @@ namespace QGamaCore {
             void save();
             void saveAs();
             void saveAll();
-            void subWindowsStatesChanged();
-            void activeSubWindowChanged(QMdiSubWindow*);
-            void activateDesiredSubwindow(QAction*);
             void print();
             void updateFileMenuEntries(Project *project);
 
@@ -126,10 +143,12 @@ namespace QGamaCore {
 
             // View Menu
             void on_action_Toolbar_File_toggled(bool checked);
+            void on_action_Toolbar_Network_toggled(bool checked);
 
             // Network Menu
             void solve();
             void newSetting();
+            void setCalculating(bool calculating);
 
             // Window Menu
             void openProjectsDock();
@@ -138,7 +157,6 @@ namespace QGamaCore {
             void aboutQGamaDialog();
             void aboutGnuGamaDialog();
             void aboutQtDialog();
-
     }; // class MainWindow
 
 } // namespace QGamaCore

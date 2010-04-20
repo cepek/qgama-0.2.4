@@ -1,48 +1,20 @@
 # version of the QGamaCore GUI
-QGAMA_VERSION = 0.2.0
+QGAMA_VERSION = 0.2.2
 
 # dependency to libqgama
-unix:libqgama.commands = cd \
-    ../../libqgama \
-    && \
-    $$QMAKE_QMAKE \
-    libqgama.pro \
-    && \
-    make
-win32:libqgama.commands = cd \
-    ../../libqgama \
-    && \
-    $$QMAKE_QMAKE \
-    libqgama.pro \
-    && \
-    mingw32-make.exe
+unix:libqgama.commands = cd ../../libqgama && $$QMAKE_QMAKE libqgama.pro && make
+win32:libqgama.commands = cd ../../libqgama && $$QMAKE_QMAKE libqgama.pro && mingw32-make.exe
 QMAKE_EXTRA_TARGETS += libqgama
 PRE_TARGETDEPS += libqgama
 
 # generating of config.h file with the version info
-unix:version.commands = cd \
-    ../../scripts \
-    && \
-    g++ \
-    -o \
-    version \
-    version.cpp \
-    && \
-    ./version
-win32:version.commands = cd \
-    ../../scripts \
-    && \
-    mingw32-g++.exe \
-    -o \
-    version \
-    version.cpp \
-    && \
-    version.exe
+unix:version.commands = cd ../../scripts && g++ -o version version.cpp && ./version
+win32:version.commands = cd ../../scripts && mingw32-g++.exe -o version version.cpp && version.exe
 QMAKE_EXTRA_TARGETS += version
 PRE_TARGETDEPS += version
 
 # including project options
-!include(../../options.pri):error(Couldn't find the options.pri file!)
+!include(../../options.pri) : error(Couldn't find the options.pri file!)
 
 # removing the thread support, static linking againts libgcc for windows
 win32:QMAKE_LFLAGS_EXCEPTIONS_ON = -Wl
@@ -50,24 +22,24 @@ win32:QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions
 win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
 
 # static linking against libgama.a
-LIBS += -L../../libqgama \
-    -lqgama
+LIBS += -L../../libqgama -lqgama
 
 # unix:LIBS += -lXext -lm -ldl -lSM -lICE
 # unix:QMAKE_LFLAGS_SHAPP += -static
 # unix:QMAKE_CXXFLAGS_RELEASE = -Wall -pedantic -ansi
+
 TARGET = qgama
-QT += xml \
-    xmlpatterns \
-    webkit
+
+QT += xml xmlpatterns webkit
 
 # CONFIG += release
+
 TEMPLATE = app
+
 DESTDIR = ../../bin
-INCLUDEPATH += ui \
-    ../../ \
-    ../../../gama/gama-local \
-    ../../../gama/lib
+
+INCLUDEPATH += ui ../../ ../../../gama/gama-local ../../../gama/lib
+
 SOURCES += main.cpp \
     factory.cpp \
     preferences/settingsimpl.cpp \
@@ -92,8 +64,9 @@ SOURCES += main.cpp \
     projects_manager/adjustmentsettingdialog.cpp \
     main_window/htmlviewer.cpp \
     main_window/document.cpp \
-    adjustment/gamalocal.cpp \
-    network/solvenetworkdialog.cpp
+    adjustment/solvenetwork.cpp \
+    main_window/solvenetworkdialog.cpp
+
 HEADERS += factory.h \
     preferences/settings.h \
     preferences/settingsimpl.h \
@@ -123,9 +96,11 @@ HEADERS += factory.h \
     projects_manager/file.h \
     main_window/htmlviewer.h \
     main_window/document.h \
-    adjustment/gamalocal.h \
-    network/solvenetworkdialog.h \
-    exception.h
+    adjustment/solvenetwork.h \
+    main_window/solvenetworkdialog.h \
+    exception.h \
+    main_window/progressdialog.h
+
 FORMS += preferences/preferencesdialog.ui \
     plugins_manager/pluginsmanagerdialog.ui \
     main_window/mainwindow.ui \
@@ -137,10 +112,14 @@ FORMS += preferences/preferencesdialog.ui \
     projects_manager/projectpropertiesdialog.ui \
     projects_manager/newnetworkwizardpage3.ui \
     projects_manager/adjustmentsettingdialog.ui \
-    network/solvenetworkdialog.ui
+    main_window/solvenetworkdialog.ui
+
 RESOURCES += qgama-core.qrc
+
 TRANSLATIONS = ../translations/qgamacore_cs_CZ.ts
+
 UI_DIR = ui
+
 MOC_DIR = .moc/release-shared
 OBJECTS_DIR = .obj/release-shared
 RCC_DIR = .rcc/release-shared

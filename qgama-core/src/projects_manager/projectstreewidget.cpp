@@ -33,6 +33,9 @@
 using namespace QGamaCore;
 
 
+enum { Id=32, ProjectLocation=33, AdjustmentSettingId=34, NetworkId=35, SolutionId=36 };
+
+
 /* ===============================================================================================================*/
 /** Constructor.
   *
@@ -141,14 +144,17 @@ void ProjectsTreeWidget::openFileDoubleClick(QTreeWidgetItem *current, int colum
 {
     QString fileId = current->data(0,Id).toString();
 
+    Project *project = prm->getActiveProject();
+    Q_ASSERT(project!=0 && "active project is 0!");
+
     if (fileId=="network") {
         int networkId = current->data(0,NetworkId).toInt();
-        QString networkPath = prm->getActiveProject()->getNetwork(networkId)->getPath();
-        mw->openFile(networkPath,"network");
+        QString networkPath = project->getNetwork(networkId)->getPath();
+        mw->openFile(networkPath,"network",project);
     }
     else if (fileId=="setting") {
         int adjustmentSettingId = current->data(0,AdjustmentSettingId).toInt();
-        AdjustmentSetting *adjustmentSetting = prm->getActiveProject()->getAdjustmentSetting(adjustmentSettingId);
+        AdjustmentSetting *adjustmentSetting = project->getAdjustmentSetting(adjustmentSettingId);
         AdjustmentSettingDialog dialog(adjustmentSetting,mw);
         dialog.exec();
     }
@@ -168,7 +174,7 @@ void ProjectsTreeWidget::processContextMenuAction(QAction *action)
 
     // call apropriate function based on the action type
     if (id=="openFile") {
-        mw->openFile(parameter,"network");
+        mw->openFile(parameter,"network",prm->getActiveProject());
     }
     else if (id=="closeActiveProject") {
         prm->closeActiveProject();
@@ -217,7 +223,7 @@ void ProjectsTreeWidget::changeActiveProject(QTreeWidgetItem *current, QTreeWidg
             emit updateFileMenuEntries(project);
 
         // set selected project to be the active one in Projects Manager
-        prm->setActiveProject(name,location,true);
+        prm->setActiveProject(project,true);
     }
 
     qDebug() << "ProjectsTreeWidget::changeActiveProject() - STOP";
@@ -228,11 +234,13 @@ void ProjectsTreeWidget::changeActiveProject(QTreeWidgetItem *current, QTreeWidg
 /**
   *
   */
-QTreeWidgetItem* ProjectsTreeWidget::findProjectItem(const QString &projectName, const QString &projectLocation)
+QTreeWidgetItem* ProjectsTreeWidget::findProjectItem(Project *project)
 {
+    Q_ASSERT(project!=0 && "project pointer is 0!");
+
     // find the corresponding project item and return it
     for (int i=0; i<topLevelItemCount(); i++) {
-        if (topLevelItem(i)->text(0) == projectName && topLevelItem(i)->data(0,ProjectLocation).toString() == projectLocation) {
+        if (topLevelItem(i)->text(0) == project->getName() && topLevelItem(i)->data(0,ProjectLocation).toString() == project->getLocation()) {
             return topLevelItem(i);
         }
     }
@@ -245,10 +253,13 @@ QTreeWidgetItem* ProjectsTreeWidget::findProjectItem(const QString &projectName,
 /**
   *
   */
-QTreeWidgetItem* ProjectsTreeWidget::findFileCategoryItem(const QString &projectName, const QString &projectLocation, const QString &fileCategoryId)
+QTreeWidgetItem* ProjectsTreeWidget::findFileCategoryItem(Project *project, const QString &fileCategoryId)
 {
+    Q_ASSERT(project!=0 && "project pointer is 0!");
+
     // find the corresponding project item
-    QTreeWidgetItem *topItem = findProjectItem(projectName,projectLocation);
+    QTreeWidgetItem *topItem = findProjectItem(project);
+    Q_ASSERT(topItem!=0 && "topItem pointer is 0!");
 
     // find the specified category item and return it
     for (int i=0; i<topItem->childCount(); i++) {
@@ -264,12 +275,55 @@ QTreeWidgetItem* ProjectsTreeWidget::findFileCategoryItem(const QString &project
 /**
   *
   */
-void ProjectsTreeWidget::deleteProjectItem(const QString &projectName, const QString &projectLocation)
+QTreeWidgetItem* ProjectsTreeWidget::findFileItem(Project *project, const QString &fileCategoryId, int fileId)
 {
+    Q_ASSERT(project!=0 && "project pointer is 0!");
+
+    // find the corresponding file category item
+    QTreeWidgetItem *categoryItem = findFileCategoryItem(project,fileCategoryId);
+    Q_ASSERT(categoryItem!=0 && "categoryItem pointer is 0!");
+
+    int role;
+    if (fileCategoryId == "Networks")       role = NetworkId;
+    else if (fileCategoryId == "Settings")  role = AdjustmentSettingId;
+
+    // find the specified category item and return it
+    for (int i=0; i<categoryItem->childCount(); i++) {
+        if (categoryItem->child(i)->data(0,role).toInt() == fileId)
+            return categoryItem->child(i);
+    }
+
+    return 0;
+}
+
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void ProjectsTreeWidget::deleteProjectItem(Project *project)
+{
+    Q_ASSERT(project!=0 && "project pointer is 0!");
+
     // find the corresponding project item and delete it
-    QTreeWidgetItem *item = findProjectItem(projectName, projectLocation);
-    if (item!=0)
-        delete item;
+    QTreeWidgetItem *projectItem = findProjectItem(project);
+    Q_ASSERT(projectItem!=0 && "projectItem pointer is 0!");
+    delete projectItem;
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void ProjectsTreeWidget::renameItem(Project *project, const QString &fileCategoryId, int fileId, const QString &newName)
+{
+    Q_ASSERT(project!=0 && "project pointer is 0!");
+    // find the corresponding file item
+    QTreeWidgetItem *item = findFileItem(project, fileCategoryId, fileId);
+    Q_ASSERT(item!=0 && "file item pointer is 0!");
+    item->setText(0,newName);
 }
 
 
@@ -320,18 +374,65 @@ void ProjectsTreeWidget::addProjectItem(Project *project)
 /**
   *
   */
-void ProjectsTreeWidget::setProjectItemActive(const QString &projectName, const QString &projectLocation)
+void ProjectsTreeWidget::setProjectItemActive(Project *project)
 {
     qDebug() << "ProjectsTreeWidget::setProjectItemActive() - START";
 
+    Q_ASSERT(project!=0 && "project pointer is 0!");
+
     // find the corresponding project item
-    QTreeWidgetItem *item = findProjectItem(projectName, projectLocation);
-    if (item!=0) {
-        // change it to be active
-        setCurrentItem(item);
-    }
+    QTreeWidgetItem *projectItem = findProjectItem(project);
+    Q_ASSERT(projectItem!=0 && "projectItem pointer is 0!");
+    // change it to be active
+    setCurrentItem(projectItem);
 
     qDebug() << "ProjectsTreeWidget::setProjectItemActive() - STOP";
+}
+
+
+
+void ProjectsTreeWidget::addFileItem(Project *project, const File &file, const QString &fileCategoryId, bool highlightOpened)
+{
+    QTreeWidgetItem *item = new QTreeWidgetItem(findFileCategoryItem(project,fileCategoryId));
+    Q_ASSERT(item!=0 && "item pointer is null!");
+
+    if (fileCategoryId == "Networks") {
+        item->setText(0,file.getName());
+        item->setData(0,Id,"network");
+        item->setData(0,NetworkId,file.getId());
+        item->setIcon(0,QIcon(":/images/icons/network-32.png"));
+    }
+
+    if (fileCategoryId == "Solutions") {
+        item->setText(0,file.getName());
+        item->setData(0,Id,"network");
+        item->setData(0,SolutionId,file.getId());
+        QIcon icon;
+        if (file.getFormat() == "xml")  icon.addFile(":/images/icons/xml-32.png");
+        if (file.getFormat() == "txt")  icon.addFile(":/images/icons/txt-32.png");
+        if (file.getFormat() == "html") icon.addFile(":/images/icons/html-32.png");
+        item->setIcon(0,icon);
+    }
+
+    if (highlightOpened)
+        setCurrentItem(item);
+
+    if (file.getOpened()=="true")
+        mw->openFile(file.getPath(),"network",project);
+}
+
+
+void ProjectsTreeWidget::addSettingItem(Project *project, const AdjustmentSetting &adjustmentSetting, bool highlightOpened)
+{
+    QTreeWidgetItem *item = new QTreeWidgetItem(findFileCategoryItem(project,"Settings"));
+    Q_ASSERT(item!=0 && "item pointer is null!");
+
+    item->setText(0,adjustmentSetting.getName());
+    item->setData(0,Id,"setting");
+    item->setData(0,AdjustmentSettingId,adjustmentSetting.getId());
+    item->setIcon(0,QIcon(":/images/icons/setting-32.png"));
+    if (highlightOpened)
+        setCurrentItem(item);
 }
 
 
@@ -350,17 +451,7 @@ void ProjectsTreeWidget::addFileItems(Project *project, bool highlightOpened)
         if (network.isDisplayed())
             continue;
 
-        QTreeWidgetItem *item = new QTreeWidgetItem(findFileCategoryItem(project->getName(),project->getLocation(),"Networks"));
-        item->setText(0,network.getName());
-        item->setData(0,Id,"network");
-        item->setData(0,NetworkId,network.getId());
-        item->setIcon(0,QIcon(":/images/icons/network-32.png"));
-
-        if (network.getOpened()=="true") {
-            mw->openFile(network.getPath(),"network");
-            if (highlightOpened)
-                setCurrentItem(item);
-        }
+        addFileItem(project, network, "Networks", highlightOpened);
         network.setDisplayed(true);
     }
 
@@ -371,14 +462,8 @@ void ProjectsTreeWidget::addFileItems(Project *project, bool highlightOpened)
         if (adjustmentSetting.isDisplayed())
             continue;
 
-        QTreeWidgetItem *item = new QTreeWidgetItem(findFileCategoryItem(project->getName(),project->getLocation(),"Settings"));
-        item->setText(0,adjustmentSetting.getName());
-        item->setData(0,Id,"setting");
-        item->setData(0,AdjustmentSettingId,adjustmentSetting.getId());
-        item->setIcon(0,QIcon(":/images/icons/setting-32.png"));
+        addSettingItem(project, adjustmentSetting,highlightOpened);
         adjustmentSetting.setDisplayed(true);
-        if (highlightOpened)
-            setCurrentItem(item);
     }
 
     qDebug() << "ProjectsTreeWidget::addFileItems() - STOP";

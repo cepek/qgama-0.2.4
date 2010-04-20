@@ -11,7 +11,7 @@
 #include <QWidget>
 
 
-XMLValidatePlugin::XMLValidatePlugin() : vd(new XMLValidationDialog())
+XMLValidatePlugin::XMLValidatePlugin()
 {
 
 }
@@ -51,7 +51,7 @@ QStringList XMLValidatePlugin::authors() const
 QStringList XMLValidatePlugin::items() const
 {
     return QStringList() << 
-            tr("Tools|Va&lidate GNU Gama XML Input/Output|XML|1|this->openDialog()|Ctrl+L");
+            tr("Tools|Va&lidate GNU Gama XML Input/Output|XML|1|this->onValidate()|Ctrl+L");
 }
 
 
@@ -64,6 +64,41 @@ QWidget* XMLValidatePlugin::configuration() const
 void XMLValidatePlugin::openDialog()
 {
     vd->exec();
+}
+
+
+void XMLValidatePlugin::validate()
+{
+    const QByteArray schemaData = schemaView->toPlainText().toUtf8();
+    const QByteArray instanceData = instanceEdit->toPlainText().toUtf8();
+
+    MessageHandler messageHandler;
+
+    QXmlSchema schema;
+    schema.setMessageHandler(&messageHandler);
+
+    schema.load(schemaData);
+
+    bool errorOccurred = false;
+    if (!schema.isValid()) {
+        errorOccurred = true;
+    } else {
+        QXmlSchemaValidator validator(schema);
+        if (!validator.validate(instanceData))
+            errorOccurred = true;
+    }
+
+    if (errorOccurred) {
+        validationStatus->setText(messageHandler.statusMessage());
+        moveCursor(messageHandler.line(), messageHandler.column());
+    } else {
+        validationStatus->setText(tr("validation successful"));
+    }
+
+    const QString styleSheet = QString("QLabel {background: %1; padding: 3px}")
+                                      .arg(errorOccurred ? QColor(Qt::red).lighter(160).name() :
+                                                           QColor(Qt::green).lighter(160).name());
+    validationStatus->setStyleSheet(styleSheet);
 }
 
 

@@ -1,23 +1,13 @@
 TEMPLATE = lib
-
 TARGET = $$qtLibraryTarget(xmlvalidation)
-
 DESTDIR = ../../bin/plugins
-
-CONFIG += plugin release
-
+CONFIG += plugin \
+    release
 INCLUDEPATH += ../../
-
-HEADERS = xmlvalidationplugin.h \
-    xmlvalidationdialog.h
-
-SOURCES = xmlvalidationplugin.cpp \
-    xmlvalidationdialog.cpp
-
+HEADERS = xmlvalidationplugin.h
+SOURCES = xmlvalidationplugin.cpp
 RESOURCES += xmlvalidationplugin.qrc
-
-FORMS += xmlvalidationdialog.ui
-
+FORMS += 
 UI_DIR = ui
 MOC_DIR = .moc/release-shared
 OBJECTS_DIR = .obj/release-shared

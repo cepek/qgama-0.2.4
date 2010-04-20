@@ -321,7 +321,7 @@ bool Project::newNetwork(const QString &filePath)
     ptw->addFileItems(this);
 
     // open the network in subwindow
-    mw->openFile(filePath,"network");
+    mw->openFile(filePath,"network",this);
 
     return true;
 }
@@ -362,7 +362,7 @@ bool Project::importNetwork(const QString &filePath)
     ptw->addFileItems(this);
 
     // open the network in subwindow
-    mw->openFile(newFilePath,"network");
+    mw->openFile(newFilePath,"network",this);
 
     return true;
 }
@@ -387,7 +387,7 @@ bool Project::linkNetwork(const QString &filePath)
     ptw->addFileItems(this);
 
     // open the network in subwindow
-    mw->openFile(filePath,"network");
+    mw->openFile(filePath,"network",this);
 
     return true;
 }

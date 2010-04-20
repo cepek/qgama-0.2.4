@@ -45,7 +45,7 @@ namespace QGamaCore {
 
             virtual Project* getProject(const QString &projectName, const QString &projectLocation) = 0;
             virtual Project* getActiveProject() = 0;
-            virtual void setActiveProject(const QString &projectName, const QString &projectLocation, bool slotCall=false) = 0;
+            virtual void setActiveProject(Project *project, bool slotCall=false) = 0;
 
             virtual bool newProject(const QString &projectType, const QString &projectName, const QString &projectLocation) = 0;
             virtual bool openProject(const QString &projectFilePath, bool markAsActive = true) = 0;

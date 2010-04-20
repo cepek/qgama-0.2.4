@@ -21,14 +21,13 @@
 **
 ****************************************************************************/
 
-#ifndef QGAMACORE__HTMLVIEWER_H
-#define QGAMACORE__HTMLVIEWER_H
+#ifndef QGAMACORE__SOLVENETWORK_H
+#define QGAMACORE__SOLVENETWORK_H
 
-#include <QWebView>
-#include <QString>
-
-#include "document.h"
-#include "../projects_manager/project.h"
+#include "../projects_manager/adjustmentsetting.h"
+#include "../main_window/document.h"
+#include <string>
+#include <QThread>
 
 
 namespace QGamaCore {
@@ -36,21 +35,33 @@ namespace QGamaCore {
     /**
       *
       */
-    class HtmlViewer : public Document
+    class SolveNetwork : public QThread
     {
+        Q_OBJECT
+
+        signals:
+            void solved(const QString outputXmlStream, const QString outputTxtStream, Document *document, AdjustmentSetting *as);
+            void solvingFailed(const QString errorMessage);
+            void label(int value, const QString &text);
+
         public:
-            HtmlViewer(const QString &type, Project *pr);
-            ~HtmlViewer();
-            virtual QString getContent();
-            virtual void setContent(const QString &content);
+            SolveNetwork(const QString &stream, AdjustmentSetting *setting, Document *doc);
 
         protected:
-            virtual void initializeUi();
+            virtual void run();
+
+        private slots:
+            void onTerminate();
 
         private:
-            QWebView htmlViewer;
-    }; // class HtmlViewer
+            void solveNetwork_(QString &xmlStream, QString &txtStream);
 
-} // namespace
+            QString inputXmlStream;
+            QGamaCore::AdjustmentSetting *as;
+            QGamaCore::Document *document;
+    }; // class GamaLocal
 
-#endif // QGAMACORE__HTMLVIEWER_H
+} // namespace QGamaCore
+
+
+#endif // QGAMACORE__SOLVENETWORK_H

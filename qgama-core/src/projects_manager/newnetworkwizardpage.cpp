@@ -29,9 +29,6 @@
 using namespace QGamaCore;
 
 
-enum { Id=32, Description=33, Location=34, ProjectFilePath=35, ProjectType=36 };
-
-
 /**
   *
   */
@@ -42,7 +39,26 @@ NewNetworkWizardPage::NewNetworkWizardPage(QWidget *parent) :
     settings(Factory::getSettings())
 {
     ui->setupUi(this);
+}
 
+
+/**
+  *
+  */
+NewNetworkWizardPage::~NewNetworkWizardPage()
+{
+    Factory::releaseProjectsManager(prm);
+    Factory::releaseSettings(settings);
+
+    delete ui;
+}
+
+
+/**
+  *
+  */
+void NewNetworkWizardPage::initializePage()
+{
     // fill the projects combobox and select the active project
     QList<Project*> projects = prm->getProjectsList();
     QStringList activeProject = settings->get("projects/activeProject").toStringList();
@@ -85,18 +101,6 @@ NewNetworkWizardPage::NewNetworkWizardPage(QWidget *parent) :
 
     // set the first item as selected
     ui->listWidget_Network_Types->setCurrentRow(0);
-}
-
-
-/**
-  *
-  */
-NewNetworkWizardPage::~NewNetworkWizardPage()
-{
-    Factory::releaseProjectsManager(prm);
-    Factory::releaseSettings(settings);
-
-    delete ui;
 }
 
 

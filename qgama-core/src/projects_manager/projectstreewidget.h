@@ -44,19 +44,21 @@ namespace QGamaCore {
 
         Q_OBJECT
 
-        public:
-            enum { Id=32, ProjectLocation=33, AdjustmentSettingId=34, NetworkId=35 };
-        
+        public:  
             ProjectsTreeWidget(QWidget *parent);
             ~ProjectsTreeWidget();
 
             void addProjectItem(Project *project);
-            void deleteProjectItem(const QString &projectName, const QString &projectLocation);
-            void setProjectItemActive(const QString &projectName, const QString &projectLocation);
+            void deleteProjectItem(Project *project);
+            void setProjectItemActive(Project *project);
 
             void addFileItems(Project *project, bool highlightOpened = true);
 
             void collapseNonActiveProjects();
+
+            void renameItem(Project *project, const QString &fileCategoryId, int fileId, const QString &newName);
+            void addFileItem(Project *project, const File &file, const QString &fileCategoryId, bool highlightOpened = true);
+            void addSettingItem(Project *project, const AdjustmentSetting &adjustmentSetting, bool hihglightOpened = true);
 
         protected:
             void contextMenuEvent(QContextMenuEvent *event);
@@ -65,8 +67,9 @@ namespace QGamaCore {
             QGamaCore::ProjectsManager *prm;
             QGamaCore::Settings *settings;
 
-            QTreeWidgetItem* findProjectItem(const QString &projectName, const QString &projectLocation);
-            QTreeWidgetItem* findFileCategoryItem(const QString &projectName, const QString &projectLocation, const QString &fileCategoryId);
+            QTreeWidgetItem* findProjectItem(Project *project);
+            QTreeWidgetItem* findFileCategoryItem(Project *project, const QString &fileCategoryId);
+            QTreeWidgetItem* findFileItem(Project *project, const QString &fileCategoryId, int fileId);
 
             void cancelAllHighlightings();
             void highlightActiveProject(QTreeWidgetItem *item);
