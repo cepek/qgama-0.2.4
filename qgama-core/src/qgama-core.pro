@@ -16,9 +16,7 @@ PRE_TARGETDEPS += version
 # including project options
 !include(../../options.pri) : error(Couldn't find the options.pri file!)
 
-# removing the thread support, static linking againts libgcc for windows
-win32:QMAKE_LFLAGS_EXCEPTIONS_ON = -Wl
-win32:QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions
+# static linking againts libgcc for windows
 win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
 
 # static linking against libgama.a

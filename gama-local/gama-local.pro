@@ -25,6 +25,8 @@ CONFIG -= qt
 
 win32:QMAKE_LFLAGS_EXCEPTIONS_ON = -Wl
 win32:QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions
+win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
+
 win32:CONFIG+=console
 
 INCLUDEPATH+=../../gama/lib
