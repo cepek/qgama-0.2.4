@@ -22,6 +22,7 @@
 ****************************************************************************/
 
 #include <QtGui>
+#include <QtXmlPatterns>
 
 #include "solvenetwork.h"
 #include "../exception.h"
@@ -76,10 +77,11 @@ SolveNetwork::SolveNetwork(const QString &stream, AdjustmentSetting *setting, Do
 void SolveNetwork::run() {
     QString outputXmlStream;
     QString outputTxtStream;
+    QString outputHtmlStream;
 
     try {
-        solveNetwork_(outputXmlStream, outputTxtStream);
-        emit solved(outputXmlStream, outputTxtStream, document, as);
+        solveNetwork_(outputXmlStream, outputTxtStream, outputHtmlStream);
+        emit solved(outputXmlStream, outputTxtStream, outputHtmlStream, document, as);
     }
     catch (Exception e) {
         emit solvingFailed(e.text);
@@ -101,7 +103,7 @@ void SolveNetwork::onTerminate()
 /**
   *
   */
-void SolveNetwork::solveNetwork_(QString & outputXmlStream, QString & outputTxtStream)
+void SolveNetwork::solveNetwork_(QString &outputXmlStream, QString &outputTxtStream, QString &outputHtmlStream)
 {
     qDebug() << "SolveNetwork::solveNetwork_() - START";
 
@@ -120,6 +122,7 @@ void SolveNetwork::solveNetwork_(QString & outputXmlStream, QString & outputTxtS
     bool argv_txt      = formats.contains("txt");
     bool argv_xml      = formats.contains("xml");
     bool argv_html     = formats.contains("html");
+
     /*
     bool argv_obs      = false;
     string argv_obsout = "";
@@ -427,7 +430,7 @@ void SolveNetwork::solveNetwork_(QString & outputXmlStream, QString & outputTxtS
                 outputTxtStream = QString::fromStdString(txt_output2.str());
             }
 
-            if (argv_xml)
+            if (argv_xml || argv_html)
             {
                 qDebug() << "solveNetwork_() - outputing xml stream";
                 emit label(9, tr("Outputing results in XML format."));
@@ -440,15 +443,21 @@ void SolveNetwork::solveNetwork_(QString & outputXmlStream, QString & outputTxtS
                 xml.write(xml_output);
                 qDebug() << "GamaLocal - outputing xml stream";
                 outputXmlStream = QString::fromStdString(xml_output.str());
+
+                if (argv_html)
+                {
+                    qDebug() << "solveNetwork_() - outputing html stream";
+                    emit label(10, tr("Outputing results in HTML format."));
+
+                    QXmlQuery query(QXmlQuery::XSLT20);
+                    query.setFocus(outputXmlStream);
+                    QFile xslFile(QString(":/xml/gama-local-adjustment.xsl"));
+                    xslFile.open(QIODevice::ReadOnly);
+                    const QString xslText(QString::fromUtf8(xslFile.readAll()));
+                    query.setQuery(xslText);
+                    query.evaluateTo(&outputHtmlStream);
+                }
             }
-
-            if (argv_html)
-            {
-                qDebug() << "solveNetwork_() - outputing html stream";
-                emit label(10, tr("Outputing results in HTML format."));
-
-            }
-
         }
 
         emit label(11, tr("Adjustment succesfully completed."));

@@ -1,76 +1,98 @@
+#include <QtGui>
+#include <QtXmlPatterns>
+
 #include "xmlvalidationplugin.h"
-#include "xmlvalidationdialog.h"
-
-#include <QString>
-#include <QStringList>
-#include <QIcon>
-#include <QMessageBox>
-#include <QAction>
-#include <QApplication>
-#include <iostream>
-#include <QWidget>
+#include "messagehandler.h"
+#include <qgama-core/src/utils/applicationcomponentprovider.h>
+#include <qgama-core/src/main_window/mainwindow.h>
+#include <qgama-core/src/main_window/document.h>
+#include <qgama-core/src/main_window/texteditor.h>
 
 
-XMLValidatePlugin::XMLValidatePlugin()
+using namespace QGamaCore;
+using namespace QGamaPlugins;
+
+
+/**
+  *
+  */
+XMLValidationPlugin::XMLValidationPlugin()
 {
-
+    // iniatialize the schema data
+    QFile schemaFile(QString(":/xml/gama-local.xsd"));
+    schemaFile.open(QIODevice::ReadOnly);
+    const QString schemaText(QString::fromUtf8(schemaFile.readAll()));
+    schemaData = schemaText.toAscii();
 }
 
-XMLValidatePlugin::~XMLValidatePlugin()
+
+/**
+  *
+  */
+XMLValidationPlugin::~XMLValidationPlugin()
 {
-    delete vd;
 }
 
 
-QIcon XMLValidatePlugin::icon() const
+/**
+  *
+  */
+QIcon XMLValidationPlugin::icon() const
 {
     QIcon icon(":/images/icons/standardbutton-apply-32.png");
     return icon;
 }
 
 
-QString XMLValidatePlugin::name() const
+/**
+  *
+  */
+QString XMLValidationPlugin::name() const
 {
-    return tr("GNU Gama Input/Output XML Validator.");
+    return tr("GNU Gama Network XML Validator.");
 }
 
 
-QString XMLValidatePlugin::description() const
+/**
+  *
+  */
+QString XMLValidationPlugin::description() const
 {
-    return tr("Validator of input and output XML format of GNU Gama against corresponding .xsd schemas.");
+    return tr("Validator of the input XML format of GNU Gama against corresponding .xsd schema.");
 }
 
 
-QStringList XMLValidatePlugin::authors() const
+/**
+  *
+  */
+QStringList XMLValidationPlugin::authors() const
 {
-    return QStringList() <<
-            tr("Jiri Novak (jiri.novak.2@fsv.cvut.cz)");
+    return QStringList() << tr("Jiri Novak (jiri.novak.2@fsv.cvut.cz)");
 }
 
 
-QStringList XMLValidatePlugin::items() const
+/**
+  *
+  */
+QStringList XMLValidationPlugin::items() const
 {
-    return QStringList() << 
-            tr("Tools|Va&lidate GNU Gama XML Input/Output|XML|1|this->onValidate()|Ctrl+L");
+    return QStringList() << tr("Tools|Va&lidate GNU Gama XML Input/Output|XML|1|this->validate()|Ctrl+L");
 }
 
 
-QWidget* XMLValidatePlugin::configuration() const
+/**
+  *
+  */
+void XMLValidationPlugin::validate()
 {
-    return 0;
-}
+    MainWindow *mw = ApplicationComponentProvider::getMainWindow();
+    Q_ASSERT(document!=0 && "mainWindow pointer is 0!");
+    Document *document = mw->getActiveDocument();
+    Q_ASSERT(document!=0 && "document pointer is 0!");
+    TextEditor *textEditor = qobject_cast<TextEditor*> (document);
+    Q_ASSERT(textEditor!=0 && "textEditor pointer is 0!");
 
-
-void XMLValidatePlugin::openDialog()
-{
-    vd->exec();
-}
-
-
-void XMLValidatePlugin::validate()
-{
-    const QByteArray schemaData = schemaView->toPlainText().toUtf8();
-    const QByteArray instanceData = instanceEdit->toPlainText().toUtf8();
+    instanceData = textEditor->getContent().toAscii();
 
     MessageHandler messageHandler;
 
@@ -89,17 +111,17 @@ void XMLValidatePlugin::validate()
     }
 
     if (errorOccurred) {
-        validationStatus->setText(messageHandler.statusMessage());
-        moveCursor(messageHandler.line(), messageHandler.column());
+        textEditor->setLabelValidationText(messageHandler.statusMessage());
+        textEditor->moveCursor(messageHandler.line(), messageHandler.column());
     } else {
-        validationStatus->setText(tr("validation successful"));
+        textEditor->setLabelValidationText(tr("validation successful"));
     }
 
     const QString styleSheet = QString("QLabel {background: %1; padding: 3px}")
                                       .arg(errorOccurred ? QColor(Qt::red).lighter(160).name() :
                                                            QColor(Qt::green).lighter(160).name());
-    validationStatus->setStyleSheet(styleSheet);
+    textEditor->setLabelValidationStyleSheet(styleSheet);
 }
 
 
-Q_EXPORT_PLUGIN2(xmlvalidate_plugin, XMLValidatePlugin)
+Q_EXPORT_PLUGIN2(xmlvalidation_plugin, QGamaPlugins::XMLValidationPlugin)

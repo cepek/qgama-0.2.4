@@ -1,0 +1,753 @@
+<?xml version="1.0" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+ <xsd:element name='gama-local-adjustment'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='description'/>
+    <xsd:element ref='network-general-parameters'/>
+    <xsd:element ref='network-processing-summary'/>
+    <xsd:element ref='coordinates'/>
+    <xsd:element ref='observations'/>
+   </xsd:sequence>
+   <xsd:attribute name='version' type='xsd:NMTOKEN' use='required'/>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='description'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='network-general-parameters'>
+  <xsd:complexType>
+   <xsd:attribute name='gama-local-version' use='optional' type='xsd:string'/>
+   <xsd:attribute name='gama-local-compiler' use='optional' type='xsd:string'/>
+   <xsd:attribute name='gama-local-algorithm' use='optional' type='xsd:string'/>
+   <xsd:attribute name='axes-xy' use='optional' default='ne'>
+    <xsd:simpleType>
+     <xsd:restriction base='xsd:string'>
+      <xsd:enumeration value='ne'/>
+      <xsd:enumeration value='sw'/>
+      <xsd:enumeration value='es'/>
+      <xsd:enumeration value='wn'/>
+      <xsd:enumeration value='en'/>
+      <xsd:enumeration value='nw'/>
+      <xsd:enumeration value='se'/>
+      <xsd:enumeration value='ws'/>
+     </xsd:restriction>
+    </xsd:simpleType>
+   </xsd:attribute>
+   <xsd:attribute name='angles' use='optional' default='right-handed'>
+    <xsd:simpleType>
+     <xsd:restriction base='xsd:string'>
+      <xsd:enumeration value='right-handed'/>
+      <xsd:enumeration value='left-handed'/>
+     </xsd:restriction>
+    </xsd:simpleType>
+   </xsd:attribute>
+   <xsd:attribute name='epoch' type='xsd:NMTOKEN' use='optional' default='0.0'/>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='network-processing-summary'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='coordinates-summary'/>
+    <xsd:element ref='observations-summary'/>
+    <xsd:element ref='project-equations'/>
+    <xsd:element ref='standard-deviation'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='coordinates-summary'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='coordinates-summary-adjusted'/>
+    <xsd:element ref='coordinates-summary-constrained'/>
+    <xsd:element ref='coordinates-summary-fixed'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='observations-summary'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='distances'/>
+    <xsd:element ref='directions'/>
+    <xsd:element ref='angles'/>
+    <xsd:element ref='xyz-coords'/>
+    <xsd:element ref='h-diffs'/>
+    <xsd:element ref='z-angles'/>
+    <xsd:element ref='s-dists'/>
+    <xsd:element ref='vectors'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='project-equations'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='equations'/>
+    <xsd:element ref='unknowns'/>
+    <xsd:element ref='degrees-of-freedom'/>
+    <xsd:element ref='defect'/>
+    <xsd:element ref='sum-of-squares'/>
+    <xsd:choice>
+     <xsd:element ref='connected-network'/>
+     <xsd:element ref='disconnected-network'/>
+    </xsd:choice>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='standard-deviation'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='apriori'/>
+    <xsd:element ref='aposteriori'/>
+    <xsd:element ref='used'/>
+    <xsd:element ref='probability'/>
+    <xsd:element ref='ratio'/>
+    <xsd:element ref='lower'/>
+    <xsd:element ref='upper'/>
+    <xsd:choice>
+     <xsd:element ref='failed'/>
+     <xsd:element ref='passed'/>
+    </xsd:choice>
+    <xsd:element ref='confidence-scale'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='coordinates'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='fixed'/>
+    <xsd:element ref='approximate'/>
+    <xsd:element ref='adjusted'/>
+    <xsd:element ref='orientation-shifts'/>
+    <xsd:element ref='cov-mat'/>
+    <xsd:element ref='original-index'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='orientation-shifts'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='orientation' minOccurs='0' maxOccurs='unbounded'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='cov-mat'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='dim'/>
+    <xsd:element ref='band'/>
+    <xsd:element ref='flt' maxOccurs='unbounded'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='original-index'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='ind' maxOccurs='unbounded'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='observations'>
+  <xsd:complexType>
+   <xsd:choice minOccurs='0' maxOccurs='unbounded'>
+    <xsd:element ref='distance'/>
+    <xsd:element ref='direction'/>
+    <xsd:element ref='angle'/>
+    <xsd:element ref='height-diff'/>
+    <xsd:element ref='slope-distance'/>
+    <xsd:element ref='zenith-angle'/>
+    <xsd:element ref='dx'/>
+    <xsd:element ref='dy'/>
+    <xsd:element ref='dz'/>
+    <xsd:element ref='coordinate-x'/>
+    <xsd:element ref='coordinate-y'/>
+    <xsd:element ref='coordinate-z'/>
+   </xsd:choice>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='adjusted'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='point' minOccurs='0' maxOccurs='unbounded'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='constrained'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='point' minOccurs='0' maxOccurs='unbounded'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='fixed'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='point' minOccurs='0' maxOccurs='unbounded'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='connected-network'>
+  <xsd:complexType/>
+ </xsd:element>
+
+ <xsd:element name='disconnected-network'>
+  <xsd:complexType/>
+ </xsd:element>
+
+ <xsd:element name='failed'>
+  <xsd:complexType/>
+ </xsd:element>
+
+ <xsd:element name='passed'>
+  <xsd:complexType/>
+ </xsd:element>
+
+ <xsd:element name='coordinates-summary-adjusted'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='count-xyz'/>
+    <xsd:element ref='count-xy'/>
+    <xsd:element ref='count-z'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='coordinates-summary-constrained'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='count-xyz'/>
+    <xsd:element ref='count-xy'/>
+    <xsd:element ref='count-z'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='coordinates-summary-fixed'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='count-xyz'/>
+    <xsd:element ref='count-xy'/>
+    <xsd:element ref='count-z'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='count-xyz'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='count-xy'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='count-z'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='point'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='id'/>
+    <xsd:sequence minOccurs='0' maxOccurs='1'>
+     <xsd:choice>
+      <xsd:element ref='X'/>
+      <xsd:element ref='x'/>
+     </xsd:choice>
+     <xsd:choice>
+      <xsd:element ref='Y'/>
+      <xsd:element ref='y'/>
+     </xsd:choice>
+    </xsd:sequence>
+    <xsd:choice minOccurs='0' maxOccurs='1'>
+     <xsd:element ref='Z'/>
+     <xsd:element ref='z'/>
+    </xsd:choice>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='orientation'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='id'/>
+    <xsd:element ref='approx'/>
+    <xsd:element ref='adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='distance'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='from'/>
+    <xsd:element ref='to'/>
+    <xsd:element ref='obs'/>
+    <xsd:element ref='adj'/>
+    <xsd:element ref='stdev'/>
+    <xsd:element ref='qrr'/>
+    <xsd:element ref='f'/>
+    <xsd:element ref='std-residual'/>
+    <xsd:element ref='err-obs'/>
+    <xsd:element ref='err-adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='direction'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='from'/>
+    <xsd:element ref='to'/>
+    <xsd:element ref='obs'/>
+    <xsd:element ref='adj'/>
+    <xsd:element ref='stdev'/>
+    <xsd:element ref='qrr'/>
+    <xsd:element ref='f'/>
+    <xsd:element ref='std-residual'/>
+    <xsd:element ref='err-obs'/>
+    <xsd:element ref='err-adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='angle'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='from'/>
+    <xsd:element ref='left'/>
+    <xsd:element ref='right'/>
+    <xsd:element ref='obs'/>
+    <xsd:element ref='adj'/>
+    <xsd:element ref='stdev'/>
+    <xsd:element ref='qrr'/>
+    <xsd:element ref='f'/>
+    <xsd:element ref='std-residual'/>
+    <xsd:element ref='err-obs'/>
+    <xsd:element ref='err-adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='slope-distance'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='from'/>
+    <xsd:element ref='to'/>
+    <xsd:element ref='obs'/>
+    <xsd:element ref='adj'/>
+    <xsd:element ref='stdev'/>
+    <xsd:element ref='qrr'/>
+    <xsd:element ref='f'/>
+    <xsd:element ref='std-residual'/>
+    <xsd:element ref='err-obs'/>
+    <xsd:element ref='err-adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='zenith-angle'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='from'/>
+    <xsd:element ref='to'/>
+    <xsd:element ref='obs'/>
+    <xsd:element ref='adj'/>
+    <xsd:element ref='stdev'/>
+    <xsd:element ref='qrr'/>
+    <xsd:element ref='f'/>
+    <xsd:element ref='std-residual'/>
+    <xsd:element ref='err-obs'/>
+    <xsd:element ref='err-adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='dx'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='from'/>
+    <xsd:element ref='to'/>
+    <xsd:element ref='obs'/>
+    <xsd:element ref='adj'/>
+    <xsd:element ref='stdev'/>
+    <xsd:element ref='qrr'/>
+    <xsd:element ref='f'/>
+    <xsd:element ref='std-residual'/>
+    <xsd:element ref='err-obs'/>
+    <xsd:element ref='err-adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='dy'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='from'/>
+    <xsd:element ref='to'/>
+    <xsd:element ref='obs'/>
+    <xsd:element ref='adj'/>
+    <xsd:element ref='stdev'/>
+    <xsd:element ref='qrr'/>
+    <xsd:element ref='f'/>
+    <xsd:element ref='std-residual'/>
+    <xsd:element ref='err-obs'/>
+    <xsd:element ref='err-adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='dz'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='from'/>
+    <xsd:element ref='to'/>
+    <xsd:element ref='obs'/>
+    <xsd:element ref='adj'/>
+    <xsd:element ref='stdev'/>
+    <xsd:element ref='qrr'/>
+    <xsd:element ref='f'/>
+    <xsd:element ref='std-residual'/>
+    <xsd:element ref='err-obs'/>
+    <xsd:element ref='err-adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='height-diff'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='from'/>
+    <xsd:element ref='to'/>
+    <xsd:element ref='obs'/>
+    <xsd:element ref='adj'/>
+    <xsd:element ref='stdev'/>
+    <xsd:element ref='qrr'/>
+    <xsd:element ref='f'/>
+    <xsd:element ref='std-residual'/>
+    <xsd:element ref='err-obs'/>
+    <xsd:element ref='err-adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='coordinate-x'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='id'/>
+    <xsd:element ref='obs'/>
+    <xsd:element ref='adj'/>
+    <xsd:element ref='stdev'/>
+    <xsd:element ref='qrr'/>
+    <xsd:element ref='f'/>
+    <xsd:element ref='std-residual'/>
+    <xsd:element ref='err-obs'/>
+    <xsd:element ref='err-adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='coordinate-y'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='id'/>
+    <xsd:element ref='obs'/>
+    <xsd:element ref='adj'/>
+    <xsd:element ref='stdev'/>
+    <xsd:element ref='qrr'/>
+    <xsd:element ref='f'/>
+    <xsd:element ref='std-residual'/>
+    <xsd:element ref='err-obs'/>
+    <xsd:element ref='err-adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='coordinate-z'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='id'/>
+    <xsd:element ref='obs'/>
+    <xsd:element ref='adj'/>
+    <xsd:element ref='stdev'/>
+    <xsd:element ref='qrr'/>
+    <xsd:element ref='f'/>
+    <xsd:element ref='std-residual'/>
+    <xsd:element ref='err-obs'/>
+    <xsd:element ref='err-adj'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='id'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='from'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='left'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='right'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='X'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='x'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='Y'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='y'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='Z'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='z'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='adj'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='angles'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='aposteriori'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='approx'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='approximate'>
+  <xsd:complexType>
+   <xsd:sequence>
+    <xsd:element ref='point' maxOccurs='unbounded'/>
+   </xsd:sequence>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='apriori'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='axes-xy'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='band'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='confidence-scale'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='defect'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='degrees-of-freedom'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='dim'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='directions'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='distances'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='epoch'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='equations'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='err-adj'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='err-obs'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='qrr'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='f'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='flt'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='ind'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='h-diffs'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='lower'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='obs'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='probability'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='ratio'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='s-dists'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='std-residual'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='stdev'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='sum-of-squares'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='to'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='unknowns'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='upper'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='used'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='vectors'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='xy'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='xyz'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='xyz-coords'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+
+ <xsd:element name='z-angles'>
+  <xsd:complexType mixed='true'>
+  </xsd:complexType>
+ </xsd:element>
+</xsd:schema>

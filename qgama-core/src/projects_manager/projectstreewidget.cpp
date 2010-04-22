@@ -191,6 +191,7 @@ void ProjectsTreeWidget::processContextMenuAction(QAction *action)
 void ProjectsTreeWidget::changeActiveProject(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
     qDebug() << "ProjectsTreeWidget::changeActiveProject() - START";
+    Q_UNUSED(previous);
 
     QString name;
     QString location;

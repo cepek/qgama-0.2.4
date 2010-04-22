@@ -100,13 +100,13 @@ void SolveNetworkDialog::accept()
 
     // start the adjustment in the separate thread
     SolveNetwork *solver = new SolveNetwork(inputXmlStream, as, document);
-    connect(solver, SIGNAL(solved(QString,QString,Document*,AdjustmentSetting*)), mw, SLOT(onAdjustmentSuccess(QString,QString,Document*,AdjustmentSetting*)));
+    connect(solver, SIGNAL(solved(QString,QString,QString,Document*,AdjustmentSetting*)), mw, SLOT(onAdjustmentSuccess(QString,QString,QString,Document*,AdjustmentSetting*)));
     connect(solver, SIGNAL(solvingFailed(QString)), mw, SLOT(onAdjustmentFailure(QString)));
 
     // dissable solve network action and add progress bar
     ProgressDialog *progressDialog = new ProgressDialog(document,tr("Adjustment in progress..."),0,11);
 
-    connect(solver, SIGNAL(solved(QString,QString,Document*,AdjustmentSetting*)), progressDialog, SLOT(close()));
+    connect(solver, SIGNAL(solved(QString,QString,QString,Document*,AdjustmentSetting*)), progressDialog, SLOT(close()));
     connect(solver, SIGNAL(solvingFailed(QString)), progressDialog, SLOT(close()));
     connect(solver, SIGNAL(label(int,QString)), progressDialog, SLOT(setLabel(int,QString)));
     connect(this, SIGNAL(setCalculating(bool)), mw, SLOT(setCalculating(bool)));

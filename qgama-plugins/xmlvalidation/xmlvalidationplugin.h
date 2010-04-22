@@ -1,5 +1,5 @@
-#ifndef XMLValidationPlugin_H
-#define XMLValidationPlugin_H
+#ifndef QGAMAPLUGINS__XMLVALIDATIONPLUGIN_H
+#define QGAMAPLUGINS__XMLVALIDATIONPLUGIN_H
 
 #include <QObject>
 #include <QString>
@@ -8,32 +8,39 @@
 #include <QList>
 #include <QMenu>
 #include <QAction>
+
 #include <qgama-core/src/plugins_manager/plugininterface.h>
-#include "xmlvalidationdialog.h"
 
-class QWidget;
 
-class XMLValidatePlugin : public QGamaCore::PluginInterface
-{
-    Q_OBJECT
-    Q_INTERFACES(QGamaCore::PluginInterface)
+namespace QGamaPlugins {
 
-public:
-    XMLValidatePlugin();
-    ~XMLValidatePlugin();
+    /**
+      *
+      */
+    class XMLValidationPlugin : public QGamaCore::PluginInterface
+    {
+            Q_OBJECT
+            Q_INTERFACES(QGamaCore::PluginInterface)
 
-    QIcon icon() const;
-    QString name() const;
-    QString description() const;
-    QStringList authors() const;
-    QStringList items() const;
-    QWidget* configuration() const;
+        public:
+            XMLValidationPlugin();
+            ~XMLValidationPlugin();
 
-private:
-    void validate();
+            QIcon icon() const;
+            QString name() const;
+            QString description() const;
+            QStringList authors() const;
+            QStringList items() const;
 
-private slots:
-    void openDialog();
-};
+        private:
+            QByteArray schemaData;
+            QByteArray instanceData;
 
-#endif
+        private slots:
+            void validate();
+    }; // class XMLValidationPlugin
+
+} // namespace QGamaPlugins
+
+
+#endif // QGAMAPLUGINS__XMLVALIDATIONPLUGIN_H

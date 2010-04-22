@@ -72,6 +72,7 @@ namespace QGamaCore {
             void increaseProjectsCount();
             void decreaseProjectsCount();
             Document* getActiveDocument();
+            TextEditor* getActiveTextEditor();
 
         protected:
             void changeEvent(QEvent *event);
@@ -117,7 +118,7 @@ namespace QGamaCore {
             void onSubWindowOpen(const QString &filePath, const QString &fileType);
 
             // adjusting
-            void onAdjustmentSuccess(const QString xmlStream, const QString txtStream, Document *document, AdjustmentSetting *as);
+            void onAdjustmentSuccess(const QString xmlStream, const QString txtStream, const QString htmlStream, Document *document, AdjustmentSetting *as);
             void onAdjustmentFailure(const QString errorMessage);
 
             // File menu

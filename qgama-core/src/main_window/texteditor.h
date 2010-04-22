@@ -46,6 +46,9 @@ namespace QGamaCore {
             ~TextEditor();
             virtual QString getContent();
             virtual void setContent(const QString &content);
+            void moveCursor(int line, int column);
+            void setLabelValidationText(const QString &text) { label_validation.setText(text); }
+            void setLabelValidationStyleSheet(const QString &styleSheet) { label_validation.setStyleSheet(styleSheet); }
 
         protected:
             virtual bool isDocumentModified();
@@ -57,6 +60,9 @@ namespace QGamaCore {
             XmlSyntaxHighlighter highlighter;
             QLabel label_status;
             QLabel label_validation;
+
+        private slots:
+            void textChanged();
     }; // class TextEditor
 
 } // namespace QGamaCore

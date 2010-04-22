@@ -48,7 +48,7 @@ namespace QGamaCore {
             virtual QString description() const = 0;
             virtual QStringList authors() const = 0;
             virtual QStringList items() const = 0;
-            virtual QWidget* configuration() const = 0;
+            virtual QWidget* configuration() const { return 0; };
     }; // class PluginInterface
 
 } // namespace QGamaCore

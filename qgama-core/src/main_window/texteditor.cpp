@@ -39,11 +39,11 @@ TextEditor::TextEditor(const QString &type, Project *pr) :
     editor(),
     highlighter(editor.document())
 {
-    // makes Qt delete this widget when the widget has accepted the close event
-    editor.setAttribute(Qt::WA_DeleteOnClose);
-
     // initialize Ui
     initializeUi();
+
+    // make connections
+    connect(editor.document(), SIGNAL(modificationChanged(bool)), this, SLOT(modificationChanged(bool)));
 }
 
 
@@ -106,7 +106,9 @@ void TextEditor::initializeUi()
     layout->setMargin(0);
     layout->addWidget(&editor,1);
     QHBoxLayout *verticalLayout = new QHBoxLayout();
-    label_status.setText("Status of validation: ");
+    label_status.setText(tr("Status of validation: "));
+    label_validation.setText(tr("Not Validated"));
+    label_validation.setMargin(3);
     label_status.setVisible(false);
     label_validation.setVisible(false);
     verticalLayout->addWidget(&label_status,0);
@@ -115,5 +117,62 @@ void TextEditor::initializeUi()
     layout->addLayout(verticalLayout);
     setLayout(layout);
 
-    connect(editor.document(), SIGNAL(modificationChanged(bool)), this, SLOT(modificationChanged(bool)));
+    if (documentType() == "network") {
+        label_status.setVisible(true);
+        label_validation.setVisible(true);
+    }
+
+    if (documentType() == "txt") {
+        QFont font = qApp->font();
+        font.setFamily("Courier");
+        editor.setFont(font);
+    }
+
+    // makes Qt delete this widget when the widget has accepted the close event
+    editor.setAttribute(Qt::WA_DeleteOnClose);
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void TextEditor::moveCursor(int line, int column)
+{
+    // set the cursor to the initial position
+    editor.moveCursor(QTextCursor::Start);
+
+    // move the cursor to the corresponding line
+    for (int i = 1; i < line; ++i)
+        editor.moveCursor(QTextCursor::Down);
+
+    // move the cursor to the corresponding character position
+    for (int i = 1; i < column; ++i)
+        editor.moveCursor(QTextCursor::Right);
+
+    // set the selection of corresponding line
+    QList<QTextEdit::ExtraSelection> extraSelections;
+    QTextEdit::ExtraSelection selection;
+
+    const QColor lineColor = QColor(Qt::red).lighter(160);
+    selection.format.setBackground(lineColor);
+    selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+    selection.cursor = editor.textCursor();
+    selection.cursor.clearSelection();
+    extraSelections.append(selection);
+
+    editor.setExtraSelections(extraSelections);
+
+    // set the focus
+    editor.setFocus();
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void TextEditor::textChanged()
+{
+    editor.setExtraSelections(QList<QTextEdit::ExtraSelection>());
 }

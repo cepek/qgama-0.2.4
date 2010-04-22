@@ -783,6 +783,19 @@ Document* MainWindow::getActiveDocument()
 /**
   *
   */
+TextEditor* MainWindow::getActiveTextEditor()
+{
+    TextEditor *document = qobject_cast<TextEditor*> (getActiveSubWindow()->widget());
+
+    Q_ASSERT(document!=0 && "document pointer is 0!");
+    return document;
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
 QMdiSubWindow* MainWindow::getActiveSubWindow()
 {
     QMdiSubWindow *subWindow = 0;
@@ -1049,7 +1062,7 @@ void MainWindow::updateFileMenuEntries(Project *project)
 /**
   *
   */
-void MainWindow::onAdjustmentSuccess(const QString xmlStream, const QString txtStream, Document *document, AdjustmentSetting *as)
+void MainWindow::onAdjustmentSuccess(const QString xmlStream, const QString txtStream, const QString htmlStream, Document *document, AdjustmentSetting *as)
 {
     Q_ASSERT(as!=0 && "adjustmentSetting pointer is 0!");
     Q_ASSERT(document!=0 && "document pointer is 0!");
@@ -1057,16 +1070,24 @@ void MainWindow::onAdjustmentSuccess(const QString xmlStream, const QString txtS
     Q_ASSERT(project!=0 && " project pointer is 0!");
 
     QString filePath;
+    qDebug() << xmlStream;
     // if calculated, add subwindow with the xml output
     if (!xmlStream.isEmpty()) {
         filePath = project->getLocation()+project->getName()+"/Solutions/"+document->userFriendlyCurrentFile().split(".").value(0)+"__"+as->getName()+".xml";
         openNewSubWindow(filePath, "solution-xml", project, xmlStream);
     }
 
+    qDebug() << txtStream;
     // if calculated, add subwindow with the txt output
     if (!txtStream.isEmpty()) {
         filePath = project->getLocation()+project->getName()+"/Solutions/"+document->userFriendlyCurrentFile().split(".").value(0)+"__"+as->getName()+".txt";
         openNewSubWindow(filePath, "txt", project, txtStream);
+    }
+
+    // if calculated, add subwindow with the txt output
+    if (!htmlStream.isEmpty()) {
+        filePath = project->getLocation()+project->getName()+"/Solutions/"+document->userFriendlyCurrentFile().split(".").value(0)+"__"+as->getName()+".html";
+        openNewSubWindow(filePath, "solution-html", project, htmlStream);
     }
 
     setCalculating(false);

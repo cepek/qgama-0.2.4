@@ -7,6 +7,13 @@ win32:libqgama.commands = cd ../../libqgama && $$QMAKE_QMAKE libqgama.pro && min
 QMAKE_EXTRA_TARGETS += libqgama
 PRE_TARGETDEPS += libqgama
 
+isEmpty(PREFIX) {
+    PREFIX = /usr/local
+}
+prefix.path = $$PREFIX
+target.path = $$prefix.path/bin
+INSTALLS += target
+
 # generating of config.h file with the version info
 unix:version.commands = cd ../../scripts && g++ -o version version.cpp && ./version
 win32:version.commands = cd ../../scripts && mingw32-g++.exe -o version version.cpp && version.exe
@@ -18,6 +25,8 @@ PRE_TARGETDEPS += version
 
 # static linking againts libgcc for windows
 win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
+QMAKE_LFLAGS += -rdynamic
+QMAKE_CXXFLAGS += -rdynamic
 
 # static linking against libgama.a
 LIBS += -L../../libqgama -lqgama

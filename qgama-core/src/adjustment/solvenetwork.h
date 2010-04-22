@@ -40,7 +40,7 @@ namespace QGamaCore {
         Q_OBJECT
 
         signals:
-            void solved(const QString outputXmlStream, const QString outputTxtStream, Document *document, AdjustmentSetting *as);
+            void solved(const QString outputXmlStream, const QString outputTxtStream, const QString outputHtmlStream, Document *document, AdjustmentSetting *as);
             void solvingFailed(const QString errorMessage);
             void label(int value, const QString &text);
 
@@ -54,7 +54,7 @@ namespace QGamaCore {
             void onTerminate();
 
         private:
-            void solveNetwork_(QString &xmlStream, QString &txtStream);
+            void solveNetwork_(QString &xmlStream, QString &txtStream, QString &htmlStream);
 
             QString inputXmlStream;
             QGamaCore::AdjustmentSetting *as;

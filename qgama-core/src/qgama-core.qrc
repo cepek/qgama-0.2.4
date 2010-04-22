@@ -45,8 +45,12 @@
 	<file>../images/icons/xml-32.png</file>
 	<file>../images/icons/txt-16.png</file>
 	<file>../images/icons/txt-32.png</file>
+
 	<file>../images/gama-local.png</file>
 	<file>../images/gama-local-elipse.png</file>
 	<file>../images/rocinante.png</file>
+
+	<file>../xml/gama-local.xsd</file>
+	<file>../xml/gama-local-adjustment.xsl</file>
     </qresource>
 </RCC>

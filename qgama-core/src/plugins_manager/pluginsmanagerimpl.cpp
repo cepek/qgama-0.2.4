@@ -19,11 +19,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <QPluginLoader>
-#include <QStringListIterator>
-#include <QObject>
-#include <QDir>
-#include <iostream>
+#include <QtGui>
 
 #include "pluginsmanagerimpl.h"
 #include "pluginsmanagerdialog.h"
@@ -111,9 +107,12 @@ void PluginsManagerImpl::loadPlugin(const QString &name)
         // load requested plugin
         QPluginLoader *loader = new QPluginLoader(pluginsDir.absoluteFilePath(name));
         PluginInterface *plugin = qobject_cast<PluginInterface*> (loader->instance());
+        qDebug() << "PluginsManagerImpl::loadPlugin(" << name << ")";
 
         // if the load and cast were successful
         if (plugin) {
+            qDebug() << "successfull";
+
             // we will add it to the map of loaded plugins
             plugins.insert(name,loader);
 
@@ -130,6 +129,7 @@ void PluginsManagerImpl::loadPlugin(const QString &name)
         }
         // otherwise delete allocated elements
         else {
+            qDebug() << "unsuccessfull";
             delete loader;
             plugins.remove(name);
         }

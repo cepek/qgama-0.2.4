@@ -139,6 +139,10 @@ int NewNetworkWizardPage::nextId() const
     else if (ui->listWidget_Network_Types->currentItem()->data(Id).toString()=="LinkExistingNetwork" ||
              ui->listWidget_Network_Types->currentItem()->data(Id).toString()=="ImportExistingNetwork")
         return NewNetworkWizard::Page_Import_Link_Existing_Network;
+    else {
+        Q_ASSERT(false && "unreachable");
+        return -1;
+    }
 }
 
 
