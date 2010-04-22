@@ -39,7 +39,7 @@ TARGET = qgama
 
 QT += xml xmlpatterns webkit
 
-# CONFIG += release
+CONFIG += release
 
 TEMPLATE = app
 
