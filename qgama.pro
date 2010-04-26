@@ -7,12 +7,20 @@ all {
     gama-local \
     gama-local-xml2txt \
     gama-g3 \
-    qgama-plugins \
-    qgama-core/src/qgama-core.pro
+    qgama-core/src/qgama-core.pro \
+    qgama-plugins
 }
 
-libqtgama {
-    SUBDIRS=libqgama
+gama {
+    SUBDIRS=libqgama \
+    gama-local \
+    gama-local-xml2txt \
+    gama-g3
+}
+
+qgama {
+    SUBDIRS=qgama-core/src/qgama-core.pro \
+    qgama-plugins
 }
 
 gama-local {
@@ -26,9 +34,8 @@ gama-g3 {
     gama-g3
 }
 
-qgama {
-    SUBDIRS=qgama-plugins \
-    qgama-core/src/qgama-core.pro
+libqgama {
+    SUBDIRS=libqgama
 }
 
 qgama-core {

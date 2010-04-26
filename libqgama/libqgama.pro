@@ -1,38 +1,42 @@
 # generating of config.h file with the version info
-!exists(../config.h) {
-    unix:version.commands = cd ../scripts && g++ -o version version.cpp && ./version
-    win32:version.commands = cd ../scripts && mingw32-g++.exe -o version version.cpp && version.exe
-    QMAKE_EXTRA_TARGETS += version
-    PRE_TARGETDEPS += version
-}
+unix:version.commands = cd ../scripts && g++ -o version version.cpp && ./version
+win32:version.commands = cd ../scripts && mingw32-g++.exe -o version version.cpp && version.exe
+QMAKE_EXTRA_TARGETS += version
+PRE_TARGETDEPS += version
 
+# add a file to be cleaned
 QMAKE_CLEAN += ../config.h
 
+# include options
 !include(../options.pri) : error(Couldn't find the options.pri file!)
+
+# compile in release mode and as a static library
+CONFIG += release
+CONFIG += staticlib
+
+# place it at the same directory
+DESTDIR=./
+
+# without qt support
+CONFIG -= qt
+
+# disable the thread support, because we don't need it
+win32:QMAKE_LFLAGS_EXCEPTIONS_ON = -Wl
+win32:QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions
 
 TARGET = qgama
 
 TEMPLATE = lib
 
-CONFIG += release
-CONFIG += staticlib
-
-DESTDIR=./
-
-win32:CONFIG -= qt
-win32:QMAKE_LFLAGS_EXCEPTIONS_ON = -Wl
-win32:QMAKE_CXXFLAGS_EXCEPTIONS_ON = -fexceptions
-
 INCLUDEPATH += ../../gama/lib ../
 
-# expat1.1
+# if include of expath 1.1 is desired, add corresponding includepaths
 GNU_gama_expat_1_1 {
 INCLUDEPATH += ../../gama/lib/expat/xmlparse \
    ../../gama/lib/expat/xmlwf \
    ../../gama/lib/expat/xmltok
 }
 
-# gnu_gama
 SOURCES += ../../gama/lib/gnu_gama/e3.cpp \
     ../../gama/lib/gnu_gama/ellipsoid.cpp \
     ../../gama/lib/gnu_gama/ellipsoids.cpp \
@@ -63,7 +67,6 @@ SOURCES += ../../gama/lib/gnu_gama/e3.cpp \
     ../../gama/lib/gnu_gama/xml/encoding_unknown_handler.cpp \
     ../../gama/lib/gnu_gama/xml/localnetwork.cpp \
     ../../gama/lib/gnu_gama/xml/localnetwork_adjustment_results.cpp \
-# gamalib
     ../../gama/lib/gamalib/c/api/capi_exception.cpp \
     ../../gama/lib/gamalib/c/api/capi_gkfparser.cpp \
     ../../gama/lib/gamalib/c/api/capi_locnet.cpp \
@@ -97,8 +100,8 @@ SOURCES += ../../gama/lib/gnu_gama/e3.cpp \
     ../../gama/lib/gamalib/skipcomm.cpp \
     ../../gama/lib/gamalib/xml/gkfparser.cpp
 
+# if include of expath 1.1 is desired, add corresponding sources
 GNU_gama_expat_1_1 {
-# expat1.1
 SOURCES += ../../gama/lib/expat/xmlparse/xmlparse.c \
     ../../gama/lib/expat/xmlparse/hashtable.c \
     ../../gama/lib/expat/xmltok/xmltok.c \
@@ -106,7 +109,6 @@ SOURCES += ../../gama/lib/expat/xmlparse/xmlparse.c \
     ../../gama/lib/expat/xmlwf/codepage.c
 }
 
-# matvec
 HEADERS += ../../gama/lib/matvec/array.h \
     ../../gama/lib/matvec/bandmat.h \
     ../../gama/lib/matvec/choldec.h \
@@ -128,7 +130,6 @@ HEADERS += ../../gama/lib/matvec/array.h \
     ../../gama/lib/matvec/transvec.h \
     ../../gama/lib/matvec/vecbase.h \
     ../../gama/lib/matvec/vec.h \
-# gnu_gama
     ../../gama/lib/gnu_gama/e3.h \
     ../../gama/lib/gnu_gama/ellipsoid.h \
     ../../gama/lib/gnu_gama/ellipsoids.h \
@@ -179,7 +180,6 @@ HEADERS += ../../gama/lib/matvec/array.h \
     ../../gama/lib/gnu_gama/xml/encoding.h \
     ../../gama/lib/gnu_gama/xml/localnetwork.h \
     ../../gama/lib/gnu_gama/xml/localnetwork_adjustment_results.h \
-# gamalib
     ../../gama/lib/gamalib/angobs.h \
     ../../gama/lib/gamalib/bpoint.h \
     ../../gama/lib/gamalib/c/api/capi_exception.h \
@@ -256,8 +256,8 @@ HEADERS += ../../gama/lib/matvec/array.h \
     ../../gama/lib/gamalib/xml/gkfparser.h \
     ../config.h
 
+# if include of expath 1.1 is desired, add corresponding headers
 GNU_gama_expat_1_1 {
-# expat1.1
 HEADERS += ../../gama/lib/expat/xmlwf/codepage.h \
     ../../gama/lib/expat/xmltok/xmlrole.h \
     ../../gama/lib/expat/xmlparse/hashtable.h \

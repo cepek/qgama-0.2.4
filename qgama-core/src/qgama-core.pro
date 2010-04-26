@@ -1,5 +1,5 @@
 # version of the QGamaCore GUI
-QGAMA_VERSION = 0.2.2
+QGAMA_VERSION = 0.2.4
 
 # dependency to libqgama
 unix:libqgama.commands = cd ../../libqgama && $$QMAKE_QMAKE libqgama.pro && make
@@ -7,6 +7,19 @@ win32:libqgama.commands = cd ../../libqgama && $$QMAKE_QMAKE libqgama.pro && min
 QMAKE_EXTRA_TARGETS += libqgama
 PRE_TARGETDEPS += libqgama
 
+# generating of config.h file with the version info
+unix:version.commands = cd ../../scripts && g++ -o version version.cpp && ./version
+win32:version.commands = cd ../../scripts && mingw32-g++.exe -o version version.cpp && version.exe
+QMAKE_EXTRA_TARGETS += version
+PRE_TARGETDEPS += version
+
+# add a file to be cleaned
+QMAKE_CLEAN += ../../config.h
+
+# including project options
+!include(../../options.pri) : error(Couldn't find the options.pri file!)
+
+# initalize the installs target
 isEmpty(PREFIX) {
     PREFIX = /usr/local
 }
@@ -14,26 +27,15 @@ prefix.path = $$PREFIX
 target.path = $$prefix.path/bin
 INSTALLS += target
 
-# generating of config.h file with the version info
-unix:version.commands = cd ../../scripts && g++ -o version version.cpp && ./version
-win32:version.commands = cd ../../scripts && mingw32-g++.exe -o version version.cpp && version.exe
-QMAKE_EXTRA_TARGETS += version
-PRE_TARGETDEPS += version
-
-# including project options
-!include(../../options.pri) : error(Couldn't find the options.pri file!)
-
 # static linking againts libgcc for windows
 win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
+
+# make the linker add all symbols, not only used ones, to the dynamic symbol table
 QMAKE_LFLAGS += -rdynamic
 QMAKE_CXXFLAGS += -rdynamic
 
 # static linking against libgama.a
 LIBS += -L../../libqgama -lqgama
-
-# unix:LIBS += -lXext -lm -ldl -lSM -lICE
-# unix:QMAKE_LFLAGS_SHAPP += -static
-# unix:QMAKE_CXXFLAGS_RELEASE = -Wall -pedantic -ansi
 
 TARGET = qgama
 

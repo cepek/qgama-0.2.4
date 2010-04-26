@@ -1,3 +1,21 @@
+# dependency to qgama-core
+unix:qgamacore.commands = cd ../../qgama-core/src && $$QMAKE_QMAKE qgama-core.pro && make
+win32:qgamacore.commands = cd ../../qgama-core/src && $$QMAKE_QMAKE qgama-core.pro && mingw32-make.exe
+QMAKE_EXTRA_TARGETS += qgamacore
+PRE_TARGETDEPS+=qgamacore
+
+# make the linker add all symbols, not only used ones, to the dynamic symbol table
+QMAKE_LFLAGS += -rdynamic
+QMAKE_CXXFLAGS += -rdynamic
+
+# initalize the installs target
+isEmpty(PREFIX) {
+    PREFIX = /usr/local
+}
+prefix.path = $$PREFIX
+target.path = $$prefix.path/lib/qgama
+INSTALLS += target
+
 TEMPLATE = lib
 
 TARGET = $$qtLibraryTarget(xmlvalidation)
@@ -19,9 +37,6 @@ HEADERS = xmlvalidationplugin.h \
     messagehandler.h
 
 SOURCES = xmlvalidationplugin.cpp
-
-QMAKE_LFLAGS += -rdynamic
-QMAKE_CXXFLAGS += -rdynamic
 
 UI_DIR = ui
 MOC_DIR = .moc/release-shared
