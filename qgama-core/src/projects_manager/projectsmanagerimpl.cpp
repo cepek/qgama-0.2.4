@@ -1,23 +1,25 @@
-/*
-    QGamaCore GUI C++ Library (QGamaCoreLib)
-    Copyright (C) 2010  Jiri Novak <jiri.novak.2@fsv.cvut.cz>
-
-    This file is part of the QGamaCore GUI C++ Library.
-
-    This library is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+/****************************************************************************
+**
+**    QGamaCore GUI C++ Library (QGamaCoreLib)
+**    Copyright (C) 2010  Jiri Novak <jiri.novak.2@fsv.cvut.cz>
+**
+**    This file is part of the QGamaCore GUI C++ Library.
+**
+**    This library is free software; you can redistribute it and/or modify
+**    it under the terms of the GNU General Public License as published by
+**    the Free Software Foundation; either version 3 of the License, or
+**    (at your option) any later version.
+**
+**    This library is distributed in the hope that it will be useful,
+**    but WITHOUT ANY WARRANTY; without even the implied warranty of
+**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**    GNU General Public License for more details.
+**
+**    You should have received a copy of the GNU General Public License
+**    along with this library; if not, write to the Free Software
+**    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+**
+****************************************************************************/
 
 #include <QtGui>
 #include <QDomDocument>
@@ -25,7 +27,6 @@
 #include "projectsmanagerimpl.h"
 #include "projectstreewidget.h"
 #include "../../../config.h"
-#include "../utils/applicationcomponentprovider.h"
 #include "../factory.h"
 #include "../main_window/mainwindow.h"
 #include "file.h"
@@ -49,7 +50,8 @@ int ProjectsManagerImpl::pointersCount = 0;
   * Initializes the reference to QGamaCore::Settings.
   */
 ProjectsManagerImpl::ProjectsManagerImpl() :
-    settings(Factory::getSettings())
+    settings(Factory::getSettings()),
+    acp(Factory::getApplicationComponentProvider())
 {
 }
 
@@ -95,6 +97,7 @@ void ProjectsManagerImpl::release()
 ProjectsManagerImpl::~ProjectsManagerImpl()
 {
     Factory::releaseSettings(settings);
+    Factory::releaseApplicationComponentProvider(acp);
 
     // delete projects list
     for (int i=0; i<projectsCount(); i++)
@@ -134,7 +137,7 @@ bool ProjectsManagerImpl::newProject(const QString &projectType, const QString &
 bool ProjectsManagerImpl::openProject(const QString &projectFilePath, bool markAsActive)
 {
     // get the pointer to the projects tree widget
-    ProjectsTreeWidget *ptw = ApplicationComponentProvider::getProjectsTreeWidget();
+    ProjectsTreeWidget *ptw = acp->getProjectsTreeWidget();
 
     // get the project location and name from the projectFile absolute path
     QStringList path = projectFilePath.split("/");
@@ -170,7 +173,7 @@ bool ProjectsManagerImpl::openProject(const QString &projectFilePath, bool markA
         }
 
         // get the pointer to the main window widget
-        MainWindow *mw = ApplicationComponentProvider::getMainWindow();
+        MainWindow *mw = acp->getMainWindow();
 
         // increase the counter of the opened projects
         mw->increaseProjectsCount();
@@ -202,13 +205,13 @@ bool ProjectsManagerImpl::openProject(const QString &projectFilePath, bool markA
 void ProjectsManagerImpl::closeProject(Project* project)
 {
     // get the pointer to the projects tree widget
-    ProjectsTreeWidget *ptw = ApplicationComponentProvider::getProjectsTreeWidget();
+    ProjectsTreeWidget *ptw = acp->getProjectsTreeWidget();
 
     // delete the project tree widget entries
     ptw->deleteProjectItem(project);
 
     // get the pointer to the main window widget
-    MainWindow *mw = ApplicationComponentProvider::getMainWindow();
+    MainWindow *mw = acp->getMainWindow();
 
     // close all projects networks
     QList<File>& networks = project->getNetworks();
@@ -303,7 +306,7 @@ Project* ProjectsManagerImpl::getActiveProject()
 void ProjectsManagerImpl::setActiveProject(Project *project, bool slotCall)
 {
     // get the pointer to the projects tree widget
-    ProjectsTreeWidget *ptw = ApplicationComponentProvider::getProjectsTreeWidget();
+    ProjectsTreeWidget *ptw = acp->getProjectsTreeWidget();
     Q_ASSERT(ptw!=0 && "projectsTreeWidget pointer is 0!");
     Q_ASSERT(project!=0 && "project pointer is 0!");
 

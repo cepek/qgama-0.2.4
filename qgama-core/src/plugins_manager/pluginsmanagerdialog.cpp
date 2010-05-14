@@ -1,28 +1,27 @@
-/*
-    QGamaCore GUI C++ Library (QGamaCoreLib)
-    Copyright (C) 2010  Jiri Novak <jiri.novak.2@fsv.cvut.cz>
+/****************************************************************************
+**
+**    QGamaCore GUI C++ Library (QGamaCoreLib)
+**    Copyright (C) 2010  Jiri Novak <jiri.novak.2@fsv.cvut.cz>
+**
+**    This file is part of the QGamaCore GUI C++ Library.
+**
+**    This library is free software; you can redistribute it and/or modify
+**    it under the terms of the GNU General Public License as published by
+**    the Free Software Foundation; either version 3 of the License, or
+**    (at your option) any later version.
+**
+**    This library is distributed in the hope that it will be useful,
+**    but WITHOUT ANY WARRANTY; without even the implied warranty of
+**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**    GNU General Public License for more details.
+**
+**    You should have received a copy of the GNU General Public License
+**    along with this library; if not, write to the Free Software
+**    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+**
+****************************************************************************/
 
-    This file is part of the QGamaCore GUI C++ Library.
-
-    This library is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-#include <QString>
-#include <QFileDialog>
-#include <QTreeWidgetItem>
-#include <iostream>
+#include <QtGui>
 
 #include "pluginsmanagerdialog.h"
 #include "../factory.h"
@@ -34,6 +33,10 @@ using namespace QGamaCore;
 enum { Enabled, Disabled };
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 PluginsManagerDialog::PluginsManagerDialog(QWidget *parent) :
     QDialog(parent),
     ui(new QGamaCore::Ui::PluginsManagerDialog),
@@ -49,6 +52,10 @@ PluginsManagerDialog::PluginsManagerDialog(QWidget *parent) :
 }
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 PluginsManagerDialog::~PluginsManagerDialog()
 {
     Factory::releaseSettings(settings);
@@ -58,6 +65,10 @@ PluginsManagerDialog::~PluginsManagerDialog()
 }
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 void PluginsManagerDialog::changeEvent(QEvent *e)
 {
     QDialog::changeEvent(e);
@@ -71,6 +82,10 @@ void PluginsManagerDialog::changeEvent(QEvent *e)
 }
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 void PluginsManagerDialog::addLoadedPlugin(const QString &name, int status, PluginInterface* plugin)
 {
     QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget_Plugins);
@@ -98,16 +113,28 @@ void PluginsManagerDialog::addLoadedPlugin(const QString &name, int status, Plug
 }
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 void PluginsManagerDialog::on_toolButton_clicked()
 {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), "/home", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), QDir::homePath(), QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
     if (!dir.isEmpty()) {
         ui->lineEdit_PluginDirectoryValue->setText(dir);
         settings->set("plugins/directory",dir);
     }
+
+    ui->treeWidget_Plugins->clear();
+    pm->updateDirAndFiles();
+    pm->loadPlugins();
 }
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 void PluginsManagerDialog::on_buttonBox_accepted()
 {  
     QStringList enabledPlugins;
@@ -124,30 +151,32 @@ void PluginsManagerDialog::on_buttonBox_accepted()
 
     if (!enabledPlugins.isEmpty()) {
         settings->set("plugins/enabledPlugins",enabledPlugins);
-        //settings.saveValue("plugins/enabledPlugins");
     }
     else {
         settings->del("plugins/enabledPlugins");
-        //settings.removeValue("plugins/enabledPlugins");
     }
 
-    //settings.saveValue("plugins/directory");
-
     for (QStringList::iterator i=disabledPlugins.begin(); i!=disabledPlugins.end(); ++i) {
-        pm->unloadPlugin(*i);
+        pm->disablePlugin(*i);
     }
 
     for (QStringList::iterator i=enabledPlugins.begin(); i!=enabledPlugins.end(); ++i) {
-        pm->loadPlugin(*i);
+        pm->enablePlugin(*i);
     }
 }
 
 
+/* ===============================================================================================================*/
+/**
+  *
+  */
 void PluginsManagerDialog::on_treeWidget_Plugins_currentItemChanged(QTreeWidgetItem* current, QTreeWidgetItem* previous)
 {
+    Q_UNUSED(previous);
+
     ui->textEdit_Description->setText(current->text(2));
 
-    PluginInterface *plugin = pm->plugin(current->text(3));
+    PluginInterface *plugin = pm->getPlugin(current->text(3));
     if (ui->tabWidget->findChild<QWidget*>(tr("Configuration")) != 0)
         ui->tabWidget->removeTab(1);
     ui->tabWidget->addTab(plugin->configuration(),tr("Configuration"));

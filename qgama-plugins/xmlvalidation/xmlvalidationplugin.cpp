@@ -3,9 +3,6 @@
 
 #include "xmlvalidationplugin.h"
 #include "messagehandler.h"
-#include <qgama-core/src/utils/applicationcomponentprovider.h>
-#include <qgama-core/src/main_window/mainwindow.h>
-#include <qgama-core/src/main_window/document.h>
 #include <qgama-core/src/main_window/texteditor.h>
 
 
@@ -76,7 +73,7 @@ QStringList XMLValidationPlugin::authors() const
   */
 QStringList XMLValidationPlugin::items() const
 {
-    return QStringList() << tr("Tools|Va&lidate GNU Gama XML Input/Output|XML|1|this->validate()|Ctrl+L");
+    return QStringList() << tr("Va&lidate GNU Gama XML Input/Output|XML|1|validate()|Ctrl+L");
 }
 
 
@@ -85,11 +82,7 @@ QStringList XMLValidationPlugin::items() const
   */
 void XMLValidationPlugin::validate()
 {
-    MainWindow *mw = ApplicationComponentProvider::getMainWindow();
-    Q_ASSERT(document!=0 && "mainWindow pointer is 0!");
-    Document *document = mw->getActiveDocument();
-    Q_ASSERT(document!=0 && "document pointer is 0!");
-    TextEditor *textEditor = qobject_cast<TextEditor*> (document);
+    TextEditor *textEditor = acp->getActiveTextEditor();
     Q_ASSERT(textEditor!=0 && "textEditor pointer is 0!");
 
     instanceData = textEditor->getContent().toAscii();
@@ -98,7 +91,6 @@ void XMLValidationPlugin::validate()
 
     QXmlSchema schema;
     schema.setMessageHandler(&messageHandler);
-
     schema.load(schemaData);
 
     bool errorOccurred = false;
@@ -115,6 +107,7 @@ void XMLValidationPlugin::validate()
         textEditor->moveCursor(messageHandler.line(), messageHandler.column());
     } else {
         textEditor->setLabelValidationText(tr("validation successful"));
+        textEditor->clearHighlights();
     }
 
     const QString styleSheet = QString("QLabel {background: %1; padding: 3px}")
@@ -122,6 +115,5 @@ void XMLValidationPlugin::validate()
                                                            QColor(Qt::green).lighter(160).name());
     textEditor->setLabelValidationStyleSheet(styleSheet);
 }
-
 
 Q_EXPORT_PLUGIN2(xmlvalidation_plugin, QGamaPlugins::XMLValidationPlugin)

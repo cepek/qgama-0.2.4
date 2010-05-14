@@ -1,33 +1,29 @@
-/*
-    QGamaCore GUI C++ Library (QGamaCoreLib)
-    Copyright (C) 2010  Jiri Novak <jiri.novak.2@fsv.cvut.cz>
+/****************************************************************************
+**
+**    QGamaCore GUI C++ Library (QGamaCoreLib)
+**    Copyright (C) 2010  Jiri Novak <jiri.novak.2@fsv.cvut.cz>
+**
+**    This file is part of the QGamaCore GUI C++ Library.
+**
+**    This library is free software; you can redistribute it and/or modify
+**    it under the terms of the GNU General Public License as published by
+**    the Free Software Foundation; either version 3 of the License, or
+**    (at your option) any later version.
+**
+**    This library is distributed in the hope that it will be useful,
+**    but WITHOUT ANY WARRANTY; without even the implied warranty of
+**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**    GNU General Public License for more details.
+**
+**    You should have received a copy of the GNU General Public License
+**    along with this library; if not, write to the Free Software
+**    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+**
+****************************************************************************/
 
-    This file is part of the QGamaCore GUI C++ Library.
-
-    This library is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
-
-#include <QMap>
-#include <QStringList>
-#include <QVariant>
-#include <QApplication>
+#include <QtGui>
 
 #include "settingsimpl.h"
-
-
-#include <iostream>
 
 using namespace QGamaCore;
 
@@ -39,6 +35,7 @@ SettingsImpl* SettingsImpl::self = 0;
 int SettingsImpl::pointersCount = 0;
 
 
+/* ===============================================================================================================*/
 /** Implicit constructor.
   *
   * Initializes QSettings object, loads everything stored there into the inner map and sets default path to the plugins directory.
@@ -57,6 +54,7 @@ SettingsImpl::SettingsImpl() :
 }
 
 
+/* ===============================================================================================================*/
 /** Method returning a pointer to QGamaCore::PluginManagerImpl object.
   *
   * On the first call the instance is created, sequentially pointers to this instance are returned.
@@ -72,6 +70,7 @@ SettingsImpl* SettingsImpl::instance() {
 }
 
 
+/* ===============================================================================================================*/
 /** Actions that have to be done on the release.
   *
   * Saves everything stored in the inner map into QSettings. Descreases counter of pointers by one
@@ -89,6 +88,7 @@ void SettingsImpl::release()
 }
 
 
+/* ===============================================================================================================*/
 /** Class destructor.
   *
   * Saves everything stored in the inner map into QSettings.
@@ -98,10 +98,11 @@ SettingsImpl::~SettingsImpl()
     // save all the settings from the inner map
     saveAll();
 
-    std::cout << "SettingsImpl - Destruktor" << std::endl;
+    qDebug() << "SettingsImpl - Destruktor";
 }
 
 
+/* ===============================================================================================================*/
 /** Saves value referenced with the specified key from the inner map into the persistent storage (QSettings).
   *
   * @param[in] key  The key for the value desired to save.
@@ -112,6 +113,7 @@ void SettingsImpl::saveValue(const QString &key)
 }
 
 
+/* ===============================================================================================================*/
 /** Loads value referenced with the specified key from the persistent storage (QSettings) into the inner map.
   *
   * @param[in] key  The key for the value desired to load.
@@ -122,6 +124,7 @@ void SettingsImpl::loadValue(const QString &key)
 }
 
 
+/* ===============================================================================================================*/
 /** Saves all the values from the inner map into the persistent storage (QSettings).
   *
   */
@@ -139,6 +142,7 @@ void SettingsImpl::saveAll()
 }
 
 
+/* ===============================================================================================================*/
 /** Loads all the values from the persistent storage (QSettings) into the inner map.
   *
   */

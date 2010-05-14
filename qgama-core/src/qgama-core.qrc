@@ -52,5 +52,7 @@
 
 	<file>../xml/gama-local.xsd</file>
 	<file>../xml/gama-local-adjustment.xsl</file>
+
+	<file>../translations/qgamacore_cs_CZ.qm</file>
     </qresource>
 </RCC>

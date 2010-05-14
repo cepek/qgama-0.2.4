@@ -5,8 +5,8 @@ QMAKE_EXTRA_TARGETS += qgamacore
 PRE_TARGETDEPS+=qgamacore
 
 # make the linker add all symbols, not only used ones, to the dynamic symbol table
-QMAKE_LFLAGS += -rdynamic
-QMAKE_CXXFLAGS += -rdynamic
+unix:QMAKE_LFLAGS += -rdynamic
+unix:QMAKE_CXXFLAGS += -rdynamic
 
 # initalize the installs target
 isEmpty(PREFIX) {
@@ -22,16 +22,11 @@ TARGET = $$qtLibraryTarget(xmlvalidation)
 
 DESTDIR = ../../bin/plugins
 
-CONFIG += plugin release
+INCLUDEPATH = ../../
 
 QT += xmlpatterns xml
 
-INCLUDEPATH += ../../ \
-../../qgama-core/src/ \
-../../qgama-core/src/main_window/ \
-../../qgama-core/src/plugins_manager/ \
-../../qgama-core/src/projects_manager \
-../../qgama-core/src/ui/
+CONFIG += plugin release
 
 HEADERS = xmlvalidationplugin.h \
     messagehandler.h

@@ -17,12 +17,10 @@ PRE_TARGETDEPS += version
 QMAKE_CLEAN += ../../config.h
 
 # including project options
-!include(../../options.pri) : error(Couldn't find the options.pri file!)
+!include(../../options.pri):error(Couldn't find the options.pri file!)
 
 # initalize the installs target
-isEmpty(PREFIX) {
-    PREFIX = /usr/local
-}
+isEmpty(PREFIX):PREFIX = /usr/local
 prefix.path = $$PREFIX
 target.path = $$prefix.path/bin
 INSTALLS += target
@@ -31,8 +29,8 @@ INSTALLS += target
 win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
 
 # make the linker add all symbols, not only used ones, to the dynamic symbol table
-QMAKE_LFLAGS += -rdynamic
-QMAKE_CXXFLAGS += -rdynamic
+unix:QMAKE_LFLAGS += -rdynamic
+unix:QMAKE_CXXFLAGS += -rdynamic
 
 # static linking against libgama.a
 LIBS += -L../../libqgama -lqgama
@@ -55,7 +53,6 @@ SOURCES += main.cpp \
     preferences/preferencesdialog.cpp \
     plugins_manager/pluginsmanagerdialog.cpp \
     plugins_manager/pluginsmanagerimpl.cpp \
-    utils/applicationcomponentprovider.cpp \
     utils/xmlsyntaxhighlighter.cpp \
     main_window/mainwindow.cpp \
     main_window/aboutqgamadialog.cpp \
@@ -74,7 +71,8 @@ SOURCES += main.cpp \
     main_window/htmlviewer.cpp \
     main_window/document.cpp \
     adjustment/solvenetwork.cpp \
-    main_window/solvenetworkdialog.cpp
+    main_window/solvenetworkdialog.cpp \
+    utils/applicationcomponentproviderimpl.cpp
 
 HEADERS += factory.h \
     preferences/settings.h \
@@ -108,7 +106,8 @@ HEADERS += factory.h \
     adjustment/solvenetwork.h \
     main_window/solvenetworkdialog.h \
     exception.h \
-    main_window/progressdialog.h
+    main_window/progressdialog.h \
+    utils/applicationcomponentproviderimpl.h
 
 FORMS += preferences/preferencesdialog.ui \
     plugins_manager/pluginsmanagerdialog.ui \
@@ -128,7 +127,6 @@ RESOURCES += qgama-core.qrc
 TRANSLATIONS = ../translations/qgamacore_cs_CZ.ts
 
 UI_DIR = ui
-
 MOC_DIR = .moc/release-shared
 OBJECTS_DIR = .obj/release-shared
 RCC_DIR = .rcc/release-shared

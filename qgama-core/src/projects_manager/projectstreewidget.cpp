@@ -1,23 +1,25 @@
-/*
-    QGamaCore GUI C++ Library (QGamaCoreLib)
-    Copyright (C) 2010  Jiri Novak <jiri.novak.2@fsv.cvut.cz>
-
-    This file is part of the QGamaCore GUI C++ Library.
-
-    This library is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+/****************************************************************************
+**
+**    QGamaCore GUI C++ Library (QGamaCoreLib)
+**    Copyright (C) 2010  Jiri Novak <jiri.novak.2@fsv.cvut.cz>
+**
+**    This file is part of the QGamaCore GUI C++ Library.
+**
+**    This library is free software; you can redistribute it and/or modify
+**    it under the terms of the GNU General Public License as published by
+**    the Free Software Foundation; either version 3 of the License, or
+**    (at your option) any later version.
+**
+**    This library is distributed in the hope that it will be useful,
+**    but WITHOUT ANY WARRANTY; without even the implied warranty of
+**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**    GNU General Public License for more details.
+**
+**    You should have received a copy of the GNU General Public License
+**    along with this library; if not, write to the Free Software
+**    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+**
+****************************************************************************/
 
 #include <QtGui>
 
@@ -27,8 +29,6 @@
 #include "../factory.h"
 #include "adjustmentsetting.h"
 #include "adjustmentsettingdialog.h"
-
-#include <iostream>
 
 using namespace QGamaCore;
 
@@ -44,8 +44,10 @@ ProjectsTreeWidget::ProjectsTreeWidget(QWidget *parent) :
         QTreeWidget(parent),
         prm(Factory::getProjectsManager()),
         settings(Factory::getSettings()),
-        mw(ApplicationComponentProvider::getMainWindow())
+        acp(Factory::getApplicationComponentProvider())
 {
+    mw = acp->getMainWindow();
+
     // make connections
     connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), this, SLOT(openFileDoubleClick(QTreeWidgetItem*,int)));
     connect(this, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)), this, SLOT(changeActiveProject(QTreeWidgetItem*,QTreeWidgetItem*)));
@@ -68,6 +70,7 @@ ProjectsTreeWidget::~ProjectsTreeWidget()
 {
     Factory::releaseSettings(settings);
     Factory::releaseProjectsManager(prm);
+    Factory::releaseApplicationComponentProvider(acp);
 }
 
 
@@ -117,15 +120,15 @@ void ProjectsTreeWidget::contextMenuEvent(QContextMenuEvent *event)
         data.append("closeActiveProject");
         action_Close_Project->setData(data);
 
-        QAction *action_Rename_Project = menu.addAction(tr("Rename..."));
-        QAction *action_Move_Project = menu.addAction(tr("Move..."));
-        QAction *action_Copy_Project = menu.addAction(tr("Copy..."));
-        QAction *action_Delete_Project = menu.addAction(tr("Delete"));
+        //QAction *action_Rename_Project = menu.addAction(tr("Rename..."));
+        //QAction *action_Move_Project = menu.addAction(tr("Move..."));
+        //QAction *action_Copy_Project = menu.addAction(tr("Copy..."));
+        //QAction *action_Delete_Project = menu.addAction(tr("Delete"));
 
         menu.addSeparator();
 
         // create action "Project Properties"
-        QAction *action_Project_Properties = menu.addAction(tr("Properties"));
+        //QAction *action_Project_Properties = menu.addAction(tr("Properties"));
 
         // connect the context menu to the corresponding slot and execute it
         connect(&menu, SIGNAL(triggered(QAction*)), this, SLOT(processContextMenuAction(QAction*)));
@@ -142,6 +145,8 @@ void ProjectsTreeWidget::contextMenuEvent(QContextMenuEvent *event)
   */
 void ProjectsTreeWidget::openFileDoubleClick(QTreeWidgetItem *current, int column)
 {
+    Q_UNUSED(column);
+
     QString fileId = current->data(0,Id).toString();
 
     Project *project = prm->getActiveProject();
@@ -284,7 +289,7 @@ QTreeWidgetItem* ProjectsTreeWidget::findFileItem(Project *project, const QStrin
     QTreeWidgetItem *categoryItem = findFileCategoryItem(project,fileCategoryId);
     Q_ASSERT(categoryItem!=0 && "categoryItem pointer is 0!");
 
-    int role;
+    int role = 0;
     if (fileCategoryId == "Networks")       role = NetworkId;
     else if (fileCategoryId == "Settings")  role = AdjustmentSettingId;
 

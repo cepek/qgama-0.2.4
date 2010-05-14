@@ -28,7 +28,7 @@ TARGET = qgama
 
 TEMPLATE = lib
 
-INCLUDEPATH += ../../gama/lib ../
+INCLUDEPATH += ../../gama/lib ../ /usr/include
 
 # if include of expath 1.1 is desired, add corresponding includepaths
 GNU_gama_expat_1_1 {
@@ -36,6 +36,7 @@ INCLUDEPATH += ../../gama/lib/expat/xmlparse \
    ../../gama/lib/expat/xmlwf \
    ../../gama/lib/expat/xmltok
 }
+!GNU_gama_expat_1_1 { LIBS+=-lexpat }
 
 SOURCES += ../../gama/lib/gnu_gama/e3.cpp \
     ../../gama/lib/gnu_gama/ellipsoid.cpp \

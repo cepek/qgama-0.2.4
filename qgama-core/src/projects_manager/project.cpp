@@ -1,31 +1,33 @@
-/*
-    QGamaCore GUI C++ Library (QGamaCoreLib)
-    Copyright (C) 2010  Jiri Novak <jiri.novak.2@fsv.cvut.cz>
-
-    This file is part of the QGamaCore GUI C++ Library.
-
-    This library is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This library is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this library; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-*/
+/****************************************************************************
+**
+**    QGamaCore GUI C++ Library (QGamaCoreLib)
+**    Copyright (C) 2010  Jiri Novak <jiri.novak.2@fsv.cvut.cz>
+**
+**    This file is part of the QGamaCore GUI C++ Library.
+**
+**    This library is free software; you can redistribute it and/or modify
+**    it under the terms of the GNU General Public License as published by
+**    the Free Software Foundation; either version 3 of the License, or
+**    (at your option) any later version.
+**
+**    This library is distributed in the hope that it will be useful,
+**    but WITHOUT ANY WARRANTY; without even the implied warranty of
+**    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+**    GNU General Public License for more details.
+**
+**    You should have received a copy of the GNU General Public License
+**    along with this library; if not, write to the Free Software
+**    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+**
+****************************************************************************/
 
 #include <QtGui>
 
 #include <iostream>
 
 #include "project.h"
+#include "../factory.h"
 #include "../main_window/mainwindow.h"
-#include "../utils/applicationcomponentprovider.h"
 #include "../projects_manager/adjustmentsetting.h"
 
 using namespace QGamaCore;
@@ -35,7 +37,8 @@ using namespace QGamaCore;
 /**
   *
   */
-Project::Project(const QString &name, const QString &location, const QString &projectFilePath)
+Project::Project(const QString &name, const QString &location, const QString &projectFilePath) :
+    acp(Factory::getApplicationComponentProvider())
 {
     // initialize atributes
     this->name = name;
@@ -52,8 +55,8 @@ Project::Project(const QString &name, const QString &location, const QString &pr
     loadXml();
 
     // set pointers to the widgets
-    mw = ApplicationComponentProvider::getMainWindow();
-    ptw = ApplicationComponentProvider::getProjectsTreeWidget();
+    mw = acp->getMainWindow();
+    ptw = acp->getProjectsTreeWidget();
 }
     
 
@@ -139,7 +142,7 @@ bool Project::loadXml()
   */
 Project::~Project()
 {
-
+    Factory::releaseApplicationComponentProvider(acp);
 }
 
 
@@ -152,7 +155,7 @@ void Project::updateProjectFileEntries()
     // have a look which networks from projects are still opened
     for (int i=0; i<networks.size(); i++) {
         // try to find the corresponding subwindow
-        QMdiSubWindow *existing = ApplicationComponentProvider::findMdiSubWindow(networks[i].getPath());
+        QMdiSubWindow *existing = acp->getMdiSubWindow(networks[i].getPath());
 
         // if still exists, set the network to be opened on another program's startup and vice versa
         if (existing)
@@ -401,6 +404,8 @@ bool Project::createProjectStructure(const QString &type, const QString &name, c
 {
     if (type == "SingleNetworkProject")
         return createSingleNetworkProjectStructure(type, name, location);
+
+    return true;
 }
 
 
@@ -570,4 +575,6 @@ bool Project::newAdjustmentSetting(AdjustmentSetting &as)
     adjustmentSettings.append(as);
     createAdjustmentSettingEntry(as);
     ptw->addFileItems(this);
+
+    return true;
 }

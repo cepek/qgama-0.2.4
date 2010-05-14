@@ -96,6 +96,9 @@
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="label_Filter">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="text">
         <string>Filter: </string>
        </property>
@@ -103,6 +106,9 @@
      </item>
      <item row="2" column="1" colspan="2">
       <widget class="QLineEdit" name="lineEdit_FilterValue">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
          <horstretch>0</horstretch>

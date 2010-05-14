@@ -44,9 +44,11 @@ TARGET=gama-local
 
 TEMPLATE=app
 
-INCLUDEPATH+=../../gama/lib
+INCLUDEPATH+=../../gama/lib /usr/include
 
 LIBS+=-L../libqgama -lqgama
+
+!GNU_gama_expat_1_1 { LIBS+=-lexpat }
 
 DESTDIR=../bin
 

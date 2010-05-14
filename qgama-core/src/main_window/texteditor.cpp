@@ -7,7 +7,7 @@
 **
 **    This library is free software; you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation; either version 2 of the License, or
+**    the Free Software Foundation; either version 3 of the License, or
 **    (at your option) any later version.
 **
 **    This library is distributed in the hope that it will be useful,
@@ -130,41 +130,6 @@ void TextEditor::initializeUi()
 
     // makes Qt delete this widget when the widget has accepted the close event
     editor.setAttribute(Qt::WA_DeleteOnClose);
-}
-
-
-/* ===============================================================================================================*/
-/**
-  *
-  */
-void TextEditor::moveCursor(int line, int column)
-{
-    // set the cursor to the initial position
-    editor.moveCursor(QTextCursor::Start);
-
-    // move the cursor to the corresponding line
-    for (int i = 1; i < line; ++i)
-        editor.moveCursor(QTextCursor::Down);
-
-    // move the cursor to the corresponding character position
-    for (int i = 1; i < column; ++i)
-        editor.moveCursor(QTextCursor::Right);
-
-    // set the selection of corresponding line
-    QList<QTextEdit::ExtraSelection> extraSelections;
-    QTextEdit::ExtraSelection selection;
-
-    const QColor lineColor = QColor(Qt::red).lighter(160);
-    selection.format.setBackground(lineColor);
-    selection.format.setProperty(QTextFormat::FullWidthSelection, true);
-    selection.cursor = editor.textCursor();
-    selection.cursor.clearSelection();
-    extraSelections.append(selection);
-
-    editor.setExtraSelections(extraSelections);
-
-    // set the focus
-    editor.setFocus();
 }
 
 

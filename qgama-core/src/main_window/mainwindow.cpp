@@ -7,7 +7,7 @@
 **
 **    This library is free software; you can redistribute it and/or modify
 **    it under the terms of the GNU General Public License as published by
-**    the Free Software Foundation; either version 2 of the License, or
+**    the Free Software Foundation; either version 3 of the License, or
 **    (at your option) any later version.
 **
 **    This library is distributed in the hope that it will be useful,
@@ -38,7 +38,6 @@
 #include "htmlviewer.h"
 #include "progressdialog.h"
 #include "solvenetworkdialog.h"
-#include "../utils/applicationcomponentprovider.h"
 #include "../factory.h"
 #include "../projects_manager/projectpropertiesdialog.h"
 #include "../projects_manager/project.h"
@@ -62,6 +61,7 @@ MainWindow::MainWindow(QWidget *parent) :
     pm(Factory::getPluginsManager()),
     prm(Factory::getProjectsManager()),
     settings(Factory::getSettings()),
+    acp(Factory::getApplicationComponentProvider()),
     calculating(false)
  {
     // setting .ui file
@@ -78,6 +78,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // load plugins
     pm->loadPlugins();
+    updateToolsMenu();
 }
 
 
@@ -127,6 +128,7 @@ MainWindow::~MainWindow()
     Factory::releaseSettings(settings);
     Factory::releasePluginsManager(pm);
     Factory::releaseProjectsManager(prm);
+    Factory::releaseApplicationComponentProvider(acp);
 
     // delete dynamically created structures
     delete ui;
@@ -400,7 +402,7 @@ void MainWindow::openFile(const QString &filePath, const QString &fileType, Proj
 {
     if (!filePath.isEmpty()) {
         // if it was already opened, set active window to it
-        QMdiSubWindow *existing = ApplicationComponentProvider::findMdiSubWindow(filePath);
+        QMdiSubWindow *existing = acp->getMdiSubWindow(filePath);
         if (existing) {
             ui->mdiArea->setActiveSubWindow(existing);
             return;
@@ -834,7 +836,6 @@ void MainWindow::onFileClosed(const QString &fileToClose, const QString &fileTyp
         }
         else {
             int index = recentlyOpenedFiles.indexOf(fileToClose+"|"+fileType);
-            std::cout << index << std::endl;
             recentlyOpenedFiles.removeAt(index);
             recentlyOpenedFiles.append(fileToClose+"|"+fileType);
         }
@@ -852,7 +853,7 @@ void MainWindow::onFileClosed(const QString &fileToClose, const QString &fileTyp
 void MainWindow::closeFile(const QString &filePath)
 {
     // change focus to the corresponding subwindow if exists and close it
-    QMdiSubWindow *existing = ApplicationComponentProvider::findMdiSubWindow(filePath);
+    QMdiSubWindow *existing = acp->getMdiSubWindow(filePath);
     if (existing) {
         ui->mdiArea->setActiveSubWindow(existing);
         closeFile();
@@ -1070,21 +1071,19 @@ void MainWindow::onAdjustmentSuccess(const QString xmlStream, const QString txtS
     Q_ASSERT(project!=0 && " project pointer is 0!");
 
     QString filePath;
-    qDebug() << xmlStream;
     // if calculated, add subwindow with the xml output
     if (!xmlStream.isEmpty()) {
         filePath = project->getLocation()+project->getName()+"/Solutions/"+document->userFriendlyCurrentFile().split(".").value(0)+"__"+as->getName()+".xml";
         openNewSubWindow(filePath, "solution-xml", project, xmlStream);
     }
 
-    qDebug() << txtStream;
     // if calculated, add subwindow with the txt output
     if (!txtStream.isEmpty()) {
         filePath = project->getLocation()+project->getName()+"/Solutions/"+document->userFriendlyCurrentFile().split(".").value(0)+"__"+as->getName()+".txt";
         openNewSubWindow(filePath, "txt", project, txtStream);
     }
 
-    // if calculated, add subwindow with the txt output
+    // if calculated, add subwindow with the html output
     if (!htmlStream.isEmpty()) {
         filePath = project->getLocation()+project->getName()+"/Solutions/"+document->userFriendlyCurrentFile().split(".").value(0)+"__"+as->getName()+".html";
         openNewSubWindow(filePath, "solution-html", project, htmlStream);
@@ -1134,4 +1133,24 @@ void MainWindow::closeSubWindow(int number)
 
     // run the corresponding callback
     onFileClosed(document->currentFile(), document->documentType());
+}
+
+
+/* ===============================================================================================================*/
+/**
+  *
+  */
+void MainWindow::updateToolsMenu()
+{
+    QList<QAction*> actions = ui->menu_Tools->actions();
+    int count = 0;
+    for (int i=0; i<actions.size(); i++) {
+        if (!actions[i]->isSeparator())
+            count++;
+    }
+
+    if (count==0)
+        ui->menu_Tools->setEnabled(false);
+    else
+        ui->menu_Tools->setEnabled(true);
 }
