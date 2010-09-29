@@ -8,10 +8,10 @@ PRE_TARGETDEPS += version
 QMAKE_CLEAN += ../config.h
 
 # dependency to libqgama
-unix:libqgama.commands = cd ../libqgama && $${QMAKE_QMAKE} libqgama.pro && make
-win32:libqgama.commands = cd ../libqgama && $${QMAKE_QMAKE} libqgama.pro && mingw32-make.exe
+unix:libqgama.commands = cd ../libqgama && $$QMAKE_QMAKE libqgama.pro && make
+win32:libqgama.commands = cd ../libqgama && $$QMAKE_QMAKE libqgama.pro && mingw32-make.exe
 QMAKE_EXTRA_TARGETS += libqgama
-PRE_TARGETDEPS += libqgama
+PRE_TARGETDEPS+=libqgama
 
 # include options
 !include(../options.pri) : error(Couldn't find the options.pri file!)
@@ -40,14 +40,14 @@ win32:QMAKE_LFLAGS_RELEASE += -static-libgcc
 # specify that deals a console application
 win32:CONFIG+=console
 
-TARGET = gama-g3
+TARGET=gama-local-xml2sql
 
-TEMPLATE = app
+TEMPLATE=app
 
-INCLUDEPATH += ../../gama/lib
+INCLUDEPATH+=../../gama/lib
 
-LIBS += -L../libqgama -lqgama
+LIBS+=-L../libqgama -lqgama
 
-DESTDIR = ../bin
+DESTDIR=../bin
 
-SOURCES += ../../gama/bin/gama-g3.cpp
+SOURCES+=../../gama/bin/gama-local-xml2sql.cpp

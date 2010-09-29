@@ -52,6 +52,6 @@ LIBS+=-L../libqgama -lqgama
 
 DESTDIR=../bin
 
-HEADERS+=../../gama/gama-local/gama-local-main.h
+HEADERS+=../../gama/bin/gama-local-main.h
 
-SOURCES+=../../gama/gama-local/gama-local.cpp
+SOURCES+=../../gama/bin/gama-local.cpp

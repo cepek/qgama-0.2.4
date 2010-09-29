@@ -10,5 +10,6 @@ bin
 config.h
 Makefile*
 *.pro.user
+*-build-desktop
 *~
 .gitignore

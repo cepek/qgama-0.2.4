@@ -50,4 +50,4 @@ LIBS+=-L../libqgama -lqgama
 
 DESTDIR=../bin
 
-SOURCES+=../../gama/gama-local/gama-local-xml2txt.cpp
+SOURCES+=../../gama/bin/gama-local-xml2txt.cpp

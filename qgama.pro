@@ -6,6 +6,7 @@ all {
     SUBDIRS=libqgama \
     gama-local \
     gama-local-xml2txt \
+    gama-local-xml2sql \
     gama-g3 \
     qgama-core/src/qgama-core.pro \
     qgama-plugins
@@ -15,6 +16,7 @@ gama {
     SUBDIRS=libqgama \
     gama-local \
     gama-local-xml2txt \
+    gama-local-xml2sql \
     gama-g3
 }
 
@@ -26,7 +28,8 @@ qgama {
 gama-local {
     SUBDIRS=libqgama \
     gama-local \
-    gama-local-xml2txt
+    gama-local-xml2txt \
+    gama-local-xml2sql
 }
 
 gama-g3 {

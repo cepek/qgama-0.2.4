@@ -32,29 +32,29 @@
 #include <gnu_gama/version.h>
 #include <gnu_gama/intfloat.h>
 #include <gnu_gama/xml/localnetwork.h>
-#include <gamalib/language.h>
-#include <gamalib/local/gamadata.h>
-#include <gamalib/xml/gkfparser.h>
-#include <gamalib/local/network_svd.h>
-#include <gamalib/local/network_gso.h>
-#include <gamalib/local/network_chol.h>
-#include <gamalib/local/network_env.h>
-#include <gamalib/local/acord.h>
-#include <gamalib/local/results/text/approximate_coordinates.h>
-#include <gamalib/local/results/text/network_description.h>
-#include <gamalib/local/results/text/general_parameters.h>
-#include <gamalib/local/results/text/fixed_points.h>
-#include <gamalib/local/results/text/adjusted_observations.h>
-#include <gamalib/local/results/text/adjusted_unknowns.h>
-#include <gamalib/local/results/text/outlying_abs_terms.h>
-#include <gamalib/local/results/text/reduced_observations.h>
-#include <gamalib/local/results/text/reduced_observations_to_ellipsoid.h>
-#include <gamalib/local/results/text/residuals_observations.h>
-#include <gamalib/local/results/text/error_ellipses.h>
-#include <gamalib/local/results/text/test_linearization.h>
+#include <gnu_gama/local/language.h>
+#include <gnu_gama/local/gamadata.h>
+#include <gnu_gama/xml/gkfparser.h>
+#include <gnu_gama/local/network_svd.h>
+#include <gnu_gama/local/network_gso.h>
+#include <gnu_gama/local/network_chol.h>
+#include <gnu_gama/local/network_env.h>
+#include <gnu_gama/local/acord.h>
+#include <gnu_gama/local/results/text/approximate_coordinates.h>
+#include <gnu_gama/local/results/text/network_description.h>
+#include <gnu_gama/local/results/text/general_parameters.h>
+#include <gnu_gama/local/results/text/fixed_points.h>
+#include <gnu_gama/local/results/text/adjusted_observations.h>
+#include <gnu_gama/local/results/text/adjusted_unknowns.h>
+#include <gnu_gama/local/results/text/outlying_abs_terms.h>
+#include <gnu_gama/local/results/text/reduced_observations.h>
+#include <gnu_gama/local/results/text/reduced_observations_to_ellipsoid.h>
+#include <gnu_gama/local/results/text/residuals_observations.h>
+#include <gnu_gama/local/results/text/error_ellipses.h>
+#include <gnu_gama/local/results/text/test_linearization.h>
 
 using namespace QGamaCore;
-using namespace GaMaLib;
+using namespace GNU_gama::local;
 using namespace std;
 using namespace GNU_gama;
 
@@ -205,7 +205,7 @@ void SolveNetwork::solveNetwork_(QString &outputXmlStream, QString &outputTxtStr
         }
 
         catch (...) {
-            throw GaMaLib::Exception(T_GaMa_exception_1);
+            throw GNU_gama::local::Exception(T_GaMa_exception_1);
         }
 
         // set latitude
@@ -276,10 +276,10 @@ void SolveNetwork::solveNetwork_(QString &outputXmlStream, QString &outputTxtStr
         }
     }
 
-    catch (const GaMaLib::ParserException& v) {
+    catch (const GNU_gama::local::ParserException& v) {
         throw Exception(QString(T_GaMa_exception_2a) + "\n\n" + QString(T_GaMa_exception_2b) + QString::number(v.line) + " : " + QString::fromStdString(v.text));
     }
-    catch (const GaMaLib::Exception& v) {
+    catch (const GNU_gama::local::Exception& v) {
         throw Exception(QString(T_GaMa_exception_2a) + "\n" + "\n***** " + QString::fromStdString(v.text) + "\n\n");
     }
     catch (...) {
@@ -305,10 +305,10 @@ void SolveNetwork::solveNetwork_(QString &outputXmlStream, QString &outputTxtStr
         }
 
         if (IS->PD.empty())
-            throw GaMaLib::Exception(T_GaMa_No_points_available);
+            throw GNU_gama::local::Exception(T_GaMa_No_points_available);
 
         if (IS->OD.clusters.empty())
-            throw GaMaLib::Exception(T_GaMa_No_observations_available);
+            throw GNU_gama::local::Exception(T_GaMa_No_observations_available);
 
         try {
             if (!GaMaConsistent(IS->PD))
@@ -335,7 +335,7 @@ void SolveNetwork::solveNetwork_(QString &outputXmlStream, QString &outputTxtStr
 
             ApproximateCoordinates(&acord, cout);
         }
-        catch(GaMaLib::Exception e)
+        catch(GNU_gama::local::Exception e)
         {
             errorOutput += e.text;
             throw Exception(QString::fromStdString(errorOutput));
@@ -468,7 +468,7 @@ void SolveNetwork::solveNetwork_(QString &outputXmlStream, QString &outputTxtStr
         delete IS;
         return;
     }
-    catch (const GaMaLib::Exception& V)
+    catch (const GNU_gama::local::Exception& V)
     {
         throw Exception(QString(T_GaMa_solution_ended_with_error) + "\n\n" + "****** " + QString::fromStdString(V.text));
     }
