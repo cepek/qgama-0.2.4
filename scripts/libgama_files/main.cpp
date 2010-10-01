@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
         // Read it line by line and grep headers and sources
         while (!in.atEnd()) {
             line = in.readLine();
-            if (line.trimmed() == "SOURCES += \\") {
+            if (line.trimmed() == "HEADERS += \\") {
                 break;
             }
             else {

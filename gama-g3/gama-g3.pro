@@ -48,6 +48,11 @@ INCLUDEPATH += ../../gama/lib
 
 LIBS += -L../libqgama -lqgama
 
+# if include of expath 1.1 is not desired, link with the version installed on host system
+!GNU_gama_expat_1_1 {
+    LIBS+=-lexpat
+}
+
 DESTDIR = ../bin
 
 SOURCES += ../../gama/bin/gama-g3.cpp
