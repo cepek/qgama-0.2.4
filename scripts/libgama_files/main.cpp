@@ -34,13 +34,13 @@ int main(int argc, char *argv[])
                 continue;
             }
             if (line.endsWith(".h")) {
-                if (category == "expat" || category == "expat_extra")
+                if (category == "expat_src" || category == "expat_extra")
                     headersExpat.append("../../gama/lib/" + line);
                 else
                     headers.append("../../gama/lib/" + line);
             }
             else if (line.endsWith(".c") || line.endsWith(".cpp")) {
-                if (category == "expat" || category == "expat_extra")
+                if (category == "expat_src" || category == "expat_extra")
                     sourcesExpat.append("../../gama/lib/" + line);
                 else
                     sources.append("../../gama/lib/" + line);
