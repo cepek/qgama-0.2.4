@@ -9,7 +9,7 @@ const QString gama="../../../gama/configure.ac";
 const QString qgama="../../qgama-core/src/qgama-core.pro";
 const QString configHeader="../../config.h";
 
-int main(int argc, char *argv[])
+int main()
 {
     QString gamaVersion;
     QString qGamaVersion;

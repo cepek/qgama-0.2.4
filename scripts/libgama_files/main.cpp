@@ -9,7 +9,7 @@ const QString gamalibFiles = "../../../gama/lib/Makefile.am";
 const QString libQGamaProjectFile = "../../libqgama/libqgama.pro";
 
 
-int main(int argc, char *argv[])
+int main()
 {
     QFile file(gamalibFiles);
     QVector<QString> headers;

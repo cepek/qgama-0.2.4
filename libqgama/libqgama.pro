@@ -7,7 +7,7 @@ QMAKE_EXTRA_TARGETS += version
 PRE_TARGETDEPS += version
 
 # generating of libqgama.pro headers and sources section
-libqgama_files.commands = cd ../scripts/libgama_files && $$QMAKE_QMAKE libgama_files.pro && $$MAKE_COMMAND && ./libgama_files
+libgama_files.commands = cd ../scripts/libgama_files && $$QMAKE_QMAKE libgama_files.pro && $$MAKE_COMMAND && ./libgama_files
 QMAKE_EXTRA_TARGETS += libgama_files
 PRE_TARGETDEPS += libgama_files
 
