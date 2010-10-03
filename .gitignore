@@ -5,7 +5,6 @@
 .rcc
 *.a
 ui
-scripts/version
 bin
 config.h
 Makefile*

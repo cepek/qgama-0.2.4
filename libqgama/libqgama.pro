@@ -1,14 +1,18 @@
+# include options
+!include(../options.pri) : error(Couldn't find the options.pri file!)
+
 # generating of config.h file with the version info
-unix:version.commands = cd ../scripts && g++ -o version version.cpp && ./version
-win32:version.commands = cd ../scripts && mingw32-g++.exe -o version version.cpp && version.exe
+version.commands = cd ../scripts/version && $$QMAKE_QMAKE version.pro && $$MAKE_COMMAND && ./version
 QMAKE_EXTRA_TARGETS += version
 PRE_TARGETDEPS += version
 
+# generating of libqgama.pro headers and sources section
+libqgama_files.commands = cd ../scripts/libgama_files && $$QMAKE_QMAKE libgama_files.pro && $$MAKE_COMMAND && ./libgama_files
+QMAKE_EXTRA_TARGETS += libgama_files
+PRE_TARGETDEPS += libgama_files
+
 # add a file to be cleaned
 QMAKE_CLEAN += ../config.h
-
-# include options
-!include(../options.pri) : error(Couldn't find the options.pri file!)
 
 # compile in release mode and as a static library
 CONFIG += release

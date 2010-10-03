@@ -1,20 +1,13 @@
-# generating of config.h file with the version info
-unix:version.commands = cd ../scripts && g++ -o version version.cpp && ./version
-win32:version.commands = cd ../scripts && mingw32-g++.exe -o version version.cpp && version.exe
-QMAKE_EXTRA_TARGETS += version
-PRE_TARGETDEPS += version
+# include options
+!include(../options.pri) : error(Couldn't find the options.pri file!)
 
 # add a file to be cleaned
 QMAKE_CLEAN += ../config.h
 
 # dependency to libqgama
-unix:libqgama.commands = cd ../libqgama && $${QMAKE_QMAKE} libqgama.pro && make
-win32:libqgama.commands = cd ../libqgama && $${QMAKE_QMAKE} libqgama.pro && mingw32-make.exe
+libqgama.commands = cd ../libqgama && $$QMAKE_QMAKE libqgama.pro && $$MAKE_COMMAND
 QMAKE_EXTRA_TARGETS += libqgama
-PRE_TARGETDEPS += libqgama
-
-# include options
-!include(../options.pri) : error(Couldn't find the options.pri file!)
+PRE_TARGETDEPS+=libqgama
 
 # initalize the installs target
 isEmpty(PREFIX) {

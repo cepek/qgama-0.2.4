@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
         }
 
         // Close the file
-        file2.close();
+        file3.close();
     }
     else {
         std::cout << "Unable to open file: " << libQGamaProjectFile.toStdString() << std::endl;
