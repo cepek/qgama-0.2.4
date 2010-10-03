@@ -13,3 +13,5 @@ Makefile*
 *.bak
 *~
 .gitignore
+scripts/version/version
+scripts/libgama_files/libgama_files
