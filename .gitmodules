@@ -1,0 +1,3 @@
+[submodule "gama-qt-port"]
+	path = gama-qt-port
+	url = /home/jirka/workspace/qgama/gama-qt-port
